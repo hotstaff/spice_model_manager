@@ -18,6 +18,10 @@ CREATE TABLE IF NOT EXISTS data (
 """)
 conn.commit()
 
+@app.route('/')
+def home():
+    return "Welcome to the Spice Model Manager API!"
+
 # データを取得するAPI (全データ取得)
 @app.route('/data', methods=['GET'])
 def get_data():
