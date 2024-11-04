@@ -1,14 +1,14 @@
 from flask import Flask
-from models import init_db
-from views import main_bp
+from models.db_model import init_db
+from views import model_views  # views.pyからmodel_viewsをインポート
 
 app = Flask(__name__)
 
 # データベースの初期化
 init_db()
 
-# Blueprintの登録
-app.register_blueprint(main_bp)
+# APIエンドポイントを設定
+app.register_blueprint(model_views)
 
 @app.route('/')
 def home():
