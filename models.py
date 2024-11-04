@@ -21,7 +21,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-# データを取得する関数
+# データを取得する関数 (全データ取得)
 def get_all_data():
     conn = get_db_connection()
     df = pd.read_sql_query("SELECT * FROM data", conn)

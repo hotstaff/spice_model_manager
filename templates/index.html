@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Models List</title>
+</head>
+<body>
+    <h1>Models</h1>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Link</th>
+        </tr>
+        {% for model in models.itertuples() %}
+        <tr>
+            <td>{{ model.id }}</td>
+            <td>{{ model.name }}</td>
+            <td><a href="{{ url_for('main.model_detail', model_id=model.id) }}">View</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
