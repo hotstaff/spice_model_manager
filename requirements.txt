@@ -1,5 +1,4 @@
 Flask
 pandas
-sqlite3
 gunicorn
 
