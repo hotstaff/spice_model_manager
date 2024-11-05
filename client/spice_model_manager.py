@@ -37,6 +37,15 @@ class ModelManager:
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの保存に失敗しました: {e}")
 
+    def update_to_api(self, model_id, params):
+        try:
+            url = f'https://spice-model-manager.onrender.com/api/models/{model_id}'
+            response = requests.put(url, json=params)
+            response.raise_for_status()
+            QMessageBox.information(self.main_window, "更新成功", "モデルが更新されました。")
+        except requests.RequestException as e:
+            QMessageBox.warning(self.main_window, "エラー", f"データの更新に失敗しました: {e}")
+
     def parse_ltspice_model(self, model_line):
         model_line = model_line.replace('+', '').replace('\n', ' ').strip()
         pattern = r'\.MODEL\s+(\S+)\s+(\S+)\s*(\(.*)?(.*)'
@@ -56,37 +65,63 @@ class ModelManager:
             value = float(param.group(2).replace('p', 'e-12').replace('n', 'e-9').replace('u', 'e-6').replace('m', 'e-3').replace('k', 'e3'))
             params[key] = value
 
-        params['DEVICE_NAME'] = device_name
-        params['DEVICE_TYPE'] = device_type
+        params['device_name'] = device_name
+        params['device_type'] = device_type
 
         return params
 
     def add_model(self, model_line):
-        params = self.parse_ltspice_model(model_line)
+        try:
+            params = self.parse_ltspice_model(model_line)
 
-        existing_devices = [d['DEVICE_NAME'] for d in self.load_from_api()]
-        if params['DEVICE_NAME'] in existing_devices:
-            reply = QMessageBox.question(
-                self.main_window, '上書き確認', f"{params['DEVICE_NAME']} は既に登録されています。上書きしますか？",
-                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
-            )
-            if reply == QMessageBox.No:
-                return False
+            # パラメータからspice_stringを作成
+            spice_string = f".MODEL {params['DEVICE_NAME']} {params['DEVICE_TYPE']} " + \
+                           " ".join(f"{k}={v}" for k, v in params.items() if k not in ['DEVICE_NAME', 'DEVICE_TYPE'])
 
-        self.save_to_api(params)  # APIに保存
-        return True
+            # APIから既存デバイスの情報を取得
+            existing_devices = {d['DEVICE_NAME']: d['id'] for d in self.load_from_api()}
+            device_name = params['DEVICE_NAME']
+
+            if device_name in existing_devices:
+                reply = QMessageBox.question(
+                    self.main_window, '上書き確認', f"{device_name} は既に登録されています。上書きしますか？",
+                    QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+                )
+                if reply == QMessageBox.No:
+                    return False
+                
+                # 上書きの場合、IDを使ってPUTリクエストを送信
+                model_id = existing_devices[device_name]
+                self.update_to_api(model_id, {
+                    "device_name": device_name,
+                    "device_type": params['DEVICE_TYPE'],
+                    "spice_string": spice_string
+                })
+            else:
+                # 新規の場合はPOSTリクエストを送信
+                self.save_to_api({
+                    "device_name": device_name,
+                    "device_type": params['DEVICE_TYPE'],
+                    "spice_string": spice_string
+                })
+            return True
+        except Exception as e:
+            QMessageBox.warning(self.main_window, "エラー", f"モデルの追加中にエラーが発生しました: {e}")
+            return False
+
 
     def get_device_list(self):
         devices = self.load_from_api()
-        return [device['DEVICE_NAME'] for device in devices]
+        return [device['device_name'] for device in devices]
 
     def get_spice_string(self, device_name, multiline=False):
         devices = self.load_from_api()
-        device = next((d for d in devices if d['DEVICE_NAME'] == device_name), None)
+        device = next((d for d in devices if d['device_name'] == device_name), None)
         
         if device:
-            spice_string = f".MODEL {device['DEVICE_NAME']} {device['DEVICE_TYPE']} "
-            param_str = " ".join(f"{k}={v}" for k, v in device.items() if k not in ['DEVICE_NAME', 'DEVICE_TYPE'])
+            parsed_string = self.parse_ltspice_model(device['spice_string'])
+            spice_string = f".MODEL {parsed_string['device_name']} {parsed_string['device_type']} "
+            param_str = " ".join(f"{k}={v}" for k, v in parsed_string.items() if k not in ['device_name', 'device_type'])
 
             if multiline:
                 lines = param_str.split(" ")
