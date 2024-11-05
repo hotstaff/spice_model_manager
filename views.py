@@ -7,7 +7,7 @@ model_views = Blueprint('model_views', __name__)
 @model_views.route('/api/models', methods=['GET'])
 def get_models():
     df = get_all_data()
-    return jsonify(df.to_dict(orient="records"))
+    return jsonify(df.to_dict(orient="records")), 200
 
 # 特定のIDのモデルデータを取得するAPI
 @model_views.route('/api/models/<int:model_id>', methods=['GET'])
@@ -15,19 +15,20 @@ def get_model_by_id(model_id):
     df = get_data_by_id(model_id)
     if df.empty:
         return abort(404, description="Model not found")
-    return jsonify(df.to_dict(orient="records")[0])
+    return jsonify(df.to_dict(orient="records")[0]), 200
 
 # データを新規追加するAPI
 @model_views.route('/api/models', methods=['POST'])
 def add_model():
-    if not request.json or 'column1' not in request.json or 'column2' not in request.json:
+    if not request.json or 'device_name' not in request.json or 'device_type' not in request.json or 'spice_string' not in request.json:
         return abort(400, description="Invalid data")
     
-    column1 = request.json['column1']
-    column2 = request.json['column2']
+    device_name = request.json['device_name']
+    device_type = request.json['device_type']
+    spice_string = request.json['spice_string']
     
-    add_data(column1, column2)
-    return "Model added successfully", 201
+    add_data(device_name, device_type, spice_string)
+    return jsonify({"message": "Model added successfully"}), 201
 
 # データを更新するAPI
 @model_views.route('/api/models/<int:model_id>', methods=['PUT'])
@@ -35,13 +36,14 @@ def update_model(model_id):
     if not request.json:
         return abort(400, description="Invalid data")
     
-    column1 = request.json.get('column1')
-    column2 = request.json.get('column2')
+    device_name = request.json.get('device_name')
+    device_type = request.json.get('device_type')
+    spice_string = request.json.get('spice_string')
     
-    if not update_data(model_id, column1, column2):
+    if not update_data(model_id, device_name, device_type, spice_string):
         return abort(404, description="Model not found")
     
-    return "Model updated successfully", 200
+    return jsonify({"message": "Model updated successfully"}), 200
 
 # データを削除するAPI
 @model_views.route('/api/models/<int:model_id>', methods=['DELETE'])
@@ -49,7 +51,7 @@ def delete_model(model_id):
     if not delete_data(model_id):
         return abort(404, description="Model not found")
     
-    return "Model deleted successfully", 200
+    return jsonify({"message": "Model deleted successfully"}), 200
 
 # モデルの一覧をHTMLで表示
 @model_views.route('/models', methods=['GET'])

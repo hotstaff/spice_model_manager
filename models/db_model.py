@@ -14,8 +14,9 @@ def init_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS data (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        column1 TEXT,
-        column2 TEXT
+        device_name TEXT,
+        device_type TEXT,
+        spice_string TEXT
     )
     """)
     conn.commit()
@@ -36,15 +37,16 @@ def get_data_by_id(data_id):
     return df
 
 # データを新規追加する関数
-def add_data(column1, column2):
+def add_data(device_name, device_type, spice_string):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO data (column1, column2) VALUES (?, ?)", (column1, column2))
+    cursor.execute("INSERT INTO data (device_name, device_type, spice_string) VALUES (?, ?, ?)", 
+                   (device_name, device_type, spice_string))
     conn.commit()
     conn.close()
 
 # データを更新する関数
-def update_data(data_id, column1=None, column2=None):
+def update_data(data_id, device_name=None, device_type=None, spice_string=None):
     conn = get_db_connection()
     cursor = conn.cursor()
     
@@ -55,10 +57,11 @@ def update_data(data_id, column1=None, column2=None):
     
     cursor.execute("""
         UPDATE data
-        SET column1 = COALESCE(?, column1),
-            column2 = COALESCE(?, column2)
+        SET device_name = COALESCE(?, device_name),
+            device_type = COALESCE(?, device_type),
+            spice_string = COALESCE(?, spice_string)
         WHERE id = ?
-    """, (column1, column2, data_id))
+    """, (device_name, device_type, spice_string, data_id))
     conn.commit()
     conn.close()
     return True  # 更新成功

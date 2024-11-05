@@ -13,25 +13,29 @@ import requests
 import pandas as pd
 import re
 
+import requests
+import re
+from PyQt5.QtWidgets import QMessageBox, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
+
 class ModelManager:
     def __init__(self, main_window):
-        self.df = pd.DataFrame()
         self.main_window = main_window
-        self.table_window = None
-        self.load_from_api()  # APIからデータを読み込む
 
     def load_from_api(self):
         try:
             response = requests.get('https://spice-model-manager.onrender.com/api/models')
-            response.raise_for_status()  # HTTPエラーがあれば例外を発生させる
-            self.df = pd.DataFrame(response.json())
+            response.raise_for_status()  # エラーがあれば例外を発生
+            return response.json()  # データはそのまま返す
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの取得に失敗しました: {e}")
+            return []  # エラーの場合は空リスト
 
-    def save_to_api(self):
-        for _, row in self.df.iterrows():
-            response = requests.post('https://spice-model-manager.onrender.com/api/models', json=row.to_dict())
-            response.raise_for_status()  # エラーをチェック
+    def save_to_api(self, params):
+        try:
+            response = requests.post('https://spice-model-manager.onrender.com/api/models', json=params)
+            response.raise_for_status()
+        except requests.RequestException as e:
+            QMessageBox.warning(self.main_window, "エラー", f"データの保存に失敗しました: {e}")
 
     def parse_ltspice_model(self, model_line):
         model_line = model_line.replace('+', '').replace('\n', ' ').strip()
@@ -60,55 +64,42 @@ class ModelManager:
     def add_model(self, model_line):
         params = self.parse_ltspice_model(model_line)
 
-        device_name = params['DEVICE_NAME']
-        if 'DEVICE_NAME' in self.df.columns and device_name in self.df['DEVICE_NAME'].values:
+        existing_devices = [d['DEVICE_NAME'] for d in self.load_from_api()]
+        if params['DEVICE_NAME'] in existing_devices:
             reply = QMessageBox.question(
-                self.main_window, '上書き確認', f"{device_name} は既に登録されています。上書きしますか？",
+                self.main_window, '上書き確認', f"{params['DEVICE_NAME']} は既に登録されています。上書きしますか？",
                 QMessageBox.Yes | QMessageBox.No, QMessageBox.No
             )
             if reply == QMessageBox.No:
                 return False
 
-        for key in params.keys():
-            if key not in self.df.columns:
-                self.df[key] = None
-
-        self.df = self.df[self.df['DEVICE_NAME'] != device_name]
-        self.df = pd.concat([self.df, pd.DataFrame([params])], ignore_index=True)
-
-        self.save_to_api()  # APIに保存
+        self.save_to_api(params)  # APIに保存
         return True
 
     def get_device_list(self):
-        return self.df['DEVICE_NAME'].tolist() if not self.df.empty else []
+        devices = self.load_from_api()
+        return [device['DEVICE_NAME'] for device in devices]
 
     def get_spice_string(self, device_name, multiline=False):
-        device_row = self.df[self.df['DEVICE_NAME'] == device_name]
-        if not device_row.empty:
-            params = device_row.iloc[0]
-            spice_string = f".MODEL {params['DEVICE_NAME']} {params['DEVICE_TYPE']} "
-            
-            # パラメータ部分を生成
-            param_str = self.generate_param_string(params)
-            
+        devices = self.load_from_api()
+        device = next((d for d in devices if d['DEVICE_NAME'] == device_name), None)
+        
+        if device:
+            spice_string = f".MODEL {device['DEVICE_NAME']} {device['DEVICE_TYPE']} "
+            param_str = " ".join(f"{k}={v}" for k, v in device.items() if k not in ['DEVICE_NAME', 'DEVICE_TYPE'])
+
             if multiline:
-                spice_string += self.format_multiline(param_str)
+                lines = param_str.split(" ")
+                spice_string += "\n" + "\n".join(f"+ {line}" for line in lines)
             else:
                 spice_string += param_str
 
             return spice_string
         return ""
 
-    def generate_param_string(self, params):
-        return " ".join(f"{k}={v}" for k, v in params.items() 
-                        if k not in ['DEVICE_NAME', 'DEVICE_TYPE'] and pd.notna(v))
-
-    def format_multiline(self, param_str):
-        lines = param_str.split(" ")
-        return "\n" + "\n".join(f"+ {line}" for line in lines)
-
     def display_table_window(self):
-        if self.df.empty:
+        devices = self.load_from_api()
+        if not devices:
             QMessageBox.warning(self.main_window, "警告", "データがありません。")
             return
 
@@ -116,34 +107,27 @@ class ModelManager:
             self.table_window.close()
             self.table_window = None
 
-        # 新しいウィンドウを作成してテーブルを表示
         self.table_window = QMainWindow()
         self.table_window.setWindowTitle("モデルデータ")
         table_widget = QTableWidget()
+        table_widget.setRowCount(len(devices))
+        table_widget.setColumnCount(len(devices[0]))
+        table_widget.setHorizontalHeaderLabels(devices[0].keys())
 
-        # データフレームの行数と列数をテーブルに設定
-        table_widget.setRowCount(len(self.df))
-        table_widget.setColumnCount(len(self.df.columns))
-        table_widget.setHorizontalHeaderLabels(self.df.columns.tolist())
-
-        # データフレームのデータをテーブルウィジェットに挿入
-        for row in range(len(self.df)):
-            for col in range(len(self.df.columns)):
-                item = QTableWidgetItem(str(self.df.iat[row, col]))
+        for row, device in enumerate(devices):
+            for col, (key, value) in enumerate(device.items()):
+                item = QTableWidgetItem(str(value))
                 table_widget.setItem(row, col, item)
 
-        # テーブルウィジェットを新しいウィンドウに配置
         layout = QVBoxLayout()
         layout.addWidget(table_widget)
-
-        # ウィジェットにレイアウトを設定
         container = QWidget()
         container.setLayout(layout)
         self.table_window.setCentralWidget(container)
 
-        # ウィンドウを表示
         self.table_window.setGeometry(100, 100, 800, 400)
         self.table_window.show()
+
 
 
 def on_register_click():
