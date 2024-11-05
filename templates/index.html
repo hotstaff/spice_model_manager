@@ -12,11 +12,11 @@
             <th>Name</th>
             <th>Link</th>
         </tr>
-        {% for model in models.itertuples() %}
+        {% for model in models %}
         <tr>
             <td>{{ model.id }}</td>
-            <td>{{ model.name }}</td>
-            <td><a href="{{ url_for('main.model_detail', model_id=model.id) }}">View</a></td>
+            <td>{{ model.device_name }}</td>
+            <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
         </tr>
         {% endfor %}
     </table>

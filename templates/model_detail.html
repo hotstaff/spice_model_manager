@@ -3,10 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <title>Model Detail</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .model-info {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+            overflow-x: auto;
+        }
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007BFF;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>SPICE String</h1>
-    <pre>{{ spice_string }}</pre>
-    <a href="{{ url_for('main.show_models') }}">Back to Models List</a>
+    <h1>Model Details</h1>
+    <div class="model-info">
+        <h2>Device Name: {{ model.device_name }}</h2>
+        <h3>Device Type: {{ model.device_type }}</h3>
+        <h4>SPICE String:</h4>
+        <pre>{{ model.spice_string }}</pre>
+    </div>
+    <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
 </body>
 </html>
