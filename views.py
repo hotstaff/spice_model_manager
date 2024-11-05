@@ -20,7 +20,13 @@ def get_model_by_id(model_id):
 # データを新規追加するAPI
 @model_views.route('/api/models', methods=['POST'])
 def add_model():
-    if not request.json or 'device_name' not in request.json or 'device_type' not in request.json or 'spice_string' not in request.json:
+    if not request.json:
+        return abort(400, description="Invalid data")
+    
+    # デバッグのために受け取ったデータをログ出力
+    print("Received data:", request.json)
+
+    if 'device_name' not in request.json or 'device_type' not in request.json or 'spice_string' not in request.json:
         return abort(400, description="Invalid data")
     
     device_name = request.json['device_name']
