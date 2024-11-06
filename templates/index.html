@@ -2,23 +2,78 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Models List</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        a {
+            color: #007BFF;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-    <h1>Models</h1>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Link</th>
-        </tr>
-        {% for model in models %}
-        <tr>
-            <td>{{ model.id }}</td>
-            <td>{{ model.device_name }}</td>
-            <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+    <div class="container">
+        <h1>Models List</h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Device Type</th>
+                    <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for model in models %}
+                <tr>
+                    <td>{{ model.id }}</td>
+                    <td>{{ model.device_name }}</td>
+                    <td>{{ model.device_type }}</td>
+                    <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
