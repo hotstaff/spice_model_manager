@@ -1,16 +1,23 @@
+import os
 import psycopg2
 import pandas as pd
 
-# データベース接続のための関数
+from dotenv import load_dotenv
+
+# .envファイルを読み込む
+load_dotenv()
+
+# 環境変数から接続情報を取得
 def get_db_connection():
     conn = psycopg2.connect(
-        dbname="spice-model-storage",
-        user="your_username",
-        password="your_password",
-        host="your_host_address",
-        port="5432"
+        dbname=os.getenv("DB_NAME"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT")
     )
     return conn
+
 
 # テーブルの初期化
 def init_db():
