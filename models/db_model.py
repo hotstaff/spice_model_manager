@@ -1,7 +1,6 @@
 import os
 import psycopg2
 import pandas as pd
-
 from dotenv import load_dotenv
 
 # .envファイルを読み込む
@@ -18,9 +17,34 @@ def get_db_connection():
     )
     return conn
 
+# データベースの存在確認と作成
+def create_db_if_not_exists():
+    try:
+        # まず、指定されたデータベースに接続を試みる
+        conn = get_db_connection()
+        conn.close()
+        print("データベースが存在します。")
+    except psycopg2.OperationalError as e:
+        # データベースが存在しない場合
+        print("データベースが存在しないため、作成します。")
+        # データベースを作成する処理
+        conn = psycopg2.connect(
+            dbname="postgres",  # PostgreSQLのデフォルトのデータベース
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT")
+        )
+        conn.autocommit = True
+        cursor = conn.cursor()
+        cursor.execute(f"CREATE DATABASE {os.getenv('DB_NAME')}")
+        conn.close()
 
 # テーブルの初期化
 def init_db():
+    create_db_if_not_exists()  # データベースの存在確認と作成
+
+    # データベースに再接続してテーブルを作成
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
