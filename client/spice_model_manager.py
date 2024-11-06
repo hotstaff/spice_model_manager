@@ -1,5 +1,6 @@
 import os
 import re
+import requests
 
 import pandas as pd
 from PyQt5.QtGui import QGuiApplication, QFont
@@ -9,31 +10,30 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QLabel, QLineEdit,
                              QWidget, QMessageBox, QComboBox)
 
 from PyQt5.QtCore import Qt
-import requests
-import pandas as pd
-import re
-
-import requests
-import re
-from PyQt5.QtWidgets import QMessageBox, QMainWindow, QTableWidget, QTableWidgetItem, QVBoxLayout, QWidget
 
 class ModelManager:
     def __init__(self, main_window):
         self.main_window = main_window
+        self.devices_cache = []  # ローカルキャッシュ
+        self.table_window = None
 
     def load_from_api(self):
+        """APIからデータをロードしてキャッシュに保存"""
         try:
             response = requests.get('https://spice-model-manager.onrender.com/api/models')
             response.raise_for_status()  # エラーがあれば例外を発生
-            return response.json()  # データはそのまま返す
+            self.devices_cache = response.json()  # キャッシュに保存
+            return self.devices_cache
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの取得に失敗しました: {e}")
-            return []  # エラーの場合は空リスト
+            self.devices_cache = []  # エラーの場合は空リスト
+            return self.devices_cache
 
     def save_to_api(self, params):
         try:
             response = requests.post('https://spice-model-manager.onrender.com/api/models', json=params)
             response.raise_for_status()
+            self.load_from_api()  # データの再ロード
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの保存に失敗しました: {e}")
 
@@ -43,6 +43,7 @@ class ModelManager:
             response = requests.put(url, json=params)
             response.raise_for_status()
             QMessageBox.information(self.main_window, "更新成功", "モデルが更新されました。")
+            self.load_from_api()  # データの再ロード
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの更新に失敗しました: {e}")
 
@@ -75,12 +76,12 @@ class ModelManager:
             params = self.parse_ltspice_model(model_line)
 
             # パラメータからspice_stringを作成
-            spice_string = f".MODEL {params['DEVICE_NAME']} {params['DEVICE_TYPE']} " + \
-                           " ".join(f"{k}={v}" for k, v in params.items() if k not in ['DEVICE_NAME', 'DEVICE_TYPE'])
+            spice_string = f".MODEL {params['device_name']} {params['device_type']} " + \
+                           " ".join(f"{k}={v}" for k, v in params.items() if k not in ['device_name', 'device_type'])
 
             # APIから既存デバイスの情報を取得
-            existing_devices = {d['DEVICE_NAME']: d['id'] for d in self.load_from_api()}
-            device_name = params['DEVICE_NAME']
+            existing_devices = {d['device_name']: d['id'] for d in self.load_from_api()}
+            device_name = params['device_name']
 
             if device_name in existing_devices:
                 reply = QMessageBox.question(
@@ -94,29 +95,28 @@ class ModelManager:
                 model_id = existing_devices[device_name]
                 self.update_to_api(model_id, {
                     "device_name": device_name,
-                    "device_type": params['DEVICE_TYPE'],
+                    "device_type": params['device_type'],
                     "spice_string": spice_string
                 })
             else:
                 # 新規の場合はPOSTリクエストを送信
                 self.save_to_api({
                     "device_name": device_name,
-                    "device_type": params['DEVICE_TYPE'],
+                    "device_type": params['device_type'],
                     "spice_string": spice_string
                 })
             return True
         except Exception as e:
             QMessageBox.warning(self.main_window, "エラー", f"モデルの追加中にエラーが発生しました: {e}")
             return False
-
-
+        
     def get_device_list(self):
-        devices = self.load_from_api()
-        return [device['device_name'] for device in devices]
+        """キャッシュからデバイスリストを取得"""
+        return [device['device_name'] for device in self.devices_cache]
 
     def get_spice_string(self, device_name, multiline=False):
-        devices = self.load_from_api()
-        device = next((d for d in devices if d['device_name'] == device_name), None)
+        """キャッシュから指定デバイスのSPICE文字列を取得"""
+        device = next((d for d in self.devices_cache if d['device_name'] == device_name), None)
         
         if device:
             parsed_string = self.parse_ltspice_model(device['spice_string'])
@@ -133,7 +133,7 @@ class ModelManager:
         return ""
 
     def display_table_window(self):
-        devices = self.load_from_api()
+        devices = self.devices_cache
         if not devices:
             QMessageBox.warning(self.main_window, "警告", "データがありません。")
             return
@@ -191,6 +191,7 @@ def copy_to_clipboard():
         QMessageBox.information(window, "コピー成功", "Spice文字列がクリップボードにコピーされました。")
 
 def update_device_combo():
+    model_manager.load_from_api()
     device_list = model_manager.get_device_list()
     device_combo.clear()
     device_combo.addItems(device_list)
@@ -264,14 +265,9 @@ window.setLayout(layout)
 
 update_device_combo()
 
-text_input.setFont(font)
-register_button.setFont(font)
-device_combo.setFont(font)
-spice_display_label.setFont(font)
-multiline_checkbox.setFont(font)
-uppercase_checkbox.setFont(font)
-copy_button.setFont(font)
-show_table_button.setFont(font)
+for widget in [text_input, register_button, device_combo, spice_display_label, 
+               multiline_checkbox, uppercase_checkbox, copy_button, show_table_button]:
+    widget.setFont(font)
 
 
 window.show()
