@@ -2,5 +2,5 @@ Flask
 pandas
 gunicorn
 psycopg2
-dotenv
+python-dotenv
 
