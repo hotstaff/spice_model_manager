@@ -13,7 +13,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
         }
         .container {
             background-color: #fff;
@@ -38,27 +38,6 @@
             font-size: 16px;
             color: #777;
             margin: 20px 0;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input[type="text"], select {
-            padding: 8px;
-            width: 200px;
-            margin: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        button {
-            padding: 8px 12px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
         }
         table {
             width: 100%;
@@ -86,16 +65,8 @@
     <div class="container">
         <h1>SPICE Model Repository</h1>
         <h2>LTspice JFET & BJT Model Data Storage</h2>
-        <p>This repository contains a collection of SPICE models for JFET and BJT devices, specifically formatted for use with LTspice. Use the search fields below to filter models by name, type, or spice string.</p>
-
-        <!-- 検索フォーム -->
-        <form method="GET" action="{{ url_for('model_views.models') }}">
-            <input type="text" name="device_name" placeholder="Device Name" value="{{ request.args.get('device_name', '') }}">
-            <input type="text" name="device_type" placeholder="Device Type" value="{{ request.args.get('device_type', '') }}">
-            <input type="text" name="spice_string" placeholder="SPICE String" value="{{ request.args.get('spice_string', '') }}">
-            <button type="submit">Search</button>
-        </form>
-
+        <p>This repository contains a collection of SPICE models for JFET and BJT devices, specifically formatted for use with LTspice. Browse through the list of available models below and click to view their details.</p>
+        
         <table>
             <thead>
                 <tr>
@@ -106,20 +77,14 @@
                 </tr>
             </thead>
             <tbody>
-                {% if models %}
-                    {% for model in models %}
-                    <tr>
-                        <td>{{ model.id }}</td>
-                        <td>{{ model.device_name }}</td>
-                        <td>{{ model.device_type }}</td>
-                        <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
-                    </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="4">No models found. Please adjust your search criteria.</td>
-                    </tr>
-                {% endif %}
+                {% for model in models %}
+                <tr>
+                    <td>{{ model.id }}</td>
+                    <td>{{ model.device_name }}</td>
+                    <td>{{ model.device_type }}</td>
+                    <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
