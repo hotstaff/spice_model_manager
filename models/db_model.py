@@ -65,6 +65,29 @@ def get_all_data():
     conn.close()
     return df
 
+# 特定の条件でデータを検索する関数
+def search_data(device_name=None, device_type=None, spice_string=None):
+    conn = get_db_connection()
+    
+    # 動的なクエリを構築するためのリスト
+    query = "SELECT * FROM data WHERE true"  # WHERE trueは常に真になるため、追加条件がある場合に便利
+    params = []
+    
+    if device_name:
+        query += " AND device_name ILIKE %s"
+        params.append(f"%{device_name}%")
+    if device_type:
+        query += " AND device_type ILIKE %s"
+        params.append(f"%{device_type}%")
+    if spice_string:
+        query += " AND spice_string ILIKE %s"
+        params.append(f"%{spice_string}%")
+    
+    # 構築されたクエリを実行
+    df = pd.read_sql_query(query, conn, params=params)
+    conn.close()
+    return df
+
 # 特定のIDのデータを取得する関数
 def get_data_by_id(data_id):
     conn = get_db_connection()

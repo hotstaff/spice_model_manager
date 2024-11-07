@@ -1,12 +1,18 @@
 from flask import Blueprint, request, jsonify, abort, render_template
-from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data
+from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data
 
 model_views = Blueprint('model_views', __name__)
 
 # 全モデルデータを取得するAPI
 @model_views.route('/api/models', methods=['GET'])
 def get_models():
-    df = get_all_data()
+    # クエリパラメータを取得
+    device_name = request.args.get('device_name')
+    device_type = request.args.get('device_type')
+    
+    # 検索条件に基づいてデータを取得
+    df = search_data(device_name=device_name, device_type=device_type)
+    
     return jsonify(df.to_dict(orient="records")), 200
 
 # 特定のIDのモデルデータを取得するAPI
