@@ -90,6 +90,11 @@ def list_models():
         device_name = form.device_name.data
         device_type = form.device_type.data
         models = search_data(device_name=device_name, device_type=device_type)
+        if device_name is None:
+            device_name = ""
+
+        if device_type is None:
+            device_type = ""
         return render_template('index.html', models=models.to_dict(orient="records"), device_name=device_name, device_type=device_type)
     else:
         # バリデーションエラーが発生した場合
