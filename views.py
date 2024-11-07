@@ -68,12 +68,6 @@ def delete_model(model_id):
 # モデルの一覧をHTMLで表示
 @model_views.route('/models', methods=['GET'])
 def list_models():
-    models = get_all_data()
-    return render_template('index.html', models=models.to_dict(orient="records"))
-
-# モデルの一覧をHTMLで表示
-@model_views.route('/models', methods=['GET'])
-def list_models():
     device_name = request.args.get('device_name', '')
     device_type = request.args.get('device_type', '')
 
