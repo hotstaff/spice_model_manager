@@ -1,17 +1,27 @@
 from flask import Blueprint, request, jsonify, abort, render_template
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data
 
+from wtforms import Form, StringField
+from wtforms.validators import DataRequired, Length, Regexp
+
+class SearchForm(Form):
+    device_name = StringField('Device Name', [Length(max=100), Regexp('^[a-zA-Z0-9_ ]+$', message="無効な文字が含まれています")])
+    device_type = StringField('Device Type', [Length(max=100)])
+
+
 model_views = Blueprint('model_views', __name__)
 
 # 全モデルデータを取得するAPI
 @model_views.route('/api/models', methods=['GET'])
 def get_models():
-    # クエリパラメータを取得
-    device_name = request.args.get('device_name')
-    device_type = request.args.get('device_type')
-    
-    # 検索条件に基づいてデータを取得
-    df = search_data(device_name=device_name, device_type=device_type)
+    form = SearchForm(request.args)
+
+    if form.validate():
+        device_name = form.device_name.data
+        device_type = form.device_type.data
+        df = search_data(device_name=device_name, device_type=device_type)
+    else:
+        return abort(400, description="Invalid data")
     
     return jsonify(df.to_dict(orient="records")), 200
 
@@ -68,15 +78,16 @@ def delete_model(model_id):
 # モデルの一覧をHTMLで表示
 @model_views.route('/models', methods=['GET'])
 def list_models():
-    device_name = request.args.get('device_name', '')
-    device_type = request.args.get('device_type', '')
+    form = SearchForm(request.args)
 
-    # 検索条件に基づいてデータを取得
-    models = search_data(device_name=device_name, device_type=device_type)
-
-    # 結果をテンプレートに渡す
-    return render_template('index.html', models=models.to_dict(orient="records"), device_name=device_name, device_type=device_type)
-
+    if form.validate():
+        device_name = form.device_name.data
+        device_type = form.device_type.data
+        models = search_data(device_name=device_name, device_type=device_type)
+        return render_template('index.html', models=models.to_dict(orient="records"), device_name=device_name, device_type=device_type)
+    else:
+        # バリデーションエラーが発生した場合
+        return "There are invalid inputs", 400
 
 
 # モデルの詳細をHTMLで表示
