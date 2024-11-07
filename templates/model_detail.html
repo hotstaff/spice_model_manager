@@ -23,6 +23,18 @@
             border: 1px solid #ccc;
             overflow-x: auto;
         }
+        .copy-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            font-size: 14px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            cursor: pointer;
+        }
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
         a {
             display: inline-block;
             margin-top: 20px;
@@ -33,6 +45,16 @@
             text-decoration: underline;
         }
     </style>
+    <script>
+        function copyToClipboard() {
+            const spiceString = document.getElementById("spiceString").innerText;
+            navigator.clipboard.writeText(spiceString).then(() => {
+                alert("SPICE string copied to clipboard!");
+            }).catch(err => {
+                console.error("Failed to copy: ", err);
+            });
+        }
+    </script>
 </head>
 <body>
     <h1>Model Details</h1>
@@ -40,7 +62,8 @@
         <h2>Device Name: {{ model.device_name }}</h2>
         <h3>Device Type: {{ model.device_type }}</h3>
         <h4>SPICE String:</h4>
-        <pre>{{ model.spice_string }}</pre>
+        <pre id="spiceString">{{ model.spice_string }}</pre>
+        <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
     </div>
     <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
 </body>
