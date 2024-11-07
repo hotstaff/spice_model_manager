@@ -2,11 +2,17 @@ from flask import Blueprint, request, jsonify, abort, render_template
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data
 
 from wtforms import Form, StringField
-from wtforms.validators import DataRequired, Length, Regexp
+from wtforms.validators import DataRequired, Length, Regexp, Optional
 
 class SearchForm(Form):
-    device_name = StringField('Device Name', [Length(max=100), Regexp('^[a-zA-Z0-9_ ]+$', message="Invalid characters are included")])
-    device_type = StringField('Device Type', [Length(max=100)])
+    # 空白を許容するためにOptional()を使用
+    device_name = StringField('Device Name', 
+                              [Length(max=100), 
+                               Regexp('^[a-zA-Z0-9_ ]+$', message="Invalid characters are included"),
+                               Optional()])
+    device_type = StringField('Device Type', 
+                              [Length(max=100),
+                               Optional()])  # 空白も許容
 
 
 model_views = Blueprint('model_views', __name__)
