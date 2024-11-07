@@ -44,16 +44,33 @@
         a:hover {
             text-decoration: underline;
         }
+        .lowercase-toggle {
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+        }
     </style>
     <script>
+        function toggleLowercase() {
+            const spiceStringElement = document.getElementById("spiceString");
+            const isLowercase = document.getElementById("lowercaseCheckbox").checked;
+            spiceStringElement.innerText = isLowercase ? spiceStringElement.innerText.toLowerCase() : spiceStringElement.getAttribute("data-original");
+        }
+
         function copyToClipboard() {
-            const spiceString = document.getElementById("spiceString").innerText;
+            const spiceStringElement = document.getElementById("spiceString");
+            const spiceString = spiceStringElement.innerText;
             navigator.clipboard.writeText(spiceString).then(() => {
                 alert("SPICE string copied to clipboard!");
             }).catch(err => {
                 console.error("Failed to copy: ", err);
             });
         }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const spiceStringElement = document.getElementById("spiceString");
+            spiceStringElement.setAttribute("data-original", spiceStringElement.innerText);
+        });
     </script>
 </head>
 <body>
@@ -63,6 +80,10 @@
         <h3>Device Type: {{ model.device_type }}</h3>
         <h4>SPICE String:</h4>
         <pre id="spiceString">{{ model.spice_string }}</pre>
+        <div class="lowercase-toggle">
+            <input type="checkbox" id="lowercaseCheckbox" onclick="toggleLowercase()">
+            <label for="lowercaseCheckbox">Display SPICE string in lowercase</label>
+        </div>
         <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
     </div>
     <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
