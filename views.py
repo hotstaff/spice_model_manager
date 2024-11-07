@@ -71,6 +71,20 @@ def list_models():
     models = get_all_data()
     return render_template('index.html', models=models.to_dict(orient="records"))
 
+# モデルの一覧をHTMLで表示
+@model_views.route('/models', methods=['GET'])
+def list_models():
+    device_name = request.args.get('device_name', '')
+    device_type = request.args.get('device_type', '')
+
+    # 検索条件に基づいてデータを取得
+    models = search_data(device_name=device_name, device_type=device_type)
+
+    # 結果をテンプレートに渡す
+    return render_template('index.html', models=models.to_dict(orient="records"), device_name=device_name, device_type=device_type)
+
+
+
 # モデルの詳細をHTMLで表示
 @model_views.route('/models/<int:model_id>', methods=['GET'])
 def model_detail(model_id):

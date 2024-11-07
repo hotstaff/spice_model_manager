@@ -90,8 +90,8 @@
 
         <!-- 検索フォーム -->
         <form action="/models" method="get">
-            <input type="text" name="device_name" placeholder="Device Name" />
-            <input type="text" name="device_type" placeholder="Device Type" />
+            <input type="text" name="device_name" placeholder="Device Name" value="{{ device_name }}" />
+            <input type="text" name="device_type" placeholder="Device Type" value="{{ device_type }}" />
             <button type="submit">Search</button>
         </form>
 
