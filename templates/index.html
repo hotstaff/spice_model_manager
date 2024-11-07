@@ -89,12 +89,12 @@
         <p>This repository contains a collection of SPICE models for JFET and BJT devices, specifically formatted for use with LTspice. Use the search fields below to filter models by name, type, or spice string.</p>
 
         <!-- 検索フォーム -->
-<!--         <form method="GET" action="{{ url_for('model_views.search') }}">
+        <form method="GET" action="{{ url_for('model_views.models') }}">
             <input type="text" name="device_name" placeholder="Device Name" value="{{ request.args.get('device_name', '') }}">
             <input type="text" name="device_type" placeholder="Device Type" value="{{ request.args.get('device_type', '') }}">
             <input type="text" name="spice_string" placeholder="SPICE String" value="{{ request.args.get('spice_string', '') }}">
             <button type="submit">Search</button>
-        </form> -->
+        </form>
 
         <table>
             <thead>
