@@ -5,7 +5,7 @@ from wtforms import Form, StringField
 from wtforms.validators import DataRequired, Length, Regexp
 
 class SearchForm(Form):
-    device_name = StringField('Device Name', [Length(max=100), Regexp('^[a-zA-Z0-9_ ]+$', message="無効な文字が含まれています")])
+    device_name = StringField('Device Name', [Length(max=100), Regexp('^[a-zA-Z0-9_ ]+$', message="Invalid characters are included")])
     device_type = StringField('Device Type', [Length(max=100)])
 
 
