@@ -1,5 +1,5 @@
 import os
-import psycopg2
+from sqlalchemy import create_engine
 import pandas as pd
 from dotenv import load_dotenv
 
@@ -8,138 +8,107 @@ load_dotenv()
 
 # 環境変数から接続情報を取得
 def get_db_connection():
-    conn = psycopg2.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
-    )
-    return conn
+    connection_string = f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@" \
+                        f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/{os.getenv('DB_NAME')}"
+    engine = create_engine(connection_string)
+    return engine
 
 # データベースの存在確認と作成
 def create_db_if_not_exists():
     try:
-        # まず、指定されたデータベースに接続を試みる
-        conn = get_db_connection()
-        conn.close()
+        engine = get_db_connection()
+        with engine.connect() as conn:
+            conn.execute('SELECT 1')  # データベース接続のテスト
         print("データベースが存在します。")
-    except psycopg2.OperationalError as e:
-        # データベースが存在しない場合
+    except Exception as e:
         print("データベースが存在しないため、作成します。")
         # データベースを作成する処理
-        conn = psycopg2.connect(
-            dbname="postgres",  # PostgreSQLのデフォルトのデータベース
-            user=os.getenv("DB_USER"),
-            password=os.getenv("DB_PASSWORD"),
-            host=os.getenv("DB_HOST"),
-            port=os.getenv("DB_PORT")
+        engine = create_engine(
+            f"postgresql://{os.getenv('DB_USER')}:{os.getenv('DB_PASSWORD')}@" 
+            f"{os.getenv('DB_HOST')}:{os.getenv('DB_PORT')}/postgres"
         )
-        conn.autocommit = True
-        cursor = conn.cursor()
-        cursor.execute(f"CREATE DATABASE {os.getenv('DB_NAME')}")
-        conn.close()
+        with engine.connect() as conn:
+            conn.execute(f"CREATE DATABASE {os.getenv('DB_NAME')}")
 
 # テーブルの初期化
 def init_db():
     create_db_if_not_exists()  # データベースの存在確認と作成
-
-    # データベースに再接続してテーブルを作成
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS data (
-        id SERIAL PRIMARY KEY,
-        device_name TEXT,
-        device_type TEXT,
-        spice_string TEXT
-    )
-    """)
-    conn.commit()
-    conn.close()
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS data (
+                id SERIAL PRIMARY KEY,
+                device_name TEXT,
+                device_type TEXT,
+                spice_string TEXT
+            )
+        """)
 
 # データを取得する関数 (全データ取得)
 def get_all_data():
-    conn = get_db_connection()
-    df = pd.read_sql_query("SELECT * FROM data", conn)
-    conn.close()
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        df = pd.read_sql_query("SELECT * FROM data", conn)
     return df
 
 # 特定の条件でデータを検索する関数
 def search_data(device_name=None, device_type=None, spice_string=None):
-    conn = get_db_connection()
-    
-    # 動的なクエリを構築するためのリスト
-    query = "SELECT * FROM data WHERE true"  # WHERE trueは常に真になるため、追加条件がある場合に便利
-    params = []
-    
-    if device_name:
-        query += " AND device_name ILIKE %s"
-        params.append(f"%{device_name}%")
-    if device_type:
-        query += " AND device_type ILIKE %s"
-        params.append(f"%{device_type}%")
-    if spice_string:
-        query += " AND spice_string ILIKE %s"
-        params.append(f"%{spice_string}%")
-    
-    # 構築されたクエリを実行
-    df = pd.read_sql_query(query, conn, params=params)
-    conn.close()
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        query = "SELECT * FROM data WHERE true"
+        params = []
+
+        if device_name:
+            query += " AND device_name ILIKE %s"
+            params.append(f"%{device_name}%")
+        if device_type:
+            query += " AND device_type ILIKE %s"
+            params.append(f"%{device_type}%")
+        if spice_string:
+            query += " AND spice_string ILIKE %s"
+            params.append(f"%{spice_string}%")
+        
+        df = pd.read_sql_query(query, conn, params=params)
     return df
 
 # 特定のIDのデータを取得する関数
 def get_data_by_id(data_id):
-    conn = get_db_connection()
-    df = pd.read_sql_query("SELECT * FROM data WHERE id = %s", conn, params=(data_id,))
-    conn.close()
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        df = pd.read_sql_query("SELECT * FROM data WHERE id = %s", conn, params=(data_id,))
     return df
 
 # データを新規追加する関数
 def add_data(device_name, device_type, spice_string):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO data (device_name, device_type, spice_string) VALUES (%s, %s, %s)",
-        (device_name, device_type, spice_string)
-    )
-    conn.commit()
-    conn.close()
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        conn.execute(
+            "INSERT INTO data (device_name, device_type, spice_string) VALUES (%s, %s, %s)",
+            (device_name, device_type, spice_string)
+        )
 
 # データを更新する関数
 def update_data(data_id, device_name=None, device_type=None, spice_string=None):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # データが存在するか確認
-    cursor.execute("SELECT * FROM data WHERE id = %s", (data_id,))
-    if cursor.fetchone() is None:
-        conn.close()
-        return False  # データが存在しない場合
-    
-    cursor.execute("""
-        UPDATE data
-        SET device_name = COALESCE(%s, device_name),
-            device_type = COALESCE(%s, device_type),
-            spice_string = COALESCE(%s, spice_string)
-        WHERE id = %s
-    """, (device_name, device_type, spice_string, data_id))
-    conn.commit()
-    conn.close()
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        result = conn.execute("SELECT * FROM data WHERE id = %s", (data_id,))
+        if result.fetchone() is None:
+            return False  # データが存在しない場合
+        conn.execute("""
+            UPDATE data
+            SET device_name = COALESCE(%s, device_name),
+                device_type = COALESCE(%s, device_type),
+                spice_string = COALESCE(%s, spice_string)
+            WHERE id = %s
+        """, (device_name, device_type, spice_string, data_id))
     return True  # 更新成功
 
 # データを削除する関数
 def delete_data(data_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    # データが存在するか確認
-    cursor.execute("SELECT * FROM data WHERE id = %s", (data_id,))
-    if cursor.fetchone() is None:
-        conn.close()
-        return False  # データが存在しない場合
-    
-    cursor.execute("DELETE FROM data WHERE id = %s", (data_id,))
-    conn.commit()
-    conn.close()
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        result = conn.execute("SELECT * FROM data WHERE id = %s", (data_id,))
+        if result.fetchone() is None:
+            return False  # データが存在しない場合
+        conn.execute("DELETE FROM data WHERE id = %s", (data_id,))
     return True  # 削除成功
