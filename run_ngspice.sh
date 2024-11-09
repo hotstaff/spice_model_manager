@@ -1,3 +1,3 @@
 #!/bin/sh
-ngspice test.cir
+ngspice -b test.cir
 
