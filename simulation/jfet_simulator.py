@@ -9,6 +9,7 @@ class JFETSimulator:
         self.device_name = device_name
         self.spice_string = spice_string
         self.image_save_path = image_save_path
+        self.root_dir = os.path.dirname(os.path.abspath(__file__))
         self.template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
     def create_cir_file(self, template_name, output_filename):
@@ -119,13 +120,14 @@ class JFETSimulator:
         plt.close()
 
     def main_idss(self):
-        output_file = './data/jfet_idss_data.dat'  # 結果を保存するデータファイル名
-
+        output_file = os.path.join(self.root_dir, './data/jfet_idss_data.dat')  # 結果を保存するデータファイル名
+        cir_file = os.path.join(self.root_dir, 'cir/jfet_idss.cir')
+        
         # .cirファイルを動的に生成
-        self.create_cir_file('jfet_idss.cir.jinja', 'cir/jfet_idss.cir')
+        self.create_cir_file('jfet_idss.cir.jinja', cir_file)
 
         # ngspiceシミュレーションの実行
-        self.run_ngspice_simulation('cir/jfet_idss.cir', output_file)
+        self.run_ngspice_simulation(cir_file, output_file)
 
         # IDSSの抽出
         try:
@@ -136,13 +138,14 @@ class JFETSimulator:
             print(e)
 
     def main_iv_curve(self):
-        output_file = './data/jfet_iv_curve_data.dat'  # 結果を保存するデータファイル名
+        output_file = os.path.join(self.root_dir, 'data/jfet_iv_curve_data.dat')  # 結果を保存するデータファイル名
+        cir_file = os.path.join(self.root_dir, 'cir/jfet_iv_curve.cir')
 
         # .cirファイルを動的に生成
-        self.create_cir_file('jfet_iv_curve.cir.jinja', 'cir/jfet_iv_curve.cir')
+        self.create_cir_file('jfet_iv_curve.cir.jinja', cir_file)
 
         # ngspiceシミュレーションの実行
-        self.run_ngspice_simulation('cir/jfet_iv_curve.cir', output_file)
+        self.run_ngspice_simulation(cir_file, output_file)
 
         # シミュレーション結果のプロット
         self.plot_iv_curve(output_file, self.image_save_path)
@@ -154,7 +157,7 @@ if __name__ == '__main__':
         # JFETデバイスの情報
         device_name = "2sk170"
         spice_string = ".model 2sk170 njf vto=-0.5211 beta=0.03683 lambda=0.004829 is=1e-09 rd=0.0 rs=0.0 cgs=5.647e-11 cgd=2.562e-11 pb=4.86 fc=0.5"
-        image_save_path = f'./images/jfet_iv_curve_{device_name}.png'
+        image_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'images/jfet_iv_curve_{device_name}.png')
 
         # JFETシミュレータインスタンスを作成
         simulator = JFETSimulator(device_name, spice_string, image_save_path)
