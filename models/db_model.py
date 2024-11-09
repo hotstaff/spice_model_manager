@@ -154,3 +154,27 @@ def delete_data(data_id):
     conn.commit()
     conn.close()
     return True  # 削除成功
+
+## imageデーターベース用のコード
+
+# 画像のURLをデータベースに追加する関数
+def add_simulation_image(data_id, image_type, image_path):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute(
+        "INSERT INTO simulation_images (data_id, image_type, image_path) VALUES (%s, %s, %s)",
+        (data_id, image_type, image_path)
+    )
+    conn.commit()
+    conn.close()
+
+# 特定のIDに関連する画像URLを取得する関数
+def get_simulation_images_by_data_id(data_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT image_type, image_path FROM simulation_images WHERE data_id = %s", (data_id,))
+    images = cursor.fetchall()
+    conn.close()
+    
+    # 結果をリスト形式で返す
+    return [{"image_type": image[0], "image_path": image[1]} for image in images]
