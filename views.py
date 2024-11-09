@@ -113,7 +113,7 @@ def model_detail(model_id):
 
 
 # 画像を作成して保存し、ブラウザに返すエンドポイント
-@app.route('/generate_image/<int:model_id>', methods=['GET'])
+@model_views.route('/generate_image/<int:model_id>', methods=['GET'])
 def generate_image(model_id):
     model = get_data_by_id(model_id)
     if model.empty:
