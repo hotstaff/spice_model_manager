@@ -55,6 +55,17 @@ def init_db():
         spice_string TEXT
     )
     """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS images (
+        id SERIAL PRIMARY KEY,               # -- 画像の一意のID
+        data_id INT REFERENCES data(id) ON DELETE CASCADE, -- 関連するデバイスのデータ
+        image_type TEXT,                     # -- 画像の種類（例: 'IV'、'Gain'）
+        image_path TEXT                      # -- 画像ファイルのパス
+    )
+    """)
+
+
     conn.commit()
     conn.close()
 
