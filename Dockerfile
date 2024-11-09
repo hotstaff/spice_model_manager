@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # 必要なパッケージのインストール
-RUN apt-get update && apt-get install -y ngspice
+RUN apt-get update && apt-get install -y ngspice libpq-dev
 
 # Python依存関係をインストール
 COPY requirements.txt .
