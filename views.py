@@ -1,11 +1,9 @@
 import os
-from flask import Blueprint, request, jsonify, send_file, abort, render_template
+from flask import Blueprint, request, jsonify, abort, render_template
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data
 
 from wtforms import Form, StringField
 from wtforms.validators import DataRequired, Length, Regexp, Optional
-
-from simulation.jfet_simulator import JFETSimulator
 
 class SearchForm(Form):
     # 空白を許容するためにOptional()を使用
@@ -111,40 +109,6 @@ def model_detail(model_id):
     if model.empty:
         return abort(404, description="Model not found")
     return render_template('model_detail.html', model=model.to_dict(orient="records")[0])
-
-
-# 画像を作成して保存し、ブラウザに返すエンドポイント
-@model_views.route('/generate_image/<int:model_id>', methods=['GET'])
-def generate_image(model_id):
-    model = get_data_by_id(model_id)
-    if model.empty:
-        return abort(404, description="Model not found")
-    
-    # モデルの詳細から必要な情報を取り出す
-    row = model.to_dict(orient="records")[0]
-
-    if row['device_type'] != 'NJF':
-        return jsonify({"error": "Model is not NJF"}), 400
-
-    device_name = row['device_name']
-    spice_string = row['spice_string']
-    
-    # 画像保存先のパスを指定
-    image_save_path = f'./simulation/images/jfet_iv_curve_{device_name}_{model_id}.png'
-
-    # 既に存在したら返す
-    if os.path.exists(image_save_path):
-        return send_file(image_save_path, mimetype='image/png')
-    
-    # JFETSimulatorインスタンスを作成して画像を生成
-    simulator = JFETSimulator(device_name, spice_string, image_save_path)
-    simulator.main_iv_curve()  # IVカーブを描画して保存
-    
-    # 生成した画像を返す
-    if os.path.exists(image_save_path):
-        return send_file(image_save_path, mimetype='image/png')
-    else:
-        return abort(500, description="Image generation failed")
 
 # エラーハンドリング
 @model_views.errorhandler(404)

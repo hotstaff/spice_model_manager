@@ -125,7 +125,7 @@ class JFETSimulator:
         cir_file = os.path.join(self.root_dir, 'cir/jfet_idss.cir')
 
         # .cirファイルを動的に生成
-        self.create_cir_file('jfet_idss.cir.jinja', cir_file)
+        self.create_cir_file('jfet_idss.cir.jinja', cir_file, output_file)
 
         # ngspiceシミュレーションの実行
         self.run_ngspice_simulation(cir_file, output_file)
@@ -156,8 +156,8 @@ if __name__ == '__main__':
 
     def test_jfet_simulation():
         # JFETデバイスの情報
-        device_name = "2sk170"
-        spice_string = ".model 2sk170 njf vto=-0.5211 beta=0.03683 lambda=0.004829 is=1e-09 rd=0.0 rs=0.0 cgs=5.647e-11 cgd=2.562e-11 pb=4.86 fc=0.5"
+        device_name = "2sk208"
+        spice_string = ".model 2sk208 njf (vto=-2.638 beta=1.059 lambda=2.8 rs=56.63 rd=56.63 betatce=-0.5 vtotc=-2.5 cgd=10.38 m=0.4373 pb=0.3905 fc=0.5 cgs=6.043 isr=112.8 nr=2.0 is=11.28 n=1.0 xti=3.0 alpha=10.0 vk=100.0 kf=1e-18)"
         image_save_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), f'images/jfet_iv_curve_{device_name}.png')
 
         # JFETシミュレータインスタンスを作成
@@ -165,6 +165,7 @@ if __name__ == '__main__':
 
         # IVカーブをプロットして画像を保存
         simulator.main_iv_curve()
+        simulator.main_idss()
 
 
     test_jfet_simulation()  # テスト実行
