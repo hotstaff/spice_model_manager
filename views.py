@@ -109,6 +109,31 @@ def model_detail(model_id):
         return abort(404, description="Model not found")
     return render_template('model_detail.html', model=model.to_dict(orient="records")[0])
 
+
+# 画像を作成して保存し、ブラウザに返すエンドポイント
+@app.route('/generate_image/<int:model_id>', methods=['GET'])
+def generate_image(model_id):
+    model = get_data_by_id(model_id)
+    if model.empty:
+        return abort(404, description="Model not found")
+    
+    # モデルの詳細から必要な情報を取り出す
+    device_name = model['device_name']
+    spice_string = model['spice_string']
+    
+    # 画像保存先のパスを指定
+    image_save_path = f'./simulation/images/jfet_iv_curve_{device_name}_{model_id}.png'
+    
+    # JFETSimulatorインスタンスを作成して画像を生成
+    simulator = JFETSimulator(device_name, spice_string, image_save_path)
+    simulator.main_iv_curve()  # IVカーブを描画して保存
+    
+    # 生成した画像を返す
+    if os.path.exists(image_save_path):
+        return send_file(image_save_path, mimetype='image/png')
+    else:
+        return abort(500, description="Image generation failed")
+
 # エラーハンドリング
 @model_views.errorhandler(404)
 def not_found(error):
