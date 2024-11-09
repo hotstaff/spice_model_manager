@@ -13,7 +13,7 @@ J1 1 2 0 {{ device_name }}
 .control
     run
     set wr_vecnames
-    wrdata data/jfet_iv_curve_data.dat V(1) I(VDS) V(2)  ; V(2)はVGSを出力
+    wrdata {{ dat_filename }} V(1) I(VDS) V(2)  ; V(2)はVGSを出力
 .endc
 
 .print DC V(1) I(VDS) V(2)

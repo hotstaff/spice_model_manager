@@ -12,7 +12,7 @@ class JFETSimulator:
         self.root_dir = os.path.dirname(os.path.abspath(__file__))
         self.template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 
-    def create_cir_file(self, template_name, output_filename):
+    def create_cir_file(self, template_name, output_filename, dat_filename):
         """
         Jinja2テンプレートを使って.cirファイルを動的に生成する。
         """
@@ -25,7 +25,7 @@ class JFETSimulator:
             exit(1)
 
         # テンプレートをレンダリングして.cirファイルを作成
-        rendered_text = template.render(device_name=self.device_name, spice_string=self.spice_string)
+        rendered_text = template.render(device_name=self.device_name, spice_string=self.spice_string, dat_filename=dat_filename)
         print(rendered_text)
 
         # ファイルに保存
@@ -143,7 +143,7 @@ class JFETSimulator:
         cir_file = os.path.join(self.root_dir, 'cir/jfet_iv_curve.cir')
 
         # .cirファイルを動的に生成
-        self.create_cir_file('jfet_iv_curve.cir.jinja', cir_file)
+        self.create_cir_file('jfet_iv_curve.cir.jinja', cir_file, output_file)
 
         # ngspiceシミュレーションの実行
         self.run_ngspice_simulation(cir_file, output_file)
