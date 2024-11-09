@@ -26,11 +26,11 @@ class JFETSimulator:
 
         # テンプレートをレンダリングして.cirファイルを作成
         rendered_text = template.render(device_name=self.device_name, spice_string=self.spice_string)
+        print(rendered_text)
 
         # ファイルに保存
         with open(output_filename, 'w') as f:
             f.write(rendered_text)
-            print(rendered_text)
         print(f"{output_filename} file created.")
 
     def run_ngspice_simulation(self, cir_file, output_file):
