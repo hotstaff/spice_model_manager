@@ -126,7 +126,7 @@ def generate_image(model_id):
     # 画像保存先のパスを指定
     image_save_path = f'./simulation/images/jfet_iv_curve_{device_name}_{model_id}.png'
 
-    print("Hi")
+    print("Hi", device_name, spice_string)
     
     # JFETSimulatorインスタンスを作成して画像を生成
     simulator = JFETSimulator(device_name, spice_string, image_save_path)
