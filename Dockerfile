@@ -14,6 +14,6 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 # アプリケーションのコピー
 COPY . .
 
-# Gunicornを使ってアプリケーションを起動
-CMD ["gunicorn", "app:app", "--bind", "0.0.0.0:$PORT"]
+# サービスを開始するためのコマンド
+CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT"]
 
