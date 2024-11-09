@@ -1,1 +1,6 @@
 .env
+
+# Ignore data and cir folders and their contents
+simulation/data/
+simulation/cir/
+simulation/images/
