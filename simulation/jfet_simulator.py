@@ -30,6 +30,7 @@ class JFETSimulator:
         # ファイルに保存
         with open(output_filename, 'w') as f:
             f.write(rendered_text)
+            print(rendered_text)
         print(f"{output_filename} file created.")
 
     def run_ngspice_simulation(self, cir_file, output_file):
@@ -122,7 +123,7 @@ class JFETSimulator:
     def main_idss(self):
         output_file = os.path.join(self.root_dir, './data/jfet_idss_data.dat')  # 結果を保存するデータファイル名
         cir_file = os.path.join(self.root_dir, 'cir/jfet_idss.cir')
-        
+
         # .cirファイルを動的に生成
         self.create_cir_file('jfet_idss.cir.jinja', cir_file)
 
