@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, request, jsonify, abort, render_template
+from flask import Blueprint, request, jsonify, send_file, abort, render_template
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data
 
 from wtforms import Form, StringField
@@ -122,6 +122,9 @@ def generate_image(model_id):
     
     # モデルの詳細から必要な情報を取り出す
     row = model.to_dict(orient="records")[0]
+
+    if row['device_type'] != 'NJF':
+        return abort(400, description="Model is not NJF")
     device_name = row['device_name']
     spice_string = row['spice_string']
     
