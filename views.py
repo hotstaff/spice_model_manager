@@ -124,12 +124,17 @@ def generate_image(model_id):
     row = model.to_dict(orient="records")[0]
 
     if row['device_type'] != 'NJF':
-        return abort(400, description="Model is not NJF")
+        return jsonify({"error": "Model is not NJF"}), 400
+
     device_name = row['device_name']
     spice_string = row['spice_string']
     
     # 画像保存先のパスを指定
     image_save_path = f'./simulation/images/jfet_iv_curve_{device_name}_{model_id}.png'
+
+    # 既に存在したら返す
+    if os.path.exists(image_save_path):
+        return send_file(image_save_path, mimetype='image/png')
     
     # JFETSimulatorインスタンスを作成して画像を生成
     simulator = JFETSimulator(device_name, spice_string, image_save_path)
