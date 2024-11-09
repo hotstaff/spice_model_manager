@@ -1,6 +1,11 @@
 .env
 
 # Ignore data and cir folders and their contents
-simulation/data/
-simulation/cir/
-simulation/images/
+simulation/data/*
+simulation/cir/*
+simulation/images/*
+
+!simulation/images/.gitkeep
+!simulation/cir/.gitkeep
+!simulation/data/.gitkeep
+
