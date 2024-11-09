@@ -120,8 +120,9 @@ def generate_image(model_id):
         return abort(404, description="Model not found")
     
     # モデルの詳細から必要な情報を取り出す
-    device_name = model['device_name']
-    spice_string = model['spice_string']
+    row = model.to_dict(orient="records")[0]
+    device_name = row['device_name']
+    spice_string = row['spice_string']
     
     # 画像保存先のパスを指定
     image_save_path = f'./simulation/images/jfet_iv_curve_{device_name}_{model_id}.png'
