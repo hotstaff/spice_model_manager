@@ -137,8 +137,8 @@ def upload_image():
 
 @model_views.route('/get_image/<int:data_id>', methods=['GET'])
 def get_image(data_id):
-    """指定されたdata_idに基づいて画像を取得して返す"""
-    # データベースから画像データを取得
+    """Retrieve and return an image based on the specified data_id."""
+    # Retrieve image data from the database
     image_data = get_image_from_db(data_id)
 
     if image_data is None:
@@ -146,12 +146,12 @@ def get_image(data_id):
     
     image_io, image_format, image_type = image_data
 
-    # Flaskのsend_fileを使ってレスポンスとして画像を返す
+    # Use send_file to return the image to the client
     return send_file(
         image_io, 
         mimetype=f'image/{image_format}', 
         as_attachment=True, 
-        attachment_filename=f'{image_type}_image.{image_format}'
+        download_name=f'{image_type}_image.{image_format}'
     )
 
 
