@@ -1,0 +1,15 @@
+* H:\spice_model_manager\simulation\TEST_JFET.asc
+J1 N002 N001 0 2sk209
+V1 N001 0 DC -0.4
+V2 N002 0
+.model NJF NJF
+.model PJF PJF
+
+* DC Sweep for V1 (Vgs) from -0.4V to 0V and V2 (Vds) from 0 to 20V
+.dc V1 -0.4 0 0.1 V2 0 20 0.1
+
+.model 2SK208 NJF Vto=-2.638 Beta=1.059m Lambda=2.8m Rs=56.63 Rd=56.63 Betatce=-.5 Vtotc=-2.5m Cgd=10.38p M=.4373 Pb=.3905 Fc=.5 Cgs=6.043p Isr=112.8p Nr=2 Is=11.28p N=1 Xti=3 Alpha=10u Vk=100 Kf=1E-18
+
+.model 2SK209 njf vto = -0.7869 beta = 0.021 lambda = 6.15e-3 rd = 12.194 rs = 16.746 is = 2.613e-15 cgd = 1.458e-11 cgs = 1.478e-11 pb = 0.3754 fc = 0.5 N = 1
+.backanno
+.end

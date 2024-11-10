@@ -5,6 +5,8 @@ simulation/data/*
 simulation/images/*
 simulation/net/*
 
+
+!simulation/data/.gitkeep
 !simulation/images/.gitkeep
 !simulation/net/.gitkeep
 
