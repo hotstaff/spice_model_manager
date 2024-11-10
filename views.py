@@ -101,7 +101,7 @@ def list_models():
         # バリデーションエラーが発生した場合
         return "There are invalid inputs", 400
 
-@app.route('/upload_image', methods=['POST'])
+@model_views.route('/upload_image', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:
         return jsonify({"error": "No image file part"}), 400
