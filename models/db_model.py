@@ -1,5 +1,5 @@
 import os
-import io
+from io import BytesIO
 import psycopg2
 import pandas as pd
 from dotenv import load_dotenv
@@ -177,30 +177,28 @@ def save_image_to_db(data_id, image_file, image_type, image_format):
     conn.close()
 
 def get_image_from_db(data_id):
-    """指定されたdata_idに対応する画像をデータベースから取得する"""
+    """指定された data_id に基づいてデータベースから画像データを取得します。"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    # データベースから画像データを取得
     cursor.execute("""
-        SELECT image_data, image_format, image_type FROM simulation_images WHERE data_id = %s
+        SELECT image_data, image_format, image_type 
+        FROM simulation_images 
+        WHERE data_id = %s
     """, (data_id,))
-    
-    image_data_row = cursor.fetchone()
-    print(image_data_row)
 
-    # 画像が見つからなかった場合
-    if image_data_row is None:
-        conn.close()
-        return None  # 画像が見つからない場合、Noneを返す
-    
-    image_data, image_format, image_type = image_data_row
+    result = cursor.fetchone()
     conn.close()
 
-    # 画像データをBytesIOオブジェクトとして処理
-    image_io = io.BytesIO(image_data)
+    if result is None:
+        return None
 
-    # 画像データ、フォーマット、タイプを返す
+    # 画像データとメタデータを抽出
+    image_data, image_format, image_type = result
+
+    # バイナリデータを BytesIO オブジェクトに変換
+    image_io = BytesIO(image_data)
+
     return image_io, image_format, image_type
 
 

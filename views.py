@@ -137,23 +137,20 @@ def upload_image():
 
 @model_views.route('/get_image/<int:data_id>', methods=['GET'])
 def get_image(data_id):
-    """Retrieve and return an image based on the specified data_id."""
-    # Retrieve image data from the database
+    """指定された data_id に基づいて画像を取得し、返します。"""
     image_data = get_image_from_db(data_id)
 
     if image_data is None:
         return jsonify({"error": "Image not found"}), 404
-    
+
     image_io, image_format, image_type = image_data
 
-    # Use send_file to return the image to the client
     return send_file(
-        image_io, 
-        mimetype=f'image/{image_format}', 
-        as_attachment=True, 
+        image_io,
+        mimetype=f'image/{image_format}',
+        as_attachment=True,
         download_name=f'{image_type}_image.{image_format}'
     )
-
 
 # モデルの詳細をHTMLで表示
 @model_views.route('/models/<int:model_id>', methods=['GET'])
