@@ -176,16 +176,24 @@ def save_image_to_db(data_id, image_file, image_type, image_format):
     conn.commit()
     conn.close()
 
-def get_image_from_db(data_id):
-    """指定された data_id に基づいてデータベースから画像データを取得します。"""
+def get_image_from_db(data_id, image_type=None):
+    """指定された data_id と image_type に基づいてデータベースから画像データを取得します。"""
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT image_data, image_format, image_type 
-        FROM simulation_images 
-        WHERE data_id = %s
-    """, (data_id,))
+    # image_type が指定されている場合は、条件を追加してクエリを実行
+    if image_type:
+        cursor.execute("""
+            SELECT image_data, image_format, image_type 
+            FROM simulation_images 
+            WHERE data_id = %s AND image_type = %s
+        """, (data_id, image_type))
+    else:
+        cursor.execute("""
+            SELECT image_data, image_format, image_type 
+            FROM simulation_images 
+            WHERE data_id = %s
+        """, (data_id,))
 
     result = cursor.fetchone()
     conn.close()

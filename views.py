@@ -151,6 +151,25 @@ def get_image(data_id):
         download_name=f'{image_type}_image.{image_format}'
     )
 
+@model_views.route('/get_iv_image/<int:data_id>', methods=['GET'])
+def get_iv_image(data_id):
+    """Retrieve and return the IV characteristic curve image based on data_id and image_type 'iv'."""
+    # Retrieve image data from the database where image_type is 'iv'
+    image_data = get_image_from_db(data_id, image_type='iv')
+
+    # If no image is found, return a 404 error
+    if image_data is None:
+        return jsonify({"error": "Image not found"}), 404
+    
+    image_io, image_format, _ = image_data
+
+    # Use send_file to return the image to the client
+    return send_file(
+        image_io,
+        mimetype=f'image/{image_format}',
+        as_attachment=False
+    )
+
 # モデルの詳細をHTMLで表示
 @model_views.route('/models/<int:model_id>', methods=['GET'])
 def model_detail(model_id):

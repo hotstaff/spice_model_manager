@@ -49,6 +49,13 @@
             display: flex;
             align-items: center;
         }
+        .iv-image {
+            margin-top: 20px;
+            display: none; /* デフォルトで非表示 */
+            border: 1px solid #ddd;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
     </style>
     <script>
         function toggleLowercase() {
@@ -70,6 +77,13 @@
         document.addEventListener("DOMContentLoaded", function() {
             const spiceStringElement = document.getElementById("spiceString");
             spiceStringElement.setAttribute("data-original", spiceStringElement.innerText);
+
+            // デバイスタイプがNJFまたはPJFの場合に画像表示エリアを表示
+            const deviceType = "{{ model.device_type }}";
+            const ivImage = document.getElementById("ivImage");
+            if (deviceType === "NJF" || deviceType === "PJF") {
+                ivImage.style.display = "block";
+            }
         });
     </script>
 </head>
@@ -86,6 +100,13 @@
         </div>
         <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
     </div>
+
+    <!-- デバイスタイプがNJFまたはPJFのときに表示されるIV画像エリア -->
+    <div id="ivImage" class="iv-image">
+        <h4>IV Characteristic Curve</h4>
+        <img src="{{ url_for('model_views.get_iv_image', data_id=model.data_id) }}" alt="IV Characteristic Curve" />
+    </div>
+
     <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
 </body>
 </html>
