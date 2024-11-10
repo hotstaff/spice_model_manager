@@ -65,6 +65,7 @@ def init_db():
         image_type TEXT,
         image_format TEXT,
         image_data BYTEA
+    )
     """)
 
 
