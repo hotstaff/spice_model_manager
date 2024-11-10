@@ -47,6 +47,7 @@ class ModelManager:
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの更新に失敗しました: {e}")
 
+
     def parse_ltspice_model(self, model_line, convert_units=False):
         """LTspiceのモデル行をパースして辞書を返す。
 
@@ -58,7 +59,12 @@ class ModelManager:
             dict: パース結果を辞書形式で返す.
         """
         model_line = model_line.replace('+', '').replace('\n', ' ').strip()
-        pattern = r'\.MODEL\s+(\S+)\s+(\S+)\s*(\(.*)?(.*)'
+
+        # 括弧のあとの空白を追加する
+        model_line = model_line.replace('(', '(  ').replace(')', ')  ')  # 括弧を取り除く
+
+        # 括弧内のパラメータも含めて全体を正規表現でキャッチ
+        pattern = r'\.MODEL\s+(\S+)\s+(\S+)\s*(\(.*\))?\s*(.*)'  
         match = re.match(pattern, model_line, re.IGNORECASE)
 
         if not match:
@@ -67,6 +73,10 @@ class ModelManager:
         device_name = match.group(1).upper()
         device_type = match.group(2).upper().split('(')[0]
         params_str = (match.group(3) or '') + ' ' + (match.group(4) or '')
+
+
+        # 括弧内のパラメータを処理
+        params_str = params_str.replace('(', '').replace(')', '')  # 括弧を取り除く
 
         params = {}
         param_pattern = re.compile(r'([A-Z]+)\s*=\s*([+-]?\d*\.?\d+(?:[eEpP][+-]?\d+)?[a-zA-Z]*)', re.IGNORECASE)
@@ -93,6 +103,7 @@ class ModelManager:
         params['device_type'] = device_type
 
         return params
+
 
     def add_model(self, model_line):
         try:

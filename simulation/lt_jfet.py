@@ -77,12 +77,16 @@ class JFET_IV_Characteristic:
         # 画像を指定したパスに保存
         plt.savefig(image_path)
 
+        return image_path
+
     def run_and_plot(self):
         """シミュレーション実行、データ取得、プロットを行う一連の流れ"""
         self.modify_netlist()
         self.run_simulation()
         Vds, Vgs, Id_mA = self.extract_data()
-        self.plot_iv_characteristics(Vds, Vgs, Id_mA)
+        image_path = self.plot_iv_characteristics(Vds, Vgs, Id_mA)
+
+        return image_path
 
 
 if __name__ == "__main__":
@@ -111,6 +115,24 @@ if __name__ == "__main__":
             print("Error: API response is not in JSON format.")
             return []
 
+    def upload_image(model_id, image_path):
+        # アップロード先のURL（Flaskアプリのエンドポイント）
+        url = 'https://spice-model-manager.onrender.com/upload_image'
+
+        # フォームデータを準備（image_typeとdata_idは必要に応じて変更）
+        data = {
+            'image_type': 'iv',  # 任意の値
+            'data_id': model_id  # 任意のデータID
+        }
+
+        # 画像ファイルを開き、POSTリクエストを送信
+        with open(image_path, 'rb') as image_file:
+            files = {'image': image_file}
+            response = requests.post(url, data=data, files=files)
+
+        # レスポンスの内容を表示
+        print(response)
+
 
     def main():
         # データベースからNJFおよびPJFのモデルデータを取得
@@ -118,18 +140,25 @@ if __name__ == "__main__":
         
         # 各モデルデータに対してI-V特性を生成
         for model in jfet_models:
+            model_id = model["id"]
             device_name = model["device_name"]
             spice_string = model["spice_string"]
 
             # JFETのI-V特性をプロット
             print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
             jfet_iv = JFET_IV_Characteristic(device_name, spice_string)
-            jfet_iv.run_and_plot()
+            image_path = jfet_iv.run_and_plot()
+
+            upload_image(model_id, image_path)
+
+
 
 
     # 使用例
-    # device_name = "2sk208"
-    # spice_string = ".model 2SK208 NJF Vto=-2.638 Beta=1.059m Lambda=2.8m Rs=56.63 Rd=56.63 Betatce=-.5 Vtotc=-2.5m Cgd=10.38p M=.4373 Pb=.3905 Fc=.5 Cgs=6.043p Isr=112.8p Nr=2 Is=11.28p N=1 Xti=3 Alpha=10u Vk=100 Kf=1E-18"
+    # device_name = "BF862"
+    # spice_string = ".model BF862 NJF(beta=0.049998 VTO=-0.5967 lambda=0.036629 Rs=7.234 Is=9.36E-14 N=1.245 Betatce=-.5 Vtotc=-2.0E-3 Isr=2.995p Nr=2 Xti=3 Alpha=-1.0E-3 Vk=59.97E1 Cgd=7.4002E-12 Pb=.5 Fc=.5 Cgs=8.2890E-12 Kf=87.5E-18 Af=1)"
+
+
     # jfet_iv = JFET_IV_Characteristic(device_name, spice_string)
     # jfet_iv.run_and_plot()
 
