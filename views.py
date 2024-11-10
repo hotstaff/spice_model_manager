@@ -148,7 +148,6 @@ def get_image(data_id):
     return send_file(
         image_io,
         mimetype=f'image/{image_format}',
-        as_attachment=True,
         download_name=f'{image_type}_image.{image_format}'
     )
 
