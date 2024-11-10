@@ -187,6 +187,7 @@ def get_image_from_db(data_id):
     """, (data_id,))
     
     image_data_row = cursor.fetchone()
+    print(image_data_row)
 
     # 画像が見つからなかった場合
     if image_data_row is None:

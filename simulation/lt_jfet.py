@@ -132,7 +132,7 @@ if __name__ == "__main__":
 
 
         # レスポンスの内容を表示
-        print(response.json())
+        print(response.json(), model_id)
 
 
     def main():
