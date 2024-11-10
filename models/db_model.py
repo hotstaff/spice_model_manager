@@ -58,13 +58,12 @@ def init_db():
 
     cursor.execute("DROP TABLE IF EXISTS simulation_images")
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS simulation_images (
+    CREATE TABLE IF NOT EXISTS simulation_images ("""
         id SERIAL PRIMARY KEY,
         data_id INT REFERENCES data(id) ON DELETE CASCADE,
         image_type TEXT,
+        image_format TEXT,
         image_data BYTEA
-    )
     """)
 
 
@@ -158,25 +157,18 @@ def delete_data(data_id):
     return True  # 削除成功
 
 ## imageデーターベース用のコード
-
-# 画像のURLをデータベースに追加する関数
-def add_simulation_image(data_id, image_type, image_path):
+def save_image_to_db(data_id, image_file, image_type, image_format):
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.execute(
-        "INSERT INTO simulation_images (data_id, image_type, image_path) VALUES (%s, %s, %s)",
-        (data_id, image_type, image_path)
-    )
+
+    # 画像ファイルをバイナリとして読み込む
+    image_data = image_file.read()
+
+    # 画像をデータベースに挿入
+    cursor.execute("""
+        INSERT INTO simulation_images (data_id, image_type, image_format, image_data)
+        VALUES (%s, %s, %s, %s)
+    """, (data_id, image_type, image_format, image_data))
+
     conn.commit()
     conn.close()
-
-# 特定のIDに関連する画像URLを取得する関数
-def get_simulation_images_by_data_id(data_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT image_type, image_path FROM simulation_images WHERE data_id = %s", (data_id,))
-    images = cursor.fetchall()
-    conn.close()
-    
-    # 結果をリスト形式で返す
-    return [{"image_type": image[0], "image_path": image[1]} for image in images]

@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, request, jsonify, abort, render_template
-from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data
+from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data, save_image_to_db
 
 from wtforms import Form, StringField
 from wtforms.validators import DataRequired, Length, Regexp, Optional
@@ -100,6 +100,40 @@ def list_models():
     else:
         # バリデーションエラーが発生した場合
         return "There are invalid inputs", 400
+
+@app.route('/upload_image', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file part"}), 400
+    
+    image_file = request.files['image']
+    
+    if image_file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    # 画像ファイルがpngまたはjpegであることを確認
+    if image_file.content_type not in ['image/png', 'image/jpeg']:
+        return jsonify({"error": "File must be a PNG or JPEG image"}), 400
+    
+    # ユーザー指定のimage_typeとimage_formatをフォームから取得
+    image_type = request.form.get('image_type', 'default')  # 'default'をデフォルトに設定
+    image_format = 'png' if image_file.content_type == 'image/png' else 'jpeg'
+    
+    data_id = request.form.get('data_id')  # データIDをフォームから取得
+    if not data_id:
+        return jsonify({"error": "No data_id provided"}), 400
+    
+    try:
+        data_id = int(data_id)
+    except ValueError:
+        return jsonify({"error": "data_id must be an integer"}), 400
+
+    # 画像データをデータベースに保存
+    try:
+        save_image_to_db(data_id, image_file, image_type, image_format)
+        return jsonify({"message": "Image uploaded successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
 
 
 # モデルの詳細をHTMLで表示

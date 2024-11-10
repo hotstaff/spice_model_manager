@@ -3,17 +3,16 @@ import os
 from PyLTSpice import SimRunner, SpiceEditor, LTspice, RawRead
 
 class JFET_IV_Characteristic:
-    def __init__(self, device_name, spice_string, output_folder='./data', template_filename="jfet_iv.net"):
+    def __init__(self, device_name, spice_string, template_filename="jfet_iv.net"):
         # 初期設定
         self.device_name = device_name
         self.spice_string = spice_string
         
-        # output_folderを絶対パスに変換
-        self.output_folder = os.path.abspath(output_folder)
         
         # スクリプトのディレクトリを基準にテンプレートファイルのパスを設定
         script_dir = os.path.dirname(os.path.abspath(__file__))  # スクリプトの絶対パスを取得
         self.template_path = os.path.join(script_dir, 'net', template_filename)  # 'net' フォルダ内にテンプレートを配置
+        self.output_folder = os.path.join(script_dir, 'data')
         
         self.runner = SimRunner(output_folder=self.output_folder, simulator=LTspice)
         self.net = None
