@@ -1,0 +1,23 @@
+* JFET IDSS Simulation
+
+* JFET Model Parameters
+.model 2SK208 NJF Vto=-2.638 Beta=1.059m Lambda=2.8m Rs=56.63 Rd=56.63 Betatce=-.5  Vtotc=-2.5m Cgd=10.38p M=.4373 Pb=.3905 Fc=.5 Cgs=6.043p Isr=112.8p Nr=2 Is=11.28p N=1 Xti=3 Alpha=10u Vk=100 Kf=1E-18
+
+* JFET Circuit Configuration
+VDS 1 0 DC 10      ; VDS = 10V
+VGS 2 0 DC 0      ; VGS = 0V
+JMOD1 1 2 0 2sk208   ;
+
+* DC Operating Point Analysis (.OP)
+.OP
+
+* Output the DC operating point data (IDSS value)
+.control
+    run
+    set wr_vecnames
+    wrdata /home/hotstaff/spice_model_manager/simulation/./data/jfet_idss_data.dat V(1) I(VDS) V(2) ; Write the VDS (V(1)) and ID (I(VDS)) along with VGS (V(2))
+.endc
+
+.print OP V(1) I(VDS) V(2) ; Print VDS, ID, and VGS values to the console
+
+.end

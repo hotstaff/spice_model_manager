@@ -47,7 +47,16 @@ class ModelManager:
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの更新に失敗しました: {e}")
 
-    def parse_ltspice_model(self, model_line):
+    def parse_ltspice_model(self, model_line, convert_units=False):
+        """LTspiceのモデル行をパースして辞書を返す。
+
+        Args:
+            model_line (str): LTspiceモデル行の文字列.
+            convert_units (bool): Trueの場合、数値変換と単位変換を行う.
+
+        Returns:
+            dict: パース結果を辞書形式で返す.
+        """
         model_line = model_line.replace('+', '').replace('\n', ' ').strip()
         pattern = r'\.MODEL\s+(\S+)\s+(\S+)\s*(\(.*)?(.*)'
         match = re.match(pattern, model_line, re.IGNORECASE)
@@ -57,14 +66,28 @@ class ModelManager:
 
         device_name = match.group(1).upper()
         device_type = match.group(2).upper().split('(')[0]
-        params_str = match.group(3) + ' ' + match.group(4) if match.group(3) else match.group(4)
+        params_str = (match.group(3) or '') + ' ' + (match.group(4) or '')
 
         params = {}
-        param_pattern = re.compile(r'([A-Z]+)\s*=\s*([+-]?\d*\.?\d+(?:[eEpP][+-]?\d+)?)', re.IGNORECASE)
+        param_pattern = re.compile(r'([A-Z]+)\s*=\s*([+-]?\d*\.?\d+(?:[eEpP][+-]?\d+)?[a-zA-Z]*)', re.IGNORECASE)
+        
         for param in param_pattern.finditer(params_str):
             key = param.group(1).upper()
-            value = float(param.group(2).replace('p', 'e-12').replace('n', 'e-9').replace('u', 'e-6').replace('m', 'e-3').replace('k', 'e3'))
-            params[key] = value
+            value = param.group(2).lower()  # そのまま文字列として保持
+
+            if convert_units:
+                # 単位変換が必要な場合、変換テーブルで置換
+                conversion_dict = {
+                    'p': 'e-12', 'n': 'e-9', 'u': 'e-6', 'm': 'e-3',
+                    'k': 'e3', 'meg': 'e6', 'g': 'e9'
+                }
+                # 単位部分のみ置き換え
+                for unit, factor in conversion_dict.items():
+                    if value.endswith(unit):
+                        value = value.replace(unit, factor)
+                        value = float(value)  # 数値に変換
+                        break
+            params[key] = value  # 単位の有無に関係なく保存
 
         params['device_name'] = device_name
         params['device_type'] = device_type

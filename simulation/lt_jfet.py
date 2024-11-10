@@ -86,9 +86,51 @@ class JFET_IV_Characteristic:
 
 
 if __name__ == "__main__":
+
+    import requests
+
+    # モデルデータを取得するエンドポイント
+    API_URL = "https://spice-model-manager.onrender.com/api/models"  # APIのURL（適宜変更してください）
+
+    def fetch_model_data():
+        """APIから全モデルデータを取得し、NJF/PJFのものを抽出"""
+        try:
+            response = requests.get(API_URL)
+            response.raise_for_status()  # ステータスコードが200以外なら例外を発生
+            
+            # レスポンスをJSONとしてデコード
+            models = response.json()
+            
+            # NJFまたはPJFタイプのデータを抽出
+            jfet_models = [model for model in models if model["device_type"] in ["NJF", "PJF"]]
+            return jfet_models
+        except requests.exceptions.RequestException as e:
+            print(f"Error fetching model data: {e}")
+            return []
+        except ValueError:
+            print("Error: API response is not in JSON format.")
+            return []
+
+
+    def main():
+        # データベースからNJFおよびPJFのモデルデータを取得
+        jfet_models = fetch_model_data()
+        
+        # 各モデルデータに対してI-V特性を生成
+        for model in jfet_models:
+            device_name = model["device_name"]
+            spice_string = model["spice_string"]
+
+            # JFETのI-V特性をプロット
+            print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
+            jfet_iv = JFET_IV_Characteristic(device_name, spice_string)
+            jfet_iv.run_and_plot()
+
+
     # 使用例
-    device_name = "2sk209"
-    spice_string = ".model 2SK209 njf vto = -0.7869 beta = 0.021 lambda = 6.15e-3 rd = 12.194 rs = 16.746 is = 2.613e-15 cgd = 1.458e-11 cgs = 1.478e-11 pb = 0.3754 fc = 0.5 N = 1"
-    
-    jfet_iv = JFET_IV_Characteristic(device_name, spice_string)
-    jfet_iv.run_and_plot()
+    # device_name = "2sk208"
+    # spice_string = ".model 2SK208 NJF Vto=-2.638 Beta=1.059m Lambda=2.8m Rs=56.63 Rd=56.63 Betatce=-.5 Vtotc=-2.5m Cgd=10.38p M=.4373 Pb=.3905 Fc=.5 Cgs=6.043p Isr=112.8p Nr=2 Is=11.28p N=1 Xti=3 Alpha=10u Vk=100 Kf=1E-18"
+    # jfet_iv = JFET_IV_Characteristic(device_name, spice_string)
+    # jfet_iv.run_and_plot()
+
+    main()
