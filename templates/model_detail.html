@@ -104,7 +104,7 @@
     <!-- デバイスタイプがNJFまたはPJFのときに表示されるIV画像エリア -->
     <div id="ivImage" class="iv-image">
         <h4>IV Characteristic Curve</h4>
-        <img src="{{ url_for('model_views.get_iv_image', data_id=model.data_id) }}" alt="IV Characteristic Curve" />
+        <img src="{{ url_for('model_views.get_iv_image', data_id=model.id) }}" alt="IV Characteristic Curve" />
     </div>
 
     <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
