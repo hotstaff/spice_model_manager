@@ -1,5 +1,5 @@
 import os
-from flask import Blueprint, request, jsonify, abort, render_template
+from flask import Blueprint, request, jsonify, abort, render_template, send_file
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data, save_image_to_db, get_image_from_db
 
 from wtforms import Form, StringField
