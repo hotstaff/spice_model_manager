@@ -58,7 +58,8 @@ def init_db():
 
     cursor.execute("DROP TABLE IF EXISTS simulation_images")
 
-    CREATE TABLE IF NOT EXISTS simulation_images ("""
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS simulation_images (
         id SERIAL PRIMARY KEY,
         data_id INT REFERENCES data(id) ON DELETE CASCADE,
         image_type TEXT,
