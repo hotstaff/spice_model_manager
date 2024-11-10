@@ -1,6 +1,6 @@
 import os
 from flask import Blueprint, request, jsonify, abort, render_template
-from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data, save_image_to_db
+from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data, save_image_to_db, get_image_from_db
 
 from wtforms import Form, StringField
 from wtforms.validators import DataRequired, Length, Regexp, Optional
@@ -134,6 +134,25 @@ def upload_image():
         return jsonify({"message": "Image uploaded successfully!"}), 200
     except Exception as e:
         return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
+
+@model_views.route('/get_image/<int:data_id>', methods=['GET'])
+def get_image(data_id):
+    """指定されたdata_idに基づいて画像を取得して返す"""
+    # データベースから画像データを取得
+    image_data = get_image_from_db(data_id)
+
+    if image_data is None:
+        return jsonify({"error": "Image not found"}), 404
+    
+    image_io, image_format, image_type = image_data
+
+    # Flaskのsend_fileを使ってレスポンスとして画像を返す
+    return send_file(
+        image_io, 
+        mimetype=f'image/{image_format}', 
+        as_attachment=True, 
+        attachment_filename=f'{image_type}_image.{image_format}'
+    )
 
 
 # モデルの詳細をHTMLで表示

@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
     def upload_image(model_id, image_path):
         # アップロード先のURL（Flaskアプリのエンドポイント）
-        url = 'https://spice-model-manager.onrender.com/upload_image'
+        url = 'https://spice-model-manager.onrender.com/api/upload_image'
 
         # フォームデータを準備（image_typeとdata_idは必要に応じて変更）
         data = {
@@ -127,11 +127,12 @@ if __name__ == "__main__":
 
         # 画像ファイルを開き、POSTリクエストを送信
         with open(image_path, 'rb') as image_file:
-            files = {'image': image_file}
+            files = {'image': ('image.png', image_file, 'image/png')}  # MIMEタイプを明示的に指定
             response = requests.post(url, data=data, files=files)
 
+
         # レスポンスの内容を表示
-        print(response)
+        print(response.json())
 
 
     def main():
