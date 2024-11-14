@@ -37,6 +37,7 @@ def init_db():
             image_data BYTEA
         )
         """))
+        conn.commit()  # 明示的にコミット
 
 # データを取得する関数 (全データ取得)
 def get_all_data():
@@ -86,6 +87,7 @@ def add_data(device_name, device_type, spice_string):
             INSERT INTO data (device_name, device_type, spice_string)
             VALUES (:device_name, :device_type, :spice_string)
         """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string})
+        conn.commit()  # 明示的にコミット
 
 # データを更新する関数
 def update_data(data_id, device_name=None, device_type=None, spice_string=None):
@@ -103,6 +105,7 @@ def update_data(data_id, device_name=None, device_type=None, spice_string=None):
                 spice_string = COALESCE(:spice_string, spice_string)
             WHERE id = :data_id
         """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "data_id": data_id})
+        conn.commit()  # 明示的にコミット
     return True  # 更新成功
 
 # データを削除する関数
@@ -115,6 +118,7 @@ def delete_data(data_id):
             return False  # データが存在しない場合
         
         conn.execute(text("DELETE FROM data WHERE id = :data_id"), {"data_id": data_id})
+        conn.commit()  # 明示的にコミット
     return True  # 削除成功
 
 ## imageデータベース用のコード
@@ -142,6 +146,7 @@ def save_image_to_db(data_id, image_file, image_type, image_format):
                 INSERT INTO simulation_images (data_id, image_type, image_format, image_data)
                 VALUES (:data_id, :image_type, :image_format, :image_data)
             """), {"data_id": data_id, "image_type": image_type, "image_format": image_format, "image_data": image_data})
+        conn.commit()  # 明示的にコミット
 
 def delete_image_from_db(data_id, image_type=None):
     """指定された data_id に関連する画像を削除（image_typeが指定されない場合は全て削除）"""
@@ -158,6 +163,7 @@ def delete_image_from_db(data_id, image_type=None):
                 DELETE FROM simulation_images 
                 WHERE data_id = :data_id
             """), {"data_id": data_id})
+        conn.commit()  # 明示的にコミット
 
 def get_image_from_db(data_id, image_type=None):
     """指定された data_id と image_type に基づいてデータベースから画像データを取得します。"""
