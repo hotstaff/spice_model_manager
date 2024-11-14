@@ -20,8 +20,8 @@
         }
 
         header {
-            background: linear-gradient(135deg, #ff8a00, #e52e71);
-            color: white;
+            background: linear-gradient(45deg, #ff007f, #00bcd4, #ffeb3b, #9c27b0);
+            color: black;
             padding: 40px 0;
             text-align: center;
             border-radius: 10px;
@@ -84,17 +84,18 @@
 
         button {
             padding: 10px 20px;
-            background-color: #007BFF;
+            background-color: #ff007f; /* ボタンの背景色 */
             color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: background-color 0.3s, transform 0.3s;
             font-size: 16px;
         }
 
         button:hover {
-            background-color: #0056b3;
+            background-color: #00bcd4;
+            transform: scale(1.05); /* ホバー時に少し大きくなる効果 */
         }
 
         table {
