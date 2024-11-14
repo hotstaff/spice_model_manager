@@ -69,12 +69,13 @@ def search_data(device_name=None, device_type=None, spice_string=None):
     df = pd.read_sql(query, engine, params=params)
     return df
 
-# 特定のIDのデータを取得する関数
 def get_data_by_id(data_id):
     engine = get_db_connection()
-    query = "SELECT * FROM data WHERE id = %s"
+    query = "SELECT * FROM data WHERE id = :data_id"
     query = text(query)  # クエリを text() でラップ
-    df = pd.read_sql(query, engine, params=(data_id,))
+    
+    # パラメータを辞書として渡す
+    df = pd.read_sql(query, engine, params={"data_id": data_id})
     return df
 
 # データを新規追加する関数
