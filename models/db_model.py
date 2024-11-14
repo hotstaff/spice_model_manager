@@ -13,21 +13,24 @@ def get_db_connection():
     engine = create_engine(os.getenv("DB_URL"))
     return engine
 
-# テーブルの初期化
+# データベースに再接続してテーブルを作成
 def init_db():
-    # データベースに接続してテーブルを作成
+    create_db_if_not_exists()  # データベースの存在確認と作成
+
+    # データベースに再接続してテーブルを作成
     engine = get_db_connection()
     with engine.connect() as conn:
-        conn.execute("""
+        # text() を使ってクエリをラップ
+        conn.execute(text("""
         CREATE TABLE IF NOT EXISTS data (
             id SERIAL PRIMARY KEY,
             device_name TEXT,
             device_type TEXT,
             spice_string TEXT
         )
-        """)
+        """))
 
-        conn.execute("""
+        conn.execute(text("""
         CREATE TABLE IF NOT EXISTS simulation_images (
             id SERIAL PRIMARY KEY,
             data_id INT REFERENCES data(id) ON DELETE CASCADE,
@@ -35,7 +38,7 @@ def init_db():
             image_format TEXT,
             image_data BYTEA
         )
-        """)
+        """))
 
 # データを取得する関数 (全データ取得)
 def get_all_data():
