@@ -1,7 +1,6 @@
 Flask
 pandas
 gunicorn
-psycopg2-binary
 python-dotenv
 wtforms
 SQLAlchemy
