@@ -15,7 +15,6 @@ def get_db_connection():
 
 # データベースに再接続してテーブルを作成
 def init_db():
-
     # データベースに再接続してテーブルを作成
     engine = get_db_connection()
     with engine.connect() as conn:
@@ -43,6 +42,7 @@ def init_db():
 def get_all_data():
     engine = get_db_connection()
     query = "SELECT * FROM data"
+    query = text(query)  # クエリを text() でラップ
     df = pd.read_sql(query, engine)
     return df
 
@@ -52,17 +52,17 @@ def search_data(device_name=None, device_type=None, spice_string=None):
     
     # 動的なクエリを構築するためのリスト
     query = "SELECT * FROM data WHERE true"  # WHERE trueは常に真になるため、追加条件がある場合に便利
-    params = []
+    params = {}
     
     if device_name:
-        query += " AND device_name ILIKE %s"
-        params.append(f"%{device_name}%")
+        query += " AND device_name ILIKE :device_name"
+        params["device_name"] = f"%{device_name}%"
     if device_type:
-        query += " AND device_type ILIKE %s"
-        params.append(f"%{device_type}%")
+        query += " AND device_type ILIKE :device_type"
+        params["device_type"] = f"%{device_type}%"
     if spice_string:
-        query += " AND spice_string ILIKE %s"
-        params.append(f"%{spice_string}%")
+        query += " AND spice_string ILIKE :spice_string"
+        params["spice_string"] = f"%{spice_string}%"
     
     # 構築されたクエリを実行
     query = text(query)  # クエリを text() でラップ
@@ -84,25 +84,25 @@ def add_data(device_name, device_type, spice_string):
     with engine.connect() as conn:
         conn.execute(text("""
             INSERT INTO data (device_name, device_type, spice_string)
-            VALUES (%s, %s, %s)
-        """), (device_name, device_type, spice_string))
+            VALUES (:device_name, :device_type, :spice_string)
+        """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string})
 
 # データを更新する関数
 def update_data(data_id, device_name=None, device_type=None, spice_string=None):
     engine = get_db_connection()
     with engine.connect() as conn:
         # データが存在するか確認
-        result = conn.execute(text("SELECT * FROM data WHERE id = %s"), (data_id,)).fetchone()
+        result = conn.execute(text("SELECT * FROM data WHERE id = :data_id"), {"data_id": data_id}).fetchone()
         if result is None:
             return False  # データが存在しない場合
         
         conn.execute(text("""
             UPDATE data
-            SET device_name = COALESCE(%s, device_name),
-                device_type = COALESCE(%s, device_type),
-                spice_string = COALESCE(%s, spice_string)
-            WHERE id = %s
-        """), (device_name, device_type, spice_string, data_id))
+            SET device_name = COALESCE(:device_name, device_name),
+                device_type = COALESCE(:device_type, device_type),
+                spice_string = COALESCE(:spice_string, spice_string)
+            WHERE id = :data_id
+        """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "data_id": data_id})
     return True  # 更新成功
 
 # データを削除する関数
@@ -110,11 +110,11 @@ def delete_data(data_id):
     engine = get_db_connection()
     with engine.connect() as conn:
         # データが存在するか確認
-        result = conn.execute(text("SELECT * FROM data WHERE id = %s"), (data_id,)).fetchone()
+        result = conn.execute(text("SELECT * FROM data WHERE id = :data_id"), {"data_id": data_id}).fetchone()
         if result is None:
             return False  # データが存在しない場合
         
-        conn.execute(text("DELETE FROM data WHERE id = %s"), (data_id,))
+        conn.execute(text("DELETE FROM data WHERE id = :data_id"), {"data_id": data_id})
     return True  # 削除成功
 
 ## imageデータベース用のコード
@@ -126,22 +126,22 @@ def save_image_to_db(data_id, image_file, image_type, image_format):
 
         # image_type と data_id が重複している場合、更新する
         result = conn.execute(text("""
-            SELECT 1 FROM simulation_images WHERE data_id = %s AND image_type = %s
-        """), (data_id, image_type)).fetchone()
+            SELECT 1 FROM simulation_images WHERE data_id = :data_id AND image_type = :image_type
+        """), {"data_id": data_id, "image_type": image_type}).fetchone()
 
         if result:
             # 既存のレコードがあれば更新
             conn.execute(text("""
                 UPDATE simulation_images 
-                SET image_format = %s, image_data = %s 
-                WHERE data_id = %s AND image_type = %s
-            """), (image_format, image_data, data_id, image_type))
+                SET image_format = :image_format, image_data = :image_data 
+                WHERE data_id = :data_id AND image_type = :image_type
+            """), {"image_format": image_format, "image_data": image_data, "data_id": data_id, "image_type": image_type})
         else:
             # レコードがなければ新しく挿入
             conn.execute(text("""
                 INSERT INTO simulation_images (data_id, image_type, image_format, image_data)
-                VALUES (%s, %s, %s, %s)
-            """), (data_id, image_type, image_format, image_data))
+                VALUES (:data_id, :image_type, :image_format, :image_data)
+            """), {"data_id": data_id, "image_type": image_type, "image_format": image_format, "image_data": image_data})
 
 def delete_image_from_db(data_id, image_type=None):
     """指定された data_id に関連する画像を削除（image_typeが指定されない場合は全て削除）"""
@@ -151,13 +151,13 @@ def delete_image_from_db(data_id, image_type=None):
         if image_type:
             conn.execute(text("""
                 DELETE FROM simulation_images 
-                WHERE data_id = %s AND image_type = %s
-            """), (data_id, image_type))
+                WHERE data_id = :data_id AND image_type = :image_type
+            """), {"data_id": data_id, "image_type": image_type})
         else:
             conn.execute(text("""
                 DELETE FROM simulation_images 
-                WHERE data_id = %s
-            """), (data_id,))
+                WHERE data_id = :data_id
+            """), {"data_id": data_id})
 
 def get_image_from_db(data_id, image_type=None):
     """指定された data_id と image_type に基づいてデータベースから画像データを取得します。"""
@@ -168,14 +168,14 @@ def get_image_from_db(data_id, image_type=None):
             result = conn.execute(text("""
                 SELECT image_data, image_format, image_type 
                 FROM simulation_images 
-                WHERE data_id = %s AND image_type = %s
-            """), (data_id, image_type)).fetchone()
+                WHERE data_id = :data_id AND image_type = :image_type
+            """), {"data_id": data_id, "image_type": image_type}).fetchone()
         else:
             result = conn.execute(text("""
                 SELECT image_data, image_format, image_type 
                 FROM simulation_images 
-                WHERE data_id = %s
-            """), (data_id,)).fetchone()
+                WHERE data_id = :data_id
+            """), {"data_id": data_id}).fetchone()
 
     if result is None:
         return None
