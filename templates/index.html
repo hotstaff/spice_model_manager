@@ -20,15 +20,15 @@
         }
 
         header {
-            background: linear-gradient(45deg, #ff007f, #00bcd4, #ffeb3b, #9c27b0);
-            color: black;
-            padding: 40px 0;
+            background: linear-gradient(45deg, #ff6a8b, #4a90e2, #f7c46d); /* 少し落ち着いた色合いのグラデーション */
+            color: white;
+            padding: 35px 25px;
             text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-            width: 100%;
-            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 50px; 
+            width: 95%;
+            max-width: 900px;
         }
 
         header h1 {
@@ -82,20 +82,28 @@
             outline: none;
         }
 
-        button {
-            padding: 10px 20px;
-            background-color: #ff007f; /* ボタンの背景色 */
+         button {
+            padding: 12px 25px;
+            background-color: #ff6a8b;
             color: white;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px; /* 丸みを少し抑えて、やや角が立った感じに */
             cursor: pointer;
-            transition: background-color 0.3s, transform 0.3s;
-            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         button:hover {
             background-color: #00bcd4;
-            transform: scale(1.05); /* ホバー時に少し大きくなる効果 */
+            transform: scale(1.1);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         table {
