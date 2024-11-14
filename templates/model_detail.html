@@ -49,12 +49,18 @@
             display: flex;
             align-items: center;
         }
-        .iv-image {
+        .image-container {
             margin-top: 20px;
-            display: none; /* デフォルトで非表示 */
             border: 1px solid #ddd;
             padding: 10px;
             background-color: #f9f9f9;
+        }
+        .image-container h4 {
+            margin-bottom: 10px;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
         }
     </style>
     <script>
@@ -77,13 +83,6 @@
         document.addEventListener("DOMContentLoaded", function() {
             const spiceStringElement = document.getElementById("spiceString");
             spiceStringElement.setAttribute("data-original", spiceStringElement.innerText);
-
-            // デバイスタイプがNJFまたはPJFの場合に画像表示エリアを表示
-            const deviceType = "{{ model.device_type }}";
-            const ivImage = document.getElementById("ivImage");
-            if (deviceType === "NJF" || deviceType === "PJF") {
-                ivImage.style.display = "block";
-            }
         });
     </script>
 </head>
@@ -101,10 +100,25 @@
         <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
     </div>
 
-    <!-- デバイスタイプがNJFまたはPJFのときに表示されるIV画像エリア -->
-    <div id="ivImage" class="iv-image">
+    <!-- 画像の表示エリア -->
+    <div class="image-container">
         <h4>IV Characteristic Curve</h4>
-        <img src="{{ url_for('model_views.get_iv_image', data_id=model.id) }}" alt="IV Characteristic Curve" />
+        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='iv') }}" alt="IV Characteristic Curve" />
+    </div>
+    
+    <div class="image-container">
+        <h4>Vgs-Id Characteristic Curve</h4>
+        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='vgs_id') }}" alt="Vgs-Id Characteristic Curve" />
+    </div>
+    
+    <div class="image-container">
+        <h4>Gm-Vgs Characteristic Curve</h4>
+        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_vgs') }}" alt="Gm-Vgs Characteristic Curve" />
+    </div>
+    
+    <div class="image-container">
+        <h4>Gm-Id Characteristic Curve</h4>
+        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
     </div>
 
     <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>

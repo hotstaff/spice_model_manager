@@ -135,27 +135,12 @@ def upload_image():
     except Exception as e:
         return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
 
-@model_views.route('/get_image/<int:data_id>', methods=['GET'])
-def get_image(data_id):
-    """指定された data_id に基づいて画像を取得し、返します。"""
-    image_data = get_image_from_db(data_id)
 
-    if image_data is None:
-        return jsonify({"error": "Image not found"}), 404
-
-    image_io, image_format, image_type = image_data
-
-    return send_file(
-        image_io,
-        mimetype=f'image/{image_format}',
-        download_name=f'{image_type}_image.{image_format}'
-    )
-
-@model_views.route('/get_iv_image/<int:data_id>', methods=['GET'])
-def get_iv_image(data_id):
-    """Retrieve and return the IV characteristic curve image based on data_id and image_type 'iv'."""
-    # Retrieve image data from the database where image_type is 'iv'
-    image_data = get_image_from_db(data_id, image_type='iv')
+@model_views.route('/get_image/<int:data_id>/<string:image_type>', methods=['GET'])
+def get_image(data_id, image_type):
+    """Retrieve and return an image based on data_id and image_type."""
+    # Retrieve image data from the database where image_type matches the provided type
+    image_data = get_image_from_db(data_id, image_type=image_type)
 
     # If no image is found, return a 404 error
     if image_data is None:
