@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from models.db_model import init_db
 from views import model_views  # views.pyからmodel_viewsをインポート
 
@@ -12,7 +12,8 @@ app.register_blueprint(model_views)
 
 @app.route('/')
 def home():
-    return "Welcome to the Spice Model Manager API!"
+    # /models にリダイレクト
+    return redirect(url_for('model_views.models'))  # model_views.blueprint内で/modelsのビュー関数が定義されていることを前提
 
 if __name__ == '__main__':
     app.run()
