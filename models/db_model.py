@@ -2,37 +2,20 @@ import os
 from sqlalchemy import create_engine
 import pandas as pd
 from dotenv import load_dotenv
+from io import BytesIO
 
 # .envファイルを読み込む
 load_dotenv()
 
 # 環境変数から接続情報を取得
 def get_db_connection():
+    # 環境変数からDB接続URLを取得
     engine = create_engine(os.getenv("DB_URL"))
     return engine
 
-# データベースの存在確認と作成
-def create_db_if_not_exists():
-    try:
-        # SQLAlchemy エンジンを使って接続
-        engine = get_db_connection()
-        with engine.connect() as conn:
-            # データベースが存在するか確認するクエリ
-            conn.execute("SELECT 1")
-        print("データベースが存在します。")
-    except Exception as e:
-        # データベースが存在しない場合
-        print("データベースが存在しないため、作成します。")
-        engine = create_engine(os.getenv("DB_URL"))
-        with engine.connect() as conn:
-            # PostgreSQLのデフォルトデータベースを使って新規作成
-            conn.execute(f"CREATE DATABASE {os.getenv('DB_NAME')}")
-
 # テーブルの初期化
 def init_db():
-    create_db_if_not_exists()  # データベースの存在確認と作成
-
-    # データベースに再接続してテーブルを作成
+    # データベースに接続してテーブルを作成
     engine = get_db_connection()
     with engine.connect() as conn:
         conn.execute("""
