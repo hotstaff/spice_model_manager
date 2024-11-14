@@ -2,6 +2,7 @@ Flask
 pandas
 gunicorn
 python-dotenv
+psycopg2-binary
 wtforms
 SQLAlchemy
 matplotlib
