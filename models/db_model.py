@@ -15,7 +15,6 @@ def get_db_connection():
 
 # データベースに再接続してテーブルを作成
 def init_db():
-    create_db_if_not_exists()  # データベースの存在確認と作成
 
     # データベースに再接続してテーブルを作成
     engine = get_db_connection()
