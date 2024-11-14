@@ -12,8 +12,8 @@ app.register_blueprint(model_views)
 
 @app.route('/')
 def home():
-    # /models にリダイレクト
-    return redirect(url_for('model_views.models'))  # model_views.blueprint内で/modelsのビュー関数が定義されていることを前提
+    # model_views.list_modelsが正しいエンドポイント名
+    return redirect(url_for('model_views.list_models'))
 
 if __name__ == '__main__':
     app.run()
