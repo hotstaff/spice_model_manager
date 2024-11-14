@@ -57,7 +57,7 @@ def init_db():
     )
     """)
 
-    cursor.execute("DROP TABLE IF EXISTS simulation_images")
+    # cursor.execute("DROP TABLE IF EXISTS simulation_images")
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS simulation_images (
@@ -167,14 +167,49 @@ def save_image_to_db(data_id, image_file, image_type, image_format):
     # 画像ファイルをバイナリとして読み込む
     image_data = image_file.read()
 
-    # 画像をデータベースに挿入
+    # image_type と data_id が重複している場合、更新する
     cursor.execute("""
-        INSERT INTO simulation_images (data_id, image_type, image_format, image_data)
-        VALUES (%s, %s, %s, %s)
-    """, (data_id, image_type, image_format, image_data))
+        SELECT 1 FROM simulation_images WHERE data_id = %s AND image_type = %s
+    """, (data_id, image_type))
+    result = cursor.fetchone()
+
+    if result:
+        # 既存のレコードがあれば更新
+        cursor.execute("""
+            UPDATE simulation_images 
+            SET image_format = %s, image_data = %s 
+            WHERE data_id = %s AND image_type = %s
+        """, (image_format, image_data, data_id, image_type))
+    else:
+        # レコードがなければ新しく挿入
+        cursor.execute("""
+            INSERT INTO simulation_images (data_id, image_type, image_format, image_data)
+            VALUES (%s, %s, %s, %s)
+        """, (data_id, image_type, image_format, image_data))
 
     conn.commit()
     conn.close()
+
+def delete_image_from_db(data_id, image_type=None):
+    """指定された data_id に関連する画像を削除（image_typeが指定されない場合は全て削除）"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    # image_type が指定されていない場合、data_id に関連する全ての画像を削除
+    if image_type:
+        cursor.execute("""
+            DELETE FROM simulation_images 
+            WHERE data_id = %s AND image_type = %s
+        """, (data_id, image_type))
+    else:
+        cursor.execute("""
+            DELETE FROM simulation_images 
+            WHERE data_id = %s
+        """, (data_id,))
+
+    conn.commit()
+    conn.close()
+
 
 def get_image_from_db(data_id, image_type=None):
     """指定された data_id と image_type に基づいてデータベースから画像データを取得します。"""
