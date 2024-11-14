@@ -148,7 +148,8 @@
         <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
     </div>
 
-    <!-- 画像の表示エリア -->
+    <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
+    {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
     <div class="image-container">
         <h4>IV Characteristic Curve</h4>
         <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='iv') }}" alt="IV Characteristic Curve" />
@@ -168,6 +169,7 @@
         <h4>Gm-Id Characteristic Curve</h4>
         <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
     </div>
+    {% endif %}
 
     <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
 </body>
