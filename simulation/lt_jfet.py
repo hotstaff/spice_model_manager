@@ -4,12 +4,17 @@ import numpy as np
 from PyLTSpice import SimRunner, SpiceEditor, LTspice, RawRead
 
 class JFET_SimulationBase:
-    def __init__(self, device_name, spice_string, template_filename):
+
+    _simulation_name = 'jfet_dc' # default
+
+    def __init__(self, device_name, device_type, spice_string):
         self.device_name = device_name
+        self.device_type = device_type
         self.spice_string = spice_string
+        self.simulation_name = self._simulation_name
 
         script_dir = os.path.dirname(os.path.abspath(__file__))  # スクリプトの絶対パスを取得
-        self.template_path = os.path.join(script_dir, 'net', template_filename)  # テンプレートファイルのパス
+        self.template_path = os.path.join(script_dir, 'net', 'jfet_dc.net')  # テンプレートファイルのパス
         self.output_folder = os.path.join(script_dir, 'data')
 
         self.runner = SimRunner(output_folder=self.output_folder, simulator=LTspice)
@@ -24,7 +29,7 @@ class JFET_SimulationBase:
 
     def run_simulation(self):
         """シミュレーションを実行してRAWデータを取得"""
-        run_filename = f"{os.path.splitext(os.path.basename(self.template_path))[0]}_{self.device_name}.net"
+        run_filename = f"{self.simulation_name}_{self.device_name}.net"
         raw_path, log = self.runner.run_now(self.net, run_filename=run_filename)
         self.raw_data = RawRead(raw_path)
 
@@ -32,8 +37,38 @@ class JFET_SimulationBase:
         """シミュレーション結果から必要なデータを抽出"""
         raise NotImplementedError("このメソッドはサブクラスで実装してください")
 
+    def save_image(self, plt, filename=None):
+        if not filename:
+            filename = f"jfet_{self.simulation_name}_{self.device_name}.png"
+        image_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images')
+        os.makedirs(image_dir, exist_ok=True)
+        image_path = os.path.join(image_dir, filename)
+        plt.savefig(image_path)
+        return image_path
+
+    def process_and_plot(self):
+        self.modify_netlist()
+        self.run_simulation()
+        data = self.extract_data()
+        try:
+            return self.plot(*data)
+        finally:
+            plt.close('all')  # メモリを解放
+
 
 class JFET_IV_Characteristic(JFET_SimulationBase):
+
+    _simulation_name = 'iv'
+
+    def modify_netlist(self):
+        super().modify_netlist()
+
+        # DC sweep
+        if self.device_type == 'NJF':
+            self.net.add_instructions('.dc V1 -0.4 0 0.1 V2 0 20 0.1')
+        elif self.device_type == 'PJF':
+            self.net.add_instructions('.dc V1 0 0.4 0.1 V2 0 -20 -0.1')
+
     def extract_data(self):
         """I-V特性に必要なデータを抽出"""
         Vds = self.raw_data['V(n002)'].data  # Vds（ドレイン-ソース電圧）
@@ -42,33 +77,50 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         Id_mA = Id * 1e3  # ドレイン電流をmA単位に変換
         return Vds, Vgs, Id_mA
 
-    def plot_iv_characteristics(self, Vds, Vgs, Id_mA):
+    def plot(self, Vds, Vgs, Id_mA):
         """I-V特性をプロットする"""
         plt.figure(figsize=(8, 6))
-        for vgs_value in [-0.4, -0.3, -0.2, -0.1, 0]:
+
+        if self.device_type == 'NJF':
+            vgs_list = [-0.4, -0.3, -0.2, -0.1, 0]
+        elif self.device_type == 'PJF':
+            vgs_list = [0.4, 0.3, 0.2, 0.1, 0]
+
+        for vgs_value in vgs_list:
             mask = (Vgs >= vgs_value - 0.05) & (Vgs <= vgs_value + 0.05)
             plt.plot(Vds[mask], Id_mA[mask], label=f'Vgs = {vgs_value}V')
 
         plt.title("I-V Characteristic of JFET for Different Vgs")
         plt.xlabel("Vds (Volts)")
         plt.ylabel("Id (mA)")
+
+        if self.device_type == 'PJF':
+            plt.gca().invert_xaxis()
+            plt.gca().invert_yaxis()
+
         plt.xlim(0)
         plt.ylim(0)
+
         plt.grid(True)
         plt.legend()
 
-        # 画像保存のディレクトリ設定
-        image_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images')
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
-        
-        image_filename = f"{os.path.splitext(os.path.basename(self.template_path))[0]}_{self.device_name}.png"
-        image_path = os.path.join(image_dir, image_filename)
-        plt.savefig(image_path)
-        return image_path
-
+        return self.save_image(plt)
 
 class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
+
+    _simulation_name = 'vgs_id'
+
+    def modify_netlist(self):
+        super().modify_netlist()
+
+        # DC sweep
+        if self.device_type == 'NJF':
+            self.net.set_element_model('V2',"DC 10")
+            self.net.add_instructions('.dc V1 -3 0 0.01')
+        elif self.device_type == 'PJF':
+            self.net.set_element_model('V2',"DC -10")
+            self.net.add_instructions('.dc V1 0 3 0.01')
+
     def extract_data(self):
         """VgsとIdの関係を抽出"""
         Vgs = self.raw_data['V(n001)'].data  # Vgs（ゲート-ソース電圧）
@@ -76,7 +128,7 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         Id_mA = Id * 1e3  # ドレイン電流をmA単位に変換
         return Vgs, Id_mA
 
-    def plot_vgs_id_characteristics(self, Vgs, Id_mA):
+    def plot(self, Vgs, Id_mA):
         """VgsとIdの特性をプロットする"""
         plt.figure(figsize=(8, 6))
         plt.plot(Vgs, Id_mA, label=f'Id vs Vgs')
@@ -84,22 +136,35 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         plt.title("Vgs-Id Characteristic of JFET")
         plt.xlabel("Vgs (Volts)")
         plt.ylabel("Id (mA)")
-        plt.xlim(-3, 0)
+
+        if self.device_type == 'PJF':
+            plt.gca().invert_xaxis()
+            plt.gca().invert_yaxis()
+            plt.xlim(3, 0)
+        elif self.device_type == 'NJF':
+            plt.xlim(-3, 0)
+
         plt.ylim(0)
         plt.grid(True)
         plt.legend()
 
-        # 画像保存のディレクトリ設定
-        image_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images')
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
-
-        image_filename = f"{os.path.splitext(os.path.basename(self.template_path))[0]}_{self.device_name}.png"
-        image_path = os.path.join(image_dir, image_filename)
-        plt.savefig(image_path)
-        return image_path
+        return self.save_image(plt)
 
 class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
+
+    _simulation_name = 'gm_vgs'
+
+    def modify_netlist(self):
+        super().modify_netlist()
+
+        # DC sweep
+        if self.device_type == 'NJF':
+            self.net.set_element_model('V2',"DC 10")
+            self.net.add_instructions('.dc V1 -3 0 0.001')
+        elif self.device_type == 'PJF':
+            self.net.set_element_model('V2',"DC -10")
+            self.net.add_instructions('.dc V1 0 3 0.001')
+
     def extract_data(self):
         """VgsとIdからgmを計算"""
         Vgs = self.raw_data['V(n001)'].data  # Vgs（ゲート-ソース電圧）
@@ -110,7 +175,7 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         gm = np.gradient(Id_mA, Vgs)  # Vgsに対するIdの数値微分
         return Vgs, gm
 
-    def plot_gm_vgs_characteristics(self, Vgs, gm):
+    def plot(self, Vgs, gm):
         """gm-Vgs特性をプロットする"""
         plt.figure(figsize=(8, 6))
         plt.plot(Vgs, gm, label=f'gm vs Vgs')
@@ -118,22 +183,35 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         plt.title("gm-Vgs Characteristic of JFET")
         plt.xlabel("Vgs (Volts)")
         plt.ylabel("gm (mS)")
-        plt.xlim(-3, 0)
+
+        if self.device_type == 'PJF':
+            plt.gca().invert_xaxis()
+            plt.xlim(3, 0)
+        elif self.device_type == 'NJF':
+            plt.xlim(-3, 0)
+
         plt.ylim(0)
         plt.grid(True)
         plt.legend()
 
-        # 画像保存のディレクトリ設定
-        image_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images')
-        if not os.path.exists(image_dir):
-            os.makedirs(image_dir)
-
-        image_filename = f"{os.path.splitext(os.path.basename(self.template_path))[0]}_{self.device_name}.png"
-        image_path = os.path.join(image_dir, image_filename)
-        plt.savefig(image_path)
-        return image_path
+        return self.save_image(plt)
 
 class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
+
+    _simulation_name = 'gm_id'
+
+    def modify_netlist(self):
+        super().modify_netlist()
+
+        # DC sweep
+        if self.device_type == 'NJF':
+            self.net.set_element_model('V2',"DC 10")
+            self.net.add_instructions('.dc V1 -3 0 0.001')
+        elif self.device_type == 'PJF':
+            self.net.set_element_model('V2',"DC -10")
+            self.net.add_instructions('.dc V1 0 3 0.001')
+
+
     def extract_data(self):
         """VgsとIdからgmを計算（mS単位に変換）"""
         Vgs = self.raw_data['V(n001)'].data  # Vgs（ゲート-ソース電圧）
@@ -144,7 +222,7 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
         gm = np.gradient(Id_mA, Vgs)  # Vgsに対するIdの数値微分
         return Id_mA, gm
 
-    def plot_gm_id_characteristics(self, Id_mA, gm):
+    def plot(self, Id_mA, gm):
         """gm-Vgs特性をプロットする"""
         plt.figure(figsize=(8, 6))
         plt.plot(Id_mA, np.abs(gm), label=f'gm vs Id')  # |gm|（mS単位）でプロット
@@ -152,19 +230,18 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
         plt.title("gm-Id Characteristic of JFET")
         plt.xlabel("Id (mA)")  # ドレイン電流をmA単位
         plt.ylabel("gm (mS)")  # フィールド・トランスコンダクタンス（ミリジーメンス）
-        plt.xlim([min(Id_mA), max(Id_mA)])  # Idの最小値と最大値で範囲を設定
+
+        if self.device_type == 'PJF':
+            plt.gca().invert_xaxis()
+            plt.xlim([max(Id_mA), min(Id_mA)]) 
+        elif self.device_type == 'NJF':
+            plt.xlim([min(Id_mA), max(Id_mA)])  # Idの最小値と最大値で範囲を設定
+
         plt.ylim([min(np.abs(gm)), max(np.abs(gm))])  # gmの絶対値で範囲を設定
         plt.grid(True)
         plt.legend()
 
-        # 画像保存のディレクトリ設定
-        image_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'images')
-        os.makedirs(image_dir, exist_ok=True)
-
-        image_filename = f"{os.path.splitext(os.path.basename(self.template_path))[0]}_{self.device_name}.png"
-        image_path = os.path.join(image_dir, image_filename)
-        plt.savefig(image_path)
-        return image_path
+        return self.save_image(plt)
 
 
 
@@ -216,46 +293,43 @@ if __name__ == "__main__":
         for model in jfet_models:
             model_id = model["id"]
             device_name = model["device_name"]
+            device_type = model["device_type"]
             spice_string = model["spice_string"]
 
-            # JFETのI-V特性をプロット
+            # # JFETのI-V特性をプロット
             print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
-            jfet_iv = JFET_IV_Characteristic(device_name, spice_string, 'jfet_iv.net')
+            jfet_iv = JFET_IV_Characteristic(device_name, device_type, spice_string)
             jfet_iv.modify_netlist()
             jfet_iv.run_simulation()
-            Vds, Vgs, Id_mA = jfet_iv.extract_data()
-            image_path_iv = jfet_iv.plot_iv_characteristics(Vds, Vgs, Id_mA)
+            image_path_iv = jfet_iv.plot(*jfet_iv.extract_data())
 
-            upload_image(model_id, image_path_iv, 'iv')
+            # upload_image(model_id, image_path_iv, 'iv')
 
-            # JFETのVgs-Id特性をプロット
+            # # JFETのVgs-Id特性をプロット
             print(f"Generating Vgs-Id characteristics for {device_name} ({model['device_type']})")
-            jfet_vgs_id = JFET_Vgs_Id_Characteristic(device_name, spice_string, 'jfet_vgs_id.net')
+            jfet_vgs_id = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
             jfet_vgs_id.modify_netlist()
             jfet_vgs_id.run_simulation()
-            Vgs, Id_mA = jfet_vgs_id.extract_data()
-            image_path_vgs_id = jfet_vgs_id.plot_vgs_id_characteristics(Vgs, Id_mA)
+            image_path_vgs_id = jfet_vgs_id.plot(*jfet_vgs_id.extract_data())
 
-            upload_image(model_id, image_path_vgs_id, 'vgs_id')
+            # upload_image(model_id, image_path_vgs_id, 'vgs_id')
 
             # JFETのgm-Vgs特性をプロット
             print(f"Generating gm-Vgs characteristics for {device_name} ({model['device_type']})")
-            jfet_gm_vgs = JFET_Gm_Vgs_Characteristic(device_name, spice_string, 'jfet_gm_vgs.net')
+            jfet_gm_vgs = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
             jfet_gm_vgs.modify_netlist()
             jfet_gm_vgs.run_simulation()
-            Vgs, gm = jfet_gm_vgs.extract_data()
-            image_path_gm_vgs = jfet_gm_vgs.plot_gm_vgs_characteristics(Vgs, gm)
+            image_path_gm_vgs = jfet_gm_vgs.plot(*jfet_gm_vgs.extract_data())
 
-            upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
+            # upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
 
-            # JFETのgm-Id特性をプロット
+            # # JFETのgm-Id特性をプロット
             print(f"Generating gm-Id characteristics for {device_name} ({model['device_type']})")
-            jfet_gm_id = JFET_Gm_Id_Characteristic(device_name, spice_string, 'jfet_gm_id.net')
+            jfet_gm_id = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
             jfet_gm_id.modify_netlist()
             jfet_gm_id.run_simulation()
-            Id_mA, gm = jfet_gm_id.extract_data()
-            image_path_gm_id = jfet_gm_id.plot_gm_id_characteristics(Id_mA, gm)
+            image_path_gm_id = jfet_gm_id.plot(*jfet_gm_id.extract_data())
             
-            upload_image(model_id, image_path_gm_id, 'gm_id')
+            # upload_image(model_id, image_path_gm_id, 'gm_id')
 
     main()
