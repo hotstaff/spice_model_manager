@@ -147,6 +147,32 @@
             color: #555;
             font-size: 18px;
         }
+
+        /* モデル追加ボタンのスタイル */
+        .add-model-btn {
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px; /* 上に少し間隔を開ける */
+        }
+
+        .add-model-btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-model-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -164,6 +190,11 @@
             <input type="text" name="device_type" placeholder="Device Type" value="{{ device_type }}" />
             <button type="submit">Search</button>
         </form>
+
+        <!-- モデル追加ボタン -->
+        <a href="{{ url_for('model_views.add_new_model') }}">
+            <button class="add-model-btn">Add New Model</button>
+        </a>
 
         <table>
             <thead>
