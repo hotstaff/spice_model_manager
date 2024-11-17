@@ -299,37 +299,29 @@ if __name__ == "__main__":
             # # JFETのI-V特性をプロット
             print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
             jfet_iv = JFET_IV_Characteristic(device_name, device_type, spice_string)
-            jfet_iv.modify_netlist()
-            jfet_iv.run_simulation()
-            image_path_iv = jfet_iv.plot(*jfet_iv.extract_data())
+            image_path_iv = jfet_iv.process_and_plot()
 
-            # upload_image(model_id, image_path_iv, 'iv')
+            upload_image(model_id, image_path_iv, 'iv')
 
             # # JFETのVgs-Id特性をプロット
             print(f"Generating Vgs-Id characteristics for {device_name} ({model['device_type']})")
             jfet_vgs_id = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
-            jfet_vgs_id.modify_netlist()
-            jfet_vgs_id.run_simulation()
-            image_path_vgs_id = jfet_vgs_id.plot(*jfet_vgs_id.extract_data())
+            image_path_vgs_id = jfet_vgs_id.process_and_plot()
 
-            # upload_image(model_id, image_path_vgs_id, 'vgs_id')
+            upload_image(model_id, image_path_vgs_id, 'vgs_id')
 
             # JFETのgm-Vgs特性をプロット
             print(f"Generating gm-Vgs characteristics for {device_name} ({model['device_type']})")
             jfet_gm_vgs = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
-            jfet_gm_vgs.modify_netlist()
-            jfet_gm_vgs.run_simulation()
-            image_path_gm_vgs = jfet_gm_vgs.plot(*jfet_gm_vgs.extract_data())
+            image_path_gm_vgs = jfet_gm_vgs.process_and_plot()
 
-            # upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
+            upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
 
             # # JFETのgm-Id特性をプロット
             print(f"Generating gm-Id characteristics for {device_name} ({model['device_type']})")
             jfet_gm_id = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
-            jfet_gm_id.modify_netlist()
-            jfet_gm_id.run_simulation()
-            image_path_gm_id = jfet_gm_id.plot(*jfet_gm_id.extract_data())
+            image_path_gm_id = jfet_gm_id.process_and_plot()
             
-            # upload_image(model_id, image_path_gm_id, 'gm_id')
+            upload_image(model_id, image_path_gm_id, 'gm_id')
 
     main()

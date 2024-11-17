@@ -5,6 +5,8 @@ from models.db_model import get_all_data, get_data_by_id, add_data, update_data,
 from wtforms import Form, StringField
 from wtforms.validators import DataRequired, Length, Regexp, Optional
 
+from client.spice_model_manager import SpiceModelParser
+
 class SearchForm(Form):
     # 空白を許容するためにOptional()を使用
     device_name = StringField('Device Name', 
@@ -14,6 +16,34 @@ class SearchForm(Form):
     device_type = StringField('Device Type', 
                               [Length(max=100),
                                Optional()])  # 空白も許容
+
+class AddModelForm(Form):
+    # spice_stringのみを受け取る
+    spice_string = StringField('Spice String', 
+                               [DataRequired(), 
+                                Length(max=5000)])  # 最大長は適宜調整
+
+    def validate_spice_string(self, field):
+        # Spiceモデル文字列をパースして、デバイス名とデバイスタイプを取得
+        try:
+            # SpiceModelParserのインスタンス化
+            parser = SpiceModelParser()
+            params = parser.parse(field.data, convert_units=True)
+
+            # device_name と device_type を取得してバリデーション
+            device_name = params['device_name']
+            device_type = params['device_type']
+
+            # デバイス名とデバイスタイプのバリデーション
+            if not device_name.isalnum():
+                raise ValueError('Device name must be alphanumeric.')
+            if not device_type.isalnum():
+                raise ValueError('Device type must be alphanumeric.')
+
+        except SyntaxError:
+            raise ValueError('Invalid Spice model string format.')
+        except KeyError:
+            raise ValueError('Device name or type not found in spice model string.')
 
 
 model_views = Blueprint('model_views', __name__)
@@ -162,6 +192,44 @@ def model_detail(model_id):
     if model.empty:
         return abort(404, description="Model not found")
     return render_template('model_detail.html', model=model.to_dict(orient="records")[0])
+
+
+from flask import Flask, render_template, request, jsonify
+from your_app.forms import AddModelForm  # 先ほど作成したフォームをインポート
+
+app = Flask(__name__)
+
+@app.route('/models/add', methods=['GET', 'POST'])
+def add_new_model():
+    form = AddModelForm(request.form)
+
+    if request.method == 'POST':
+        if form.validate():
+            spice_string = form.spice_string.data
+
+            try:
+                # SpiceStringの解析とデータベースに保存
+                parser = SpiceModelParser()
+                parsed_params = parser.parse(spice_string)
+
+                device_name = parsed_params['device_name']
+                device_type = parsed_params['device_type']
+
+                # データベースに保存
+                # add_data(device_name, device_type, spice_string)  # 保存する関数を呼び出す
+                return jsonify({"message": "Model added successfully!"}), 201
+
+            except Exception as e:
+                return jsonify({"error": f"Failed to add model: {str(e)}"}), 500
+
+        else:
+            # バリデーションエラーがあればエラーメッセージを返す
+            return jsonify({"errors": form.errors}), 400
+
+    # GETリクエストの場合、フォームを表示
+    return render_template('spice_model_add.html', form=form)
+
+
 
 # エラーハンドリング
 @model_views.errorhandler(404)
