@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Add Failed - SPICE Model Repository</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-image: url('path_to_your_texture.png');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+        }
+
+        header {
+            background: linear-gradient(45deg, #ff6a8b, #4a90e2, #f7c46d);
+            color: white;
+            padding: 25px 20px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            font-size: 30px;
+            margin: 0;
+        }
+
+        header h2 {
+            font-size: 18px;
+            font-weight: normal;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .error-message {
+            font-size: 18px;
+            color: #d9534f;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: #f8d7da;
+            border-radius: 5px;
+            border: 1px solid #d9534f;
+        }
+
+        .back-link {
+            text-decoration: none;
+            font-size: 16px;
+            color: #0275d8;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Model Addition Failed</h1>
+            <h2>There was an issue while adding the model.</h2>
+        </header>
+
+        <div class="error-message">
+            <p>{{ error_message }}</p>
+        </div>
+
+        <a href="/models/add" class="back-link">Go back and try again</a>
+    </div>
+</body>
+</html>

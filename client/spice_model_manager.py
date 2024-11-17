@@ -43,6 +43,16 @@ class ModelManager:
         except requests.RequestException as e:
             QMessageBox.warning(self.main_window, "エラー", f"データの更新に失敗しました: {e}")
 
+    def delete_model_from_api(self, model_id):
+        try:
+            url = f'https://spice-model-manager.onrender.com/api/models/{model_id}'
+            response = requests.delete(url)
+            response.raise_for_status()
+            QMessageBox.information(self.main_window, "削除成功", "モデルが削除されました。")
+            self.load_from_api()  # データの再ロード
+        except requests.RequestException as e:
+            QMessageBox.warning(self.main_window, "エラー", f"データの削除に失敗しました: {e}")
+
     def add_model(self, model_line):
         try:
             # SpiceModelParserを使ってモデル行をパース
@@ -83,6 +93,18 @@ class ModelManager:
         except Exception as e:
             QMessageBox.warning(self.main_window, "エラー", f"モデルの追加中にエラーが発生しました: {e}")
             return False
+
+    def remove_device(self, device_name):
+        """選択されたデバイスを削除する"""
+        device = next((d for d in self.devices_cache if d['device_name'] == device_name), None)
+        if device:
+            reply = QMessageBox.question(
+                self.main_window, '削除確認', f"{device_name} を削除しますか？",
+                QMessageBox.Yes | QMessageBox.No, QMessageBox.No
+            )
+            if reply == QMessageBox.Yes:
+                model_id = device['id']
+                self.delete_model_from_api(model_id)
         
     def get_device_list(self):
         """キャッシュからデバイスリストを取得"""
@@ -151,6 +173,14 @@ def on_register_click():
     except SyntaxError as e:
         QMessageBox.warning(window, "エラー", str(e))
 
+def on_delete_click():
+    selected_device = device_combo.currentText()
+    if selected_device:
+        model_manager.remove_device(selected_device)
+    else:
+        QMessageBox.warning(window, "警告", "削除するデバイスを選択してください。")
+
+
 def on_device_selected(device_name):
     spice_string = model_manager.get_spice_string(
         device_name, multiline=multiline_checkbox.isChecked()
@@ -191,7 +221,14 @@ text_input.setFixedHeight(40)
 
 register_button = QPushButton("登録")
 register_button.setFixedHeight(40)
+register_button.setFixedWidth(100)
 register_button.clicked.connect(on_register_click)
+
+# 削除ボタンの作成
+delete_button = QPushButton("削除")
+delete_button.setFixedHeight(40)
+delete_button.setFixedWidth(70)
+delete_button.clicked.connect(on_delete_click)
 
 device_combo = QComboBox()
 device_combo.currentTextChanged.connect(on_device_selected)
@@ -217,11 +254,14 @@ show_table_button = QPushButton("モデルデータ表示")
 show_table_button.clicked.connect(model_manager.display_table_window)
 
 h_layout = QHBoxLayout()
+# h_layout.addWidget(delete_button)
 h_layout.addWidget(text_input)
 h_layout.addWidget(register_button)
 
+
 device_layout = QHBoxLayout()
 device_layout.addWidget(device_combo)
+device_layout.addWidget(delete_button)
 
 checkbox_layout = QHBoxLayout()
 checkbox_layout.addWidget(multiline_checkbox)
@@ -241,7 +281,7 @@ window.setLayout(layout)
 
 update_device_combo()
 
-for widget in [text_input, register_button, device_combo, spice_display_label, 
+for widget in [text_input, register_button, delete_button, device_combo, spice_display_label, 
                multiline_checkbox, uppercase_checkbox, copy_button, show_table_button]:
     widget.setFont(font)
 

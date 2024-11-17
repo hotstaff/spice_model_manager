@@ -234,17 +234,18 @@ def add_new_model():
 
                 if result:
                     # 登録成功
-                    return jsonify({"message": "Model added successfully!"}), 201
+                    return render_template('model_added_successfully.html', device_name=device_name)
+
                 else:
                     # デバイス名が重複している場合
-                    return jsonify({"error": f"Device '{device_name}' already exists."}), 400
+                    return render_template('model_add_failed.html', error_message=f"Device '{device_name}' already exists.")
 
             except Exception as e:
-                return jsonify({"error": f"Failed to add model: {str(e)}"}), 500
+                return render_template('model_add_failed.html', error_message=f"Failed to add model: {str(e)}")
 
         else:
             # バリデーションエラーがあればエラーメッセージを返す
-            return jsonify({"errors": form.errors}), 400
+            return render_template('model_add_failed.html', error_message="Validation failed. Please check your input.")
 
     # GETリクエストの場合、フォームを表示
     return render_template('spice_model_add.html', form=form)
