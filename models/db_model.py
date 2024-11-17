@@ -1,5 +1,6 @@
 import os
 from sqlalchemy import create_engine, text
+from sqlalchemy.exc import IntegrityError
 import pandas as pd
 from dotenv import load_dotenv
 from io import BytesIO
@@ -82,12 +83,29 @@ def get_data_by_id(data_id):
 # データを新規追加する関数
 def add_data(device_name, device_type, spice_string):
     engine = get_db_connection()
+    
     with engine.connect() as conn:
-        conn.execute(text("""
-            INSERT INTO data (device_name, device_type, spice_string)
-            VALUES (:device_name, :device_type, :spice_string)
-        """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string})
-        conn.commit()  # 明示的にコミット
+        # デバイス名が既に存在するか確認する
+        result = conn.execute(text("""
+            SELECT COUNT(*) FROM data WHERE device_name = :device_name
+        """), {"device_name": device_name}).fetchone()
+
+        if result[0] > 0:
+            # 既に同じデバイス名が存在する場合はFalseを返す
+            return False
+        
+        try:
+            # 新しいデバイスを追加
+            conn.execute(text("""
+                INSERT INTO data (device_name, device_type, spice_string)
+                VALUES (:device_name, :device_type, :spice_string)
+            """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string})
+            conn.commit()  # 明示的にコミット
+            return True  # 成功した場合はTrueを返す
+        except IntegrityError:
+            # 重複などのエラーが発生した場合はロールバック
+            conn.rollback()
+            return False
 
 # データを更新する関数
 def update_data(data_id, device_name=None, device_type=None, spice_string=None):
@@ -96,8 +114,10 @@ def update_data(data_id, device_name=None, device_type=None, spice_string=None):
         # データが存在するか確認
         result = conn.execute(text("SELECT * FROM data WHERE id = :data_id"), {"data_id": data_id}).fetchone()
         if result is None:
-            return False  # データが存在しない場合
+            # データが存在しない場合はFalseを返す
+            return False
         
+        # データを更新
         conn.execute(text("""
             UPDATE data
             SET device_name = COALESCE(:device_name, device_name),
