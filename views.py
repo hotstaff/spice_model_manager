@@ -1,7 +1,7 @@
 import os
 import logging
 
-from flask import Blueprint, request, jsonify, flash, abort, render_template, send_file, redirect
+from flask import Blueprint, request, jsonify, flash, abort, render_template, send_file, redirect, url_for
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data, save_image_to_db, get_image_from_db
 
 from wtforms import Form, StringField
