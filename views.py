@@ -1,7 +1,7 @@
 import os
 import logging
 
-from flask import Blueprint, request, jsonify, abort, render_template, send_file
+from flask import Blueprint, request, jsonify, flash, abort, render_template, send_file
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data, save_image_to_db, get_image_from_db
 
 from wtforms import Form, StringField
@@ -48,22 +48,29 @@ class AddModelForm(Form):
             # エラーが発生した入力データもログに記録
             logging.warning(f"SyntaxError with input: {field.data}")
             logging.warning(f"SyntaxError: {str(e)}")
-            abort(400, description='Invalid Spice model string format.')  # 400エラーを返す
+            flash('Invalid Spice model string format.', 'error')  # エラーメッセージをflash
+            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+
         except KeyError:
             # エラーが発生した入力データもログに記録
             logging.warning(f"KeyError with input: {field.data}")
             logging.warning("KeyError: Device name or type not found in spice model string.")
-            abort(400, description='Device name or type not found in spice model string.')  # 400エラーを返す
+            flash('Device name or type not found in spice model string.', 'error')  # エラーメッセージをflash
+            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+
         except ValueError as e:
             # エラーが発生した入力データもログに記録
             logging.warning(f"ValueError with input: {field.data}")
             logging.warning(f"ValueError: {str(e)}")
-            abort(400, description=str(e))  # 400エラーを返す
+            flash(str(e), 'error')  # エラーメッセージをflash
+            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+
         except Exception as e:
             # エラーが発生した入力データもログに記録
             logging.warning(f"Unexpected error with input: {field.data}")
             logging.warning(f"Unexpected error: {str(e)}")
-            abort(500, description='An unexpected error occurred during parsing.')  # 500エラーを返すす
+            flash('An unexpected error occurred during parsing.', 'error')  # エラーメッセージをflash
+            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
 
 
 model_views = Blueprint('model_views', __name__)
@@ -234,18 +241,22 @@ def add_new_model():
 
                 if result:
                     # 登録成功
-                    return render_template('model_added_successfully.html', device_name=device_name)
+                    flash(f"Model for device '{device_name}' added successfully!", "success")
+                    return redirect(url_for('model_views.add_new_model'))  # 成功後リダイレクト
 
                 else:
                     # デバイス名が重複している場合
-                    return render_template('model_add_failed.html', error_message=f"Device '{device_name}' already exists.")
+                    flash(f"Device '{device_name}' already exists.", "error")
+                    return redirect(url_for('model_views.add_new_model'))  # 失敗後リダイレクト
 
             except Exception as e:
-                return render_template('model_add_failed.html', error_message=f"Failed to add model: {str(e)}")
+                flash(f"Failed to add model: {str(e)}", "error")
+                return redirect(url_for('model_views.add_new_model'))  # 失敗後リダイレクト
 
         else:
             # バリデーションエラーがあればエラーメッセージを返す
-            return render_template('model_add_failed.html', error_message="Validation failed. Please check your input.")
+            flash("Validation failed. Please check your input.", "error")
+            return redirect(url_for('model_views.add_new_model'))  # 失敗後リダイレクト
 
     # GETリクエストの場合、フォームを表示
     return render_template('spice_model_add.html', form=form)
