@@ -47,15 +47,19 @@ class AddModelForm(Form):
         except SyntaxError as e:
             # ログにエラーを記録する
             logging.error(f"SyntaxError: {str(e)}")
-            raise ValueError('Invalid Spice model string format.')  # クライアントにはエラーメッセージを返す
+            abort(400, description='Invalid Spice model string format.')  # 400エラーを返す
         except KeyError:
             # ログにエラーを記録する
             logging.error("KeyError: Device name or type not found in spice model string.")
-            raise ValueError('Device name or type not found in spice model string.')  # クライアントにはエラーメッセージを返す
+            abort(400, description='Device name or type not found in spice model string.')  # 400エラーを返す
+        except ValueError as e:
+            # ログにエラーを記録する
+            logging.error(f"ValueError: {str(e)}")
+            abort(400, description=str(e))  # 400エラーを返す
         except Exception as e:
             # その他の例外もログに記録する
             logging.error(f"Unexpected error: {str(e)}")
-            raise ValueError('An unexpected error occurred during parsing.')
+            abort(500, description='An unexpected error occurred during parsing.')  # 500エラーを返す
 
 
 model_views = Blueprint('model_views', __name__)
