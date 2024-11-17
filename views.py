@@ -45,21 +45,25 @@ class AddModelForm(Form):
                 raise ValueError('Device type must be alphanumeric.')
 
         except SyntaxError as e:
-            # ログにエラーを記録する
-            logging.error(f"SyntaxError: {str(e)}")
+            # エラーが発生した入力データもログに記録
+            logging.warning(f"SyntaxError with input: {field.data}")
+            logging.warning(f"SyntaxError: {str(e)}")
             abort(400, description='Invalid Spice model string format.')  # 400エラーを返す
         except KeyError:
-            # ログにエラーを記録する
-            logging.error("KeyError: Device name or type not found in spice model string.")
+            # エラーが発生した入力データもログに記録
+            logging.warning(f"KeyError with input: {field.data}")
+            logging.warning("KeyError: Device name or type not found in spice model string.")
             abort(400, description='Device name or type not found in spice model string.')  # 400エラーを返す
         except ValueError as e:
-            # ログにエラーを記録する
-            logging.error(f"ValueError: {str(e)}")
+            # エラーが発生した入力データもログに記録
+            logging.warning(f"ValueError with input: {field.data}")
+            logging.warning(f"ValueError: {str(e)}")
             abort(400, description=str(e))  # 400エラーを返す
         except Exception as e:
-            # その他の例外もログに記録する
-            logging.error(f"Unexpected error: {str(e)}")
-            abort(500, description='An unexpected error occurred during parsing.')  # 500エラーを返す
+            # エラーが発生した入力データもログに記録
+            logging.warning(f"Unexpected error with input: {field.data}")
+            logging.warning(f"Unexpected error: {str(e)}")
+            abort(500, description='An unexpected error occurred during parsing.')  # 500エラーを返すす
 
 
 model_views = Blueprint('model_views', __name__)
