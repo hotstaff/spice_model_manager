@@ -193,13 +193,7 @@ def model_detail(model_id):
         return abort(404, description="Model not found")
     return render_template('model_detail.html', model=model.to_dict(orient="records")[0])
 
-
-from flask import Flask, render_template, request, jsonify
-from your_app.forms import AddModelForm  # 先ほど作成したフォームをインポート
-
-app = Flask(__name__)
-
-@app.route('/models/add', methods=['GET', 'POST'])
+@model_views.route('/models/add', methods=['GET', 'POST'])
 def add_new_model():
     form = AddModelForm(request.form)
 
