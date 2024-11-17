@@ -241,8 +241,8 @@ def add_new_model():
 
                 if result:
                     # 登録成功
-                    flash(f"Model for device '{device_name}' added successfully!", "success")
-                    return redirect(url_for('model_views.add_new_model'))  # 成功後リダイレクト
+                    flash('SPICE Model added successfully!', 'success')
+                    return redirect(url_for('home'))  # 登録成功後、トップページにリダイレクト
 
                 else:
                     # デバイス名が重複している場合
