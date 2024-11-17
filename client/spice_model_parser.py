@@ -34,7 +34,7 @@ class SpiceModelParser:
 
     def _normalize_line(self, model_line):
         model_line = model_line.replace('+', '').replace('\n', ' ').strip()
-        model_line = model_line.replace('(', '( ').replace(')', ') ')
+        model_line = model_line.replace('(', ' ( ').replace(')', ' ) ')
         return model_line
 
     def _parse_model_line(self, model_line):
