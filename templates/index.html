@@ -20,33 +20,6 @@
             background-position: center;
         }
 
-        /* ボタンをヘッダーの上に固定 */
-        .add-model-btn {
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            padding: 10px 20px;
-            background-color: #4CAF50; /* 色を少し控えめに */
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .add-model-btn:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .add-model-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
-
         header {
             background: linear-gradient(45deg, #ff6a8b, #4a90e2, #f7c46d);
             color: white;
@@ -57,7 +30,6 @@
             margin-bottom: 20px;
             width: 95%;
             max-width: 900px;
-            position: relative; /* ヘッダーの相対位置 */
         }
 
         header h1 {
@@ -72,6 +44,7 @@
         }
 
         .container {
+            position: relative;
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
@@ -111,7 +84,7 @@
             outline: none;
         }
 
-        button {
+         button {
             padding: 12px 25px;
             background-color: #ff6a8b;
             color: white;
@@ -177,14 +150,35 @@
             font-size: 18px;
         }
 
+        /* 新しいモデル追加ボタンのスタイル */
+        .add-model-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 12px 25px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .add-model-btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-model-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body>
-    <!-- 右上にボタンを配置 -->
-    <a href="{{ url_for('model_views.add_new_model') }}">
-        <button class="add-model-btn">+ New Model</button>
-    </a>
-
     <div class="container">
         <header>
             <h1>SPICE Model Repository</h1>
@@ -226,6 +220,11 @@
                 {% endif %}
             </tbody>
         </table>
+        
+        <!-- 右上に新しいモデル追加ボタン -->
+        <a href="{{ url_for('model_views.add_new_model') }}">
+            <button class="add-model-btn">+ New Model</button>
+        </a>
     </div>
 </body>
 </html>
