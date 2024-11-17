@@ -5,7 +5,7 @@ from models.db_model import get_all_data, get_data_by_id, add_data, update_data,
 from wtforms import Form, StringField
 from wtforms.validators import DataRequired, Length, Regexp, Optional
 
-from client.spice_model_manager import SpiceModelParser
+from client.spice_model_parser import SpiceModelParser
 
 class SearchForm(Form):
     # 空白を許容するためにOptional()を使用
