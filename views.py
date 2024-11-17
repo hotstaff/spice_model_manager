@@ -222,7 +222,7 @@ def add_new_model():
             spice_string = form.spice_string.data
 
             try:
-                # SpiceStringの解析とデータベースに保存
+                # SpiceStringの解析
                 parser = SpiceModelParser()
                 parsed_params = parser.parse(spice_string)
 
@@ -230,8 +230,14 @@ def add_new_model():
                 device_type = parsed_params['device_type']
 
                 # データベースに保存
-                # add_data(device_name, device_type, spice_string)  # 保存する関数を呼び出す
-                return jsonify({"message": "Model added successfully!"}), 201
+                result = add_data(device_name, device_type, spice_string)
+
+                if result:
+                    # 登録成功
+                    return jsonify({"message": "Model added successfully!"}), 201
+                else:
+                    # デバイス名が重複している場合
+                    return jsonify({"error": f"Device '{device_name}' already exists."}), 400
 
             except Exception as e:
                 return jsonify({"error": f"Failed to add model: {str(e)}"}), 500
@@ -242,7 +248,6 @@ def add_new_model():
 
     # GETリクエストの場合、フォームを表示
     return render_template('spice_model_add.html', form=form)
-
 
 
 # エラーハンドリング
