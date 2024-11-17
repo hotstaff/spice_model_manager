@@ -1,4 +1,6 @@
 import os
+import logging
+
 from flask import Blueprint, request, jsonify, abort, render_template, send_file
 from models.db_model import get_all_data, get_data_by_id, add_data, update_data, delete_data, search_data, save_image_to_db, get_image_from_db
 
@@ -6,6 +8,8 @@ from wtforms import Form, StringField
 from wtforms.validators import DataRequired, Length, Regexp, Optional
 
 from client.spice_model_parser import SpiceModelParser
+
+logging.basicConfig(level=logging.INFO)
 
 class SearchForm(Form):
     # 空白を許容するためにOptional()を使用
@@ -40,10 +44,18 @@ class AddModelForm(Form):
             if not device_type.isalnum():
                 raise ValueError('Device type must be alphanumeric.')
 
-        except SyntaxError:
-            raise ValueError('Invalid Spice model string format.')
+        except SyntaxError as e:
+            # ログにエラーを記録する
+            logging.error(f"SyntaxError: {str(e)}")
+            raise ValueError('Invalid Spice model string format.')  # クライアントにはエラーメッセージを返す
         except KeyError:
-            raise ValueError('Device name or type not found in spice model string.')
+            # ログにエラーを記録する
+            logging.error("KeyError: Device name or type not found in spice model string.")
+            raise ValueError('Device name or type not found in spice model string.')  # クライアントにはエラーメッセージを返す
+        except Exception as e:
+            # その他の例外もログに記録する
+            logging.error(f"Unexpected error: {str(e)}")
+            raise ValueError('An unexpected error occurred during parsing.')
 
 
 model_views = Blueprint('model_views', __name__)
