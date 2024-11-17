@@ -237,7 +237,7 @@ def add_new_model():
                 device_type = parsed_params['device_type']
 
                 # データベースに保存
-                result = add_data(device_name, device_type, spice_string)
+                result = add_data(device_name, device_type, parser.format(parsed_params))
 
                 if result:
                     # 登録成功
