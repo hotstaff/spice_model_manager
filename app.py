@@ -1,8 +1,11 @@
+import os
 from flask import Flask, redirect, url_for
 from models.db_model import init_db
 from views import model_views  # views.pyからmodel_viewsをインポート
 
 app = Flask(__name__)
+
+app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24))
 
 # データベースの初期化
 init_db()
