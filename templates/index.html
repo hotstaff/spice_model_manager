@@ -11,24 +11,53 @@
             margin: 0;
             padding: 0;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-image: url('path_to_your_texture.png'); /* テクスチャ追加 */
+            background-image: url('path_to_your_texture.png');
             background-size: cover;
             background-position: center;
         }
 
+        /* ボタンをヘッダーの上に固定 */
+        .add-model-btn {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* 色を少し控えめに */
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .add-model-btn:hover {
+            background-color: #45a049;
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .add-model-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
         header {
-            background: linear-gradient(45deg, #ff6a8b, #4a90e2, #f7c46d); /* 少し落ち着いた色合いのグラデーション */
+            background: linear-gradient(45deg, #ff6a8b, #4a90e2, #f7c46d);
             color: white;
             padding: 35px 25px;
             text-align: center;
             border-radius: 20px;
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-            margin-bottom: 50px; 
+            margin-bottom: 20px;
             width: 95%;
             max-width: 900px;
+            position: relative; /* ヘッダーの相対位置 */
         }
 
         header h1 {
@@ -82,12 +111,12 @@
             outline: none;
         }
 
-         button {
+        button {
             padding: 12px 25px;
             background-color: #ff6a8b;
             color: white;
             border: none;
-            border-radius: 12px; /* 丸みを少し抑えて、やや角が立った感じに */
+            border-radius: 12px;
             cursor: pointer;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             font-size: 18px;
@@ -148,34 +177,14 @@
             font-size: 18px;
         }
 
-        /* モデル追加ボタンのスタイル */
-        .add-model-btn {
-            padding: 12px 25px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            font-size: 18px;
-            font-weight: bold;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            margin-top: 20px; /* 上に少し間隔を開ける */
-        }
-
-        .add-model-btn:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .add-model-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
     </style>
 </head>
 <body>
+    <!-- 右上にボタンを配置 -->
+    <a href="{{ url_for('model_views.add_new_model') }}">
+        <button class="add-model-btn">+ New Model</button>
+    </a>
+
     <div class="container">
         <header>
             <h1>SPICE Model Repository</h1>
@@ -190,11 +199,6 @@
             <input type="text" name="device_type" placeholder="Device Type" value="{{ device_type }}" />
             <button type="submit">Search</button>
         </form>
-
-        <!-- モデル追加ボタン -->
-        <a href="{{ url_for('model_views.add_new_model') }}">
-            <button class="add-model-btn">Add New Model</button>
-        </a>
 
         <table>
             <thead>
