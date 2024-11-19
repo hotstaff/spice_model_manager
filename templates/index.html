@@ -272,19 +272,19 @@
         <div class="pagination">
             {% if page > 1 %}
             <a href="{{ url_for('model_views.list_models', page=1, device_name=device_name, device_type=device_type) }}" class="pagination-link">First</a>
-            <a href="{{ url_for('model_views.list_models', page=page-1, device_name=device_name, device_type=device_type) }}" class="pagination-link">Previous</a>
+            <a href="{{ url_for('model_views.list_models', page=page-1, device_name=device_name, device_type=device_type) }}" class="pagination-link"><</a>
             {% else %}
             <span class="pagination-link disabled">First</span>
-            <span class="pagination-link disabled">Previous</span>
+            <span class="pagination-link disabled"><</span>
             {% endif %}
 
             <span class="pagination-info">Page {{ page }} of {{ total_pages }}</span>
 
             {% if page < total_pages %}
-            <a href="{{ url_for('model_views.list_models', page=page+1, device_name=device_name, device_type=device_type) }}" class="pagination-link">Next</a>
+            <a href="{{ url_for('model_views.list_models', page=page+1, device_name=device_name, device_type=device_type) }}" class="pagination-link">></a>
             <a href="{{ url_for('model_views.list_models', page=total_pages, device_name=device_name, device_type=device_type) }}" class="pagination-link">Last</a>
             {% else %}
-            <span class="pagination-link disabled">Next</span>
+            <span class="pagination-link disabled">></span>
             <span class="pagination-link disabled">Last</span>
             {% endif %}
         </div>
