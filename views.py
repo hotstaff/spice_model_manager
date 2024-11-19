@@ -148,16 +148,36 @@ def list_models():
         device_name = form.device_name.data
         device_type = form.device_type.data
         models = search_data(device_name=device_name, device_type=device_type)
-        if device_name is None:
-            device_name = ""
-
-        if device_type is None:
-            device_type = ""
-        return render_template('index.html', models=models.to_dict(orient="records"), device_name=device_name, device_type=device_type)
+        
+        # モデル数と1ページあたりの表示数
+        models_count = len(models)  # 例えばmodelsはリストまたはDataFrame
+        items_per_page = 10  # 1ページあたりのアイテム数
+        
+        # ページ数の計算 (ceilを使わずにビルトイン関数で処理)
+        pages = (models_count + items_per_page - 1) // items_per_page
+        
+        # 現在のページ番号を取得（デフォルトは1）
+        page = int(request.args.get('page', 1))
+        
+        # ページ番号が1より小さい場合は1に設定
+        if page < 1:
+            page = 1
+        
+        # ページごとのアイテムのスライスを取得
+        start_index = (page - 1) * items_per_page
+        end_index = start_index + items_per_page
+        page_models = models[start_index:end_index]
+        
+        return render_template(
+            'index.html',
+            models=page_models.to_dict(orient="records"),
+            device_name=device_name,
+            device_type=device_type,
+            page=page,
+            pages=pages
+        )
     else:
-        # バリデーションエラーが発生した場合
         return "There are invalid inputs", 400
-
 @model_views.route('/api/upload_image', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:

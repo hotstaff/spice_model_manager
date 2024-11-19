@@ -154,28 +154,64 @@
         .add-model-btn {
             position: absolute;
             top: 20px;
-            right: 20px;
-            padding: 12px 25px;
-            background-color: #4CAF50;
+            right: 20px;  /* 少し右に調整してスペースを確保 */
+            padding: 14px 35px;  /* ボタンを少し大きめに */
+            background-color: #FF5733;  /* 目を引くオレンジ色に変更 */
             color: white;
             border: none;
-            border-radius: 10px;
+            border-radius: 50px;  /* 完全に丸い形にする */
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            font-size: 16px;
+            font-size: 18px;  /* 少し大きめのフォント */
             font-weight: bold;
+            text-transform: uppercase;  /* テキストを大文字にして視覚的に強調 */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);  /* 少しだけ影を強めに */
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
 
         .add-model-btn:hover {
-            background-color: #45a049;
-            transform: scale(1.05);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            background-color: #FF7F50;  /* オレンジ色を少し明るく */
+            transform: scale(1.1);  /* ほんの少し大きくして目立たせる */
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);  /* 影を強調 */
         }
 
         .add-model-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: scale(0.98);  /* クリック時に少し縮めて反応を良く */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);  /* クリック時の影 */
         }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            padding: 8px 16px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #007BFF;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .pagination a:hover {
+            background-color: #f1f1f1;
+        }
+
+        .pagination .active {
+            background-color: #007BFF;
+            color: white;
+            border-color: #007BFF;
+        }
+
+        .pagination .disabled {
+            color: #ccc;
+            pointer-events: none;
+            cursor: not-allowed;
+        }
+
     </style>
 </head>
 <body>
@@ -231,6 +267,27 @@
                 {% endif %}
             </tbody>
         </table>
+
+        <!-- ページネーション -->
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="{{ url_for('model_views.models', page=1, device_name=device_name, device_type=device_type) }}">First</a>
+            <a href="{{ url_for('model_views.models', page=page-1, device_name=device_name, device_type=device_type) }}">Previous</a>
+            {% else %}
+            <span class="disabled">First</span>
+            <span class="disabled">Previous</span>
+            {% endif %}
+
+            <span>Page {{ page }} of {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+            <a href="{{ url_for('model_views.models', page=page+1, device_name=device_name, device_type=device_type) }}">Next</a>
+            <a href="{{ url_for('model_views.models', page=total_pages, device_name=device_name, device_type=device_type) }}">Last</a>
+            {% else %}
+            <span class="disabled">Next</span>
+            <span class="disabled">Last</span>
+            {% endif %}
+        </div>
         
         <!-- 右上に新しいモデル追加ボタン -->
         <a href="{{ url_for('model_views.add_new_model') }}">
