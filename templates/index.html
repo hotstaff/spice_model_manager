@@ -190,7 +190,18 @@
         <!-- 検索フォーム -->
         <form action="/models" method="get">
             <input type="text" name="device_name" placeholder="Device Name" value="{{ device_name }}" />
-            <input type="text" name="device_type" placeholder="Device Type" value="{{ device_type }}" />
+
+            <!-- Device Typeのドロップダウンリスト -->
+            <select name="device_type" value="{{ device_type }}">
+                <option value="">Select Device Type</option>
+                <option value="NJF">NJF</option>
+                <option value="PJF">PJF</option>
+                <option value="D">D</option>
+                <option value="PNP">PNP</option>
+                <option value="NPN">NPN</option>
+                <option value="NMOS">NMOS</option>
+                <option value="PMOS">PMOS</option>
+            </select>
             <button type="submit">Search</button>
         </form>
 
