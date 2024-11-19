@@ -174,10 +174,11 @@ def list_models():
             device_name=device_name,
             device_type=device_type,
             page=page,
-            pages=pages
+            total_pages=pages
         )
     else:
         return "There are invalid inputs", 400
+
 @model_views.route('/api/upload_image', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:
