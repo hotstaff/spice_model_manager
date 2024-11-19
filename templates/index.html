@@ -272,7 +272,7 @@
         <div class="pagination">
             {% if page > 1 %}
             <a href="{{ url_for('model_views.list_models', page=1, device_name=device_name, device_type=device_type) }}">First</a>
-            <a href="{{ url_for('model_views.lisr_models', page=page-1, device_name=device_name, device_type=device_type) }}">Previous</a>
+            <a href="{{ url_for('model_views.list_models', page=page-1, device_name=device_name, device_type=device_type) }}">Previous</a>
             {% else %}
             <span class="disabled">First</span>
             <span class="disabled">Previous</span>
