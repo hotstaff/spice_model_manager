@@ -151,7 +151,7 @@ def list_models():
         
         # モデル数と1ページあたりの表示数
         models_count = len(models)  # 例えばmodelsはリストまたはDataFrame
-        items_per_page = 100  # 1ページあたりのアイテム数
+        items_per_page = 10  # 1ページあたりのアイテム数
         
         # ページ数の計算 (ceilを使わずにビルトイン関数で処理)
         pages = (models_count + items_per_page - 1) // items_per_page
