@@ -151,7 +151,7 @@
         }
 
         /* 新しいモデル追加ボタンのスタイル */
-        .add-model-btn {
+/*        .add-model-btn {
             position: absolute;
             top: 20px;
             right: 20px;
@@ -175,7 +175,43 @@
         .add-model-btn:active {
             transform: scale(0.98);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
+        }*/
+
+.add-model-btn {
+    padding: 12px 30px;
+    background-color: #ff7043; /* 明るいオレンジ系の色 */
+    color: white;
+    border: none;
+    border-radius: 25px; /* 丸みを帯びた形状 */
+    cursor: pointer;
+    font-size: 18px; /* 読みやすい文字サイズ */
+    font-weight: 600; /* 強調されたテキスト */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽いシャドウで浮き上がる印象 */
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    margin-top: 20px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block; /* 中央配置 */
+    width: auto;
+    max-width: 200px; /* 幅は最大200px程度 */
+    text-align: center;
+}
+
+/* ホバー時 */
+.add-model-btn:hover {
+    background-color: #ff5722; /* 少し濃いオレンジ色に */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2); /* 強めのシャドウで浮き感を増す */
+    transform: translateY(-2px); /* 上に浮き上がるアニメーション */
+}
+
+/* アクティブ時 (押された時) */
+.add-model-btn:active {
+    transform: scale(0.98); /* 少し縮んで押された感じに */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* シャドウを少し小さくして押し込んだ感じ */
+}
+
+
+
     </style>
 </head>
 <body>
