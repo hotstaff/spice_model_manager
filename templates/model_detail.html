@@ -6,37 +6,55 @@
     <title>Model Detail</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            margin: 0;
+            padding: 0;
         }
-        h1 {
-            color: #333;
-            text-align: center;
-        }
-        .model-info {
-            margin-top: 20px;
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
             padding: 20px;
-            border: 1px solid #ddd;
             background-color: #ffffff;
             border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+        h2, h3, h4 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+        .model-info {
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fafafa;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
         pre {
             background-color: #f4f4f4;
-            padding: 10px;
-            border: 1px solid #ccc;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             overflow-x: auto;
             font-size: 14px;
+            white-space: pre-wrap;
         }
         .copy-button {
             margin-top: 10px;
-            padding: 8px 16px;
-            font-size: 14px;
+            padding: 10px 20px;
+            font-size: 16px;
             color: white;
             background-color: #007BFF;
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
         .copy-button:hover {
             background-color: #0056b3;
@@ -53,19 +71,24 @@
             text-decoration: underline;
         }
         .lowercase-toggle {
-            margin-top: 10px;
+            margin-top: 15px;
             display: flex;
             align-items: center;
+        }
+        .lowercase-toggle label {
+            margin-left: 10px;
+            font-size: 16px;
         }
         .image-container {
             margin-top: 20px;
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 15px;
             background-color: #ffffff;
             border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
         .image-container h4 {
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             font-size: 18px;
             color: #333;
         }
@@ -76,39 +99,34 @@
         }
         /* モバイルデバイス用 */
         @media (max-width: 600px) {
-          body {
-            font-size: 14px;
-            margin: 10px;
-          }
-
-          h1 {
-            font-size: 24px;
-          }
-
-          .model-info {
-            padding: 15px;
-          }
-
-          pre {
-            font-size: 12px;
-          }
-
-          .lowercase-toggle label {
-            font-size: 12px;
-          }
-
-          .copy-button {
-            padding: 6px 12px;
-            font-size: 12px;
-          }
-
-          .image-container h4 {
-            font-size: 16px;
-          }
-
-          a {
-            font-size: 14px;
-          }
+            body {
+                font-size: 14px;
+            }
+            .container {
+                padding: 15px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            h2, h3, h4 {
+                font-size: 18px;
+            }
+            pre {
+                font-size: 12px;
+            }
+            .copy-button {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .lowercase-toggle label {
+                font-size: 14px;
+            }
+            .image-container h4 {
+                font-size: 16px;
+            }
+            a {
+                font-size: 14px;
+            }
         }
     </style>
     <script>
@@ -135,42 +153,44 @@
     </script>
 </head>
 <body>
-    <h1>Model Details</h1>
-    <div class="model-info">
-        <h2>Device Name: {{ model.device_name }}</h2>
-        <h3>Device Type: {{ model.device_type }}</h3>
-        <h4>SPICE String:</h4>
-        <pre id="spiceString">{{ model.spice_string }}</pre>
-        <div class="lowercase-toggle">
-            <input type="checkbox" id="lowercaseCheckbox" onclick="toggleLowercase()">
-            <label for="lowercaseCheckbox">Display SPICE string in lowercase</label>
+    <div class="container">
+        <h1>Model Details</h1>
+        <div class="model-info">
+            <h2>Device Name: {{ model.device_name }}</h2>
+            <h3>Device Type: {{ model.device_type }}</h3>
+            <h4>SPICE String:</h4>
+            <pre id="spiceString">{{ model.spice_string }}</pre>
+            <div class="lowercase-toggle">
+                <input type="checkbox" id="lowercaseCheckbox" onclick="toggleLowercase()">
+                <label for="lowercaseCheckbox">Display SPICE string in lowercase</label>
+            </div>
+            <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
         </div>
-        <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
-    </div>
 
-    <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
-    {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
-    <div class="image-container">
-        <h4>IV Characteristic Curve</h4>
-        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='iv') }}" alt="IV Characteristic Curve" />
+        <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
+        {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
+        <div class="image-container">
+            <h4>IV Characteristic Curve</h4>
+            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='iv') }}" alt="IV Characteristic Curve" />
+        </div>
+        
+        <div class="image-container">
+            <h4>Vgs-Id Characteristic Curve</h4>
+            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='vgs_id') }}" alt="Vgs-Id Characteristic Curve" />
+        </div>
+        
+        <div class="image-container">
+            <h4>Gm-Vgs Characteristic Curve</h4>
+            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_vgs') }}" alt="Gm-Vgs Characteristic Curve" />
+        </div>
+        
+        <div class="image-container">
+            <h4>Gm-Id Characteristic Curve</h4>
+            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
+        </div>
+        {% endif %}
+        
+        <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
     </div>
-    
-    <div class="image-container">
-        <h4>Vgs-Id Characteristic Curve</h4>
-        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='vgs_id') }}" alt="Vgs-Id Characteristic Curve" />
-    </div>
-    
-    <div class="image-container">
-        <h4>Gm-Vgs Characteristic Curve</h4>
-        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_vgs') }}" alt="Gm-Vgs Characteristic Curve" />
-    </div>
-    
-    <div class="image-container">
-        <h4>Gm-Id Characteristic Curve</h4>
-        <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
-    </div>
-    {% endif %}
-
-    <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
 </body>
 </html>
