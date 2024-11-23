@@ -79,24 +79,22 @@
             margin-left: 10px;
             font-size: 16px;
         }
-        .image-container {
+
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
             margin-top: 20px;
-            border: 1px solid #ddd;
-            padding: 15px;
-            background-color: #ffffff;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
-        .image-container h4 {
-            margin-bottom: 15px;
-            font-size: 18px;
-            color: #333;
+        .image-item {
+            text-align: center;
         }
-        .image-container img {
+        img {
             max-width: 100%;
             height: auto;
             border-radius: 4px;
         }
+
         /* モバイルデバイス用 */
         @media (max-width: 600px) {
             body {
@@ -120,9 +118,6 @@
             }
             .lowercase-toggle label {
                 font-size: 14px;
-            }
-            .image-container h4 {
-                font-size: 16px;
             }
             a {
                 font-size: 14px;
@@ -169,24 +164,23 @@
 
         <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
         {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
-        <div class="image-container">
-            <h4>IV Characteristic Curve</h4>
-            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='iv') }}" alt="IV Characteristic Curve" />
-        </div>
-        
-        <div class="image-container">
-            <h4>Vgs-Id Characteristic Curve</h4>
-            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='vgs_id') }}" alt="Vgs-Id Characteristic Curve" />
-        </div>
-        
-        <div class="image-container">
-            <h4>Gm-Vgs Characteristic Curve</h4>
-            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_vgs') }}" alt="Gm-Vgs Characteristic Curve" />
-        </div>
-        
-        <div class="image-container">
-            <h4>Gm-Id Characteristic Curve</h4>
-            <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
+        <div class="image-grid">
+            <div class="image-item">
+                <h4>IV Characteristic Curve</h4>
+                <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='iv') }}" alt="IV Characteristic Curve" />
+            </div>
+            <div class="image-item">
+                <h4>Vgs-Id Characteristic Curve</h4>
+                <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='vgs_id') }}" alt="Vgs-Id Characteristic Curve" />
+            </div>
+            <div class="image-item">
+                <h4>Gm-Vgs Characteristic Curve</h4>
+                <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_vgs') }}" alt="Gm-Vgs Characteristic Curve" />
+            </div>
+            <div class="image-item">
+                <h4>Gm-Id Characteristic Curve</h4>
+                <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
+            </div>
         </div>
         {% endif %}
         
