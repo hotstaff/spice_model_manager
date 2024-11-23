@@ -25,7 +25,10 @@ def init_db():
             id SERIAL PRIMARY KEY,
             device_name TEXT,
             device_type TEXT,
-            spice_string TEXT
+            spice_string TEXT,
+            author TEXT,
+            comment TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """))
 
