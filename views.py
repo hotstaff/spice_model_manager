@@ -51,8 +51,8 @@ class AddModelForm(Form):
                          [Length(max=16)], 
                          default="Anonymous")  # デフォルト値を"Anonymous"に設定
     comment = StringField('Comment', 
-                            [Length(max=100)], 
-                            default="")  # デフォルト値を""に設定
+                          [Length(max=100)], 
+                          default="")  # デフォルト値を""に設定
 
     def validate_spice_string(self, field):
         # Spiceモデル文字列をパースして、デバイス名とデバイスタイプを取得
@@ -67,28 +67,54 @@ class AddModelForm(Form):
 
             # デバイス名とデバイスタイプのバリデーション
             if not device_name.isalnum():
-                raise ValueError('Device name must be alphanumeric.')
+                flash('Device name must be alphanumeric.', 'error')
+                logging.warning(f"Invalid device name: {device_name}")
+                return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
             if not device_type.isalnum():
-                raise ValueError('Device type must be alphanumeric.')
+                flash('Device type must be alphanumeric.', 'error')
+                logging.warning(f"Invalid device type: {device_type}")
+                return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
 
         except (SyntaxError, KeyError, ValueError) as e:
             # 共通のエラーハンドリング
             error_message = f"{e.__class__.__name__}: {str(e)}"
+            flash(f"Failed to add model: {error_message}", 'error')
             logging.warning(f"Error with input: {field.data}")
             logging.warning(f"{error_message}")
-            flash(f"Failed to add model: {error_message}", 'error')
             return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
 
         except Exception as e:
             # 予期しないエラー
+            flash('An unexpected error occurred during parsing.', 'error')
             logging.warning(f"Unexpected error with input: {field.data}")
             logging.warning(f"Unexpected error: {str(e)}")
-            flash('An unexpected error occurred during parsing.', 'error')  # エラーメッセージをflash
             return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
 
     def validate_author(self, field):
+        # 英数字とスペースのみ許可
+        if not re.match(r'^[a-zA-Z0-9 ]*$', field.data):
+            error_message = 'Author must contain only letters, numbers, and spaces.'
+            flash(error_message, 'error')
+            logging.warning(f"Invalid author input: {field.data} - {error_message}")
+            return  # バリデーションエラーとして処理を終了
+
+        # HTMLタグを無害化（タグを除去）
+        field.data = re.sub(r'<.*?>', '', field.data)
+
         if not field.data:  # 空文字が送られた場合
             field.data = "Anonymous"  # デフォルト値を設定
+
+    def validate_comment(self, field):
+        # 特殊文字やHTMLタグを除去
+        field.data = re.sub(r'<.*?>', '', field.data)  # HTMLタグの除去
+        field.data = re.sub(r'[<>]', '', field.data)  # 特殊文字の除去
+
+        # 最大長の確認
+        if len(field.data) > 100:
+            error_message = 'Comment is too long. Max length is 100 characters.'
+            flash(error_message, 'error')
+            logging.warning(f"Invalid comment input: {field.data} - {error_message}")
+            return  # バリデーションエラーとして処理を終了
 
 
 model_views = Blueprint('model_views', __name__)
