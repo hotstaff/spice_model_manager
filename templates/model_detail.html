@@ -27,7 +27,6 @@
         }
         h2, h3, h4 {
             color: #333;
-            font-size: 20px;
             margin-bottom: 8px;
         }
         .model-info {
@@ -100,13 +99,51 @@
             height: auto;
         }
 
+        /* 印刷スタイル */
         @media print {
-            img {
-                display: block;
-                margin: 10px auto;
-                max-width: 100%;
-                height: auto;
+            body {
+                margin: 0;
+                padding: 0;
+                font-size: 12px;
+            }
+            .container {
                 width: 100%;
+                padding: 10px;
+                box-sizing: border-box;
+                box-shadow: none;
+                background-color: #fff;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            h2, h3, h4 {
+                font-size: 18px;
+            }
+            pre {
+                font-size: 12px;
+                line-height: 1.3;
+            }
+            .copy-button, .lowercase-toggle, a {
+                display: none;
+            }
+            img {
+                width: 100%;
+                height: auto;
+                max-width: 90%;
+                margin: 10px 0;
+            }
+            .image-grid {
+                display: block;
+                margin: 0 auto;
+                width: 100%;
+            }
+            .image-item {
+                text-align: center;
+                width: 100%;
+                display: inline-block;
+            }
+            .model-info {
+                margin-bottom: 15px;
             }
         }
 
@@ -136,6 +173,16 @@
             a {
                 font-size: 14px;
             }
+        }
+
+        /* 小さく表示される部分 */
+        .small-text {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .model-info h4 {
+            font-size: 16px;
         }
     </style>
     <script>
@@ -178,10 +225,10 @@
 
         <!-- New Section for Author, Comment, Created_at -->
         <div class="model-info">
-            <h4>Author: <span style="font-weight: normal; color: #555;">{{ model.author }}</span></h4>
+            <h4>Author: <span class="small-text">{{ model.author }}</span></h4>
             <h4>Comment:</h4>
-            <pre style="background-color: #e9ecef; color: #333;">{{ model.comment }}</pre>
-            <h4>Created At: <span style="font-weight: normal; color: #555;">{{ model.created_at }}</span></h4>
+            <pre class="small-text" style="background-color: #e9ecef; color: #333;">{{ model.comment }}</pre>
+            <h4>Created At: <span class="small-text">{{ model.created_at }}</span></h4>
         </div>
 
         <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
