@@ -10,7 +10,6 @@
             background-color: #f5f7fa;
             margin: 0;
             padding: 0;
-            color: #333;
         }
         .container {
             max-width: 1100px;
@@ -18,27 +17,25 @@
             padding: 20px;
             background-color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
-            font-size: 36px;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-weight: 600;
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 20px;
         }
         h2, h3, h4 {
-            color: #2c3e50;
-            font-size: 22px;
-            margin-bottom: 10px;
-            font-weight: 500;
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 8px;
         }
         .model-info {
             padding: 20px;
             border-radius: 8px;
             background-color: #fafafa;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
         }
         pre {
             background-color: #f4f4f4;
@@ -48,34 +45,27 @@
             overflow-x: auto;
             font-size: 14px;
             white-space: pre-wrap;
-            word-wrap: break-word;
         }
         .copy-button {
-            margin-top: 15px;
-            padding: 12px 24px;
+            margin-top: 10px;
+            padding: 10px 20px;
             font-size: 16px;
             color: white;
-            background-color: #3498db;
+            background-color: #007BFF;
             border: none;
-            border-radius: 5px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            display: block;
-            width: 100%;
+            transition: background-color 0.3s ease;
         }
         .copy-button:hover {
-            background-color: #2980b9;
-            transform: scale(1.05);
-        }
-        .copy-button:focus {
-            outline: none;
+            background-color: #0056b3;
         }
         a {
             display: inline-block;
             margin-top: 20px;
             text-decoration: none;
-            color: #3498db;
-            font-size: 18px;
+            color: #007BFF;
+            font-size: 16px;
             text-align: center;
         }
         a:hover {
@@ -85,11 +75,12 @@
             margin-top: 15px;
             display: flex;
             align-items: center;
+        }
+        .lowercase-toggle label {
+            margin-left: 10px;
             font-size: 16px;
         }
-        .lowercase-toggle input {
-            margin-right: 10px;
-        }
+
         .image-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -98,35 +89,27 @@
         }
         .image-item {
             text-align: center;
-            padding: 10px;
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
         img {
             max-width: 100%;
             height: auto;
             border-radius: 4px;
-            margin-bottom: 15px;
         }
-        .image-item h4 {
-            font-size: 18px;
-            color: #2c3e50;
-            font-weight: 500;
+        .image-container img {
+            max-width: 100%;
+            height: auto;
         }
 
-        /* 印刷時の設定 */
         @media print {
             img {
                 display: block;
                 margin: 10px auto;
-                max-width: 100%;  
-                height: auto;     
-                width: 100%;      
+                max-width: 100%;
+                height: auto;
+                width: 100%;
             }
         }
 
-        /* モバイルデバイス用 */
         @media (max-width: 600px) {
             body {
                 font-size: 14px;
@@ -138,13 +121,16 @@
                 font-size: 28px;
             }
             h2, h3, h4 {
-                font-size: 20px;
+                font-size: 18px;
             }
             pre {
                 font-size: 12px;
             }
             .copy-button {
-                padding: 10px 20px;
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+            .lowercase-toggle label {
                 font-size: 14px;
             }
             a {
@@ -188,6 +174,14 @@
                 <label for="lowercaseCheckbox">Display SPICE string in lowercase</label>
             </div>
             <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
+        </div>
+
+        <!-- New Section for Author, Comment, Created_at -->
+        <div class="model-info">
+            <h4>Author: <span style="font-weight: normal; color: #555;">{{ model.author }}</span></h4>
+            <h4>Comment:</h4>
+            <pre style="background-color: #e9ecef; color: #333;">{{ model.comment }}</pre>
+            <h4>Created At: <span style="font-weight: normal; color: #555;">{{ model.created_at }}</span></h4>
         </div>
 
         <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
