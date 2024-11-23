@@ -86,6 +86,9 @@ class AddModelForm(Form):
             flash('An unexpected error occurred during parsing.', 'error')  # エラーメッセージをflash
             return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
 
+    def validate_author(self, field):
+        if not field.data:  # 空文字が送られた場合
+            field.data = "Anonymous"  # デフォルト値を設定
 
 
 model_views = Blueprint('model_views', __name__)
