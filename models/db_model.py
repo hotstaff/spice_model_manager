@@ -97,7 +97,7 @@ def get_data_by_id(data_id):
     return df
 
 # データを新規追加する関数
-def add_data(device_name, device_type, spice_string):
+def add_data(device_name, device_type, spice_string, author="Anonymous", comment=""):
     engine = get_db_connection()
     
     with engine.connect() as conn:
@@ -113,9 +113,9 @@ def add_data(device_name, device_type, spice_string):
         try:
             # 新しいデバイスを追加
             conn.execute(text("""
-                INSERT INTO data (device_name, device_type, spice_string)
-                VALUES (:device_name, :device_type, :spice_string)
-            """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string})
+                INSERT INTO data (device_name, device_type, spice_string, author, comment)
+                VALUES (:device_name, :device_type, :spice_string, :author, :comment)
+            """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "author": author, "comment": comment})
             conn.commit()  # 明示的にコミット
             return True  # 成功した場合はTrueを返す
         except IntegrityError:
@@ -124,7 +124,7 @@ def add_data(device_name, device_type, spice_string):
             return False
 
 # データを更新する関数
-def update_data(data_id, device_name=None, device_type=None, spice_string=None):
+def update_data(data_id, device_name=None, device_type=None, spice_string=None, author="Anonymous", comment=""):
     engine = get_db_connection()
     with engine.connect() as conn:
         # データが存在するか確認
@@ -138,9 +138,11 @@ def update_data(data_id, device_name=None, device_type=None, spice_string=None):
             UPDATE data
             SET device_name = COALESCE(:device_name, device_name),
                 device_type = COALESCE(:device_type, device_type),
-                spice_string = COALESCE(:spice_string, spice_string)
+                spice_string = COALESCE(:spice_string, spice_string),
+                author = COALESCE(:author, author),
+                comment = COALESCE(:comment, comment)
             WHERE id = :data_id
-        """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "data_id": data_id})
+        """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "author": author, "comment": comment, "data_id": data_id})
         conn.commit()  # 明示的にコミット
     return True  # 更新成功
 

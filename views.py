@@ -43,10 +43,16 @@ class SearchForm(Form):
                                Optional()])  # 空白も許容
 
 class AddModelForm(Form):
-    # spice_stringのみを受け取る
+    # spice_string, author, comment の3つのフィールドを受け取る
     spice_string = StringField('Spice String', 
                                [DataRequired(), 
-                                Length(max=5000)])  # 最大長は適宜調整
+                                Length(max=1000)])  # 最大長は適宜調整
+    author = StringField('Author', 
+                         [Length(max=16)], 
+                         default="Anonymous")  # デフォルト値を"Anonymous"に設定
+    comment = StringField('Comment', 
+                            [Length(max=100)], 
+                            default="")  # デフォルト値を""に設定
 
     def validate_spice_string(self, field):
         # Spiceモデル文字列をパースして、デバイス名とデバイスタイプを取得
@@ -65,33 +71,21 @@ class AddModelForm(Form):
             if not device_type.isalnum():
                 raise ValueError('Device type must be alphanumeric.')
 
-        except SyntaxError as e:
-            # エラーが発生した入力データもログに記録
-            logging.warning(f"SyntaxError with input: {field.data}")
-            logging.warning(f"SyntaxError: {str(e)}")
-            flash('Invalid Spice model string format.', 'error')  # エラーメッセージをflash
-            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
-
-        except KeyError:
-            # エラーが発生した入力データもログに記録
-            logging.warning(f"KeyError with input: {field.data}")
-            logging.warning("KeyError: Device name or type not found in spice model string.")
-            flash('Device name or type not found in spice model string.', 'error')  # エラーメッセージをflash
-            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
-
-        except ValueError as e:
-            # エラーが発生した入力データもログに記録
-            logging.warning(f"ValueError with input: {field.data}")
-            logging.warning(f"ValueError: {str(e)}")
-            flash(str(e), 'error')  # エラーメッセージをflash
+        except (SyntaxError, KeyError, ValueError) as e:
+            # 共通のエラーハンドリング
+            error_message = f"{e.__class__.__name__}: {str(e)}"
+            logging.warning(f"Error with input: {field.data}")
+            logging.warning(f"{error_message}")
+            flash(f"Failed to add model: {error_message}", 'error')
             return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
 
         except Exception as e:
-            # エラーが発生した入力データもログに記録
+            # 予期しないエラー
             logging.warning(f"Unexpected error with input: {field.data}")
             logging.warning(f"Unexpected error: {str(e)}")
             flash('An unexpected error occurred during parsing.', 'error')  # エラーメッセージをflash
             return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+
 
 
 model_views = Blueprint('model_views', __name__)
@@ -269,6 +263,8 @@ def add_new_model():
     if request.method == 'POST':
         if form.validate():
             spice_string = form.spice_string.data
+            author = form.author.data
+            comment = form.comment.data
 
             try:
                 # SpiceStringの解析
@@ -279,7 +275,7 @@ def add_new_model():
                 device_type = parsed_params['device_type']
 
                 # データベースに保存
-                result = add_data(device_name, device_type, parser.format(parsed_params))
+                result = add_data(device_name, device_type, parser.format(parsed_params), author, comment)
 
                 if result:
                     # 登録成功
@@ -302,7 +298,6 @@ def add_new_model():
 
     # GETリクエストの場合、フォームを表示
     return render_template('spice_model_add.html', form=form)
-
 
 # エラーハンドリング
 @model_views.errorhandler(404)
