@@ -94,6 +94,21 @@
             height: auto;
             border-radius: 4px;
         }
+        .image-container img {
+        max-width: 100%; /* 親要素の幅に応じて広がる */
+        height: auto;    /* 高さを自動調整 */
+        }
+
+        /* 印刷時の設定 */
+        @media print {
+            img {
+                display: block;
+                margin: 10px auto;
+                max-width: 100%;  /* 画像の最大幅を100%に変更 */
+                height: auto;     /* 高さは自動調整 */
+                width: 100%;      /* 印刷時に画像の幅を100%に設定 */
+            }
+        }
 
         /* モバイルデバイス用 */
         @media (max-width: 600px) {
