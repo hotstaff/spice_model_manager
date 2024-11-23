@@ -256,7 +256,7 @@
                     <tr>
                         <td>{{ model.device_name }}</td>
                         <td>{{ model.device_type }}</td>
-                        <td>{{ model.created_at }}</td>
+                        <td>{{ model.created_at.strftime('%Y-%m-%d') }}</td>
                         <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
                     </tr>
                     {% endfor %}
