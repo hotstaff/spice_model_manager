@@ -244,10 +244,9 @@
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
-                    <th>Name</th>
+                    <th>Device Name</th>
                     <th>Device Type</th>
-                    <th>Author</th> <!-- Authorの列を追加 -->
+                    <th>Last Updated</th>
                     <th>Link</th>
                 </tr>
             </thead>
@@ -255,16 +254,15 @@
                 {% if models %}
                     {% for model in models %}
                     <tr>
-                        <td>{{ model.id }}</td>
                         <td>{{ model.device_name }}</td>
                         <td>{{ model.device_type }}</td>
-                        <td>{{ model.author }}</td> <!-- Authorのデータを表示 -->
+                        <td>{{ model.updated_at }}</td>
                         <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
                     </tr>
                     {% endfor %}
                 {% else %}
                     <tr class="no-results">
-                        <td colspan="5">No models found. Please adjust your search criteria.</td>
+                        <td colspan="4">No models found. Please adjust your search criteria.</td>
                     </tr>
                 {% endif %}
             </tbody>
