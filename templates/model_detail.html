@@ -10,6 +10,7 @@
             background-color: #f5f7fa;
             margin: 0;
             padding: 0;
+            color: #333;
         }
         .container {
             max-width: 1100px;
@@ -17,24 +18,27 @@
             padding: 20px;
             background-color: #ffffff;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
         }
         h1 {
             text-align: center;
-            color: #333;
-            font-size: 32px;
-            margin-bottom: 20px;
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-weight: 600;
         }
         h2, h3, h4 {
-            color: #333;
-            font-size: 20px;
+            color: #2c3e50;
+            font-size: 22px;
             margin-bottom: 10px;
+            font-weight: 500;
         }
         .model-info {
             padding: 20px;
             border-radius: 8px;
             background-color: #fafafa;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
         }
         pre {
             background-color: #f4f4f4;
@@ -44,27 +48,34 @@
             overflow-x: auto;
             font-size: 14px;
             white-space: pre-wrap;
+            word-wrap: break-word;
         }
         .copy-button {
-            margin-top: 10px;
-            padding: 10px 20px;
+            margin-top: 15px;
+            padding: 12px 24px;
             font-size: 16px;
             color: white;
-            background-color: #007BFF;
+            background-color: #3498db;
             border: none;
-            border-radius: 4px;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: block;
+            width: 100%;
         }
         .copy-button:hover {
-            background-color: #0056b3;
+            background-color: #2980b9;
+            transform: scale(1.05);
+        }
+        .copy-button:focus {
+            outline: none;
         }
         a {
             display: inline-block;
             margin-top: 20px;
             text-decoration: none;
-            color: #007BFF;
-            font-size: 16px;
+            color: #3498db;
+            font-size: 18px;
             text-align: center;
         }
         a:hover {
@@ -74,12 +85,11 @@
             margin-top: 15px;
             display: flex;
             align-items: center;
-        }
-        .lowercase-toggle label {
-            margin-left: 10px;
             font-size: 16px;
         }
-
+        .lowercase-toggle input {
+            margin-right: 10px;
+        }
         .image-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -88,15 +98,21 @@
         }
         .image-item {
             text-align: center;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
         img {
             max-width: 100%;
             height: auto;
             border-radius: 4px;
+            margin-bottom: 15px;
         }
-        .image-container img {
-            max-width: 100%; /* 親要素の幅に応じて広がる */
-            height: auto;    /* 高さを自動調整 */
+        .image-item h4 {
+            font-size: 18px;
+            color: #2c3e50;
+            font-weight: 500;
         }
 
         /* 印刷時の設定 */
@@ -104,9 +120,9 @@
             img {
                 display: block;
                 margin: 10px auto;
-                max-width: 100%;  /* 画像の最大幅を100%に変更 */
-                height: auto;     /* 高さは自動調整 */
-                width: 100%;      /* 印刷時に画像の幅を100%に設定 */
+                max-width: 100%;  
+                height: auto;     
+                width: 100%;      
             }
         }
 
@@ -122,16 +138,13 @@
                 font-size: 28px;
             }
             h2, h3, h4 {
-                font-size: 18px;
+                font-size: 20px;
             }
             pre {
                 font-size: 12px;
             }
             .copy-button {
-                padding: 8px 16px;
-                font-size: 14px;
-            }
-            .lowercase-toggle label {
+                padding: 10px 20px;
                 font-size: 14px;
             }
             a {
