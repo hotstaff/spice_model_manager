@@ -51,6 +51,7 @@
             margin-top: 5px;
         }
 
+        /* フォーム全体のスタイル */
         form {
             background-color: #f9f9f9;
             padding: 25px;
@@ -59,23 +60,77 @@
             margin-top: 20px;
         }
 
+        /* テキストエリア共通のスタイル */
         textarea {
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             padding: 10px;
+            resize: vertical;
+        }
+
+        /* SPICE Model用のテキストエリア */
+        textarea[name="spice_string"] {
             width: 100%;
             max-width: 700px;
             height: 120px;
-            border-radius: 4px;
-            border: 1px solid #ddd;
-            font-size: 14px;
-            resize: vertical;
-            transition: border-color 0.3s ease;
+            margin-bottom: 20px;
         }
 
-        textarea:focus {
+        /* コメント用のinputフィールド */
+        input[name="comment"] {
+            width: calc(70% - 10px);
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #f0f0f0;  /* 非必須フィールドは薄いグレー */
+        }
+
+        /* コメントのinputフィールドにフォーカスした時のスタイル */
+        input[name="comment"]:focus {
+            border-color: #007BFF;
+            outline: none;
+            background-color: #fff; /* フォーカス時に背景色を白に */
+        }
+
+
+        /* 入力フィールド全般のフォーカス時のスタイル */
+        textarea:focus, input:focus {
             border-color: #007BFF;
             outline: none;
         }
 
+        /* 名前とコメントの非必須を示すスタイル */
+        input[name="comment"], input[name="author"] {
+            border-color: #ddd;
+            background-color: #f0f0f0;  /* 非必須フィールドは薄いグレー */
+        }
+
+        /* 必須フィールドにフォーカスしたときのスタイル */
+        input[name="comment"]:focus, input[name="author"]:focus {
+            border-color: #007BFF;
+            outline: none;
+            background-color: #fff; /* フォーカス時に背景色を白に */
+        }
+
+        /* 名前とコメントの横並び */
+        .form-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 15px;
+        }
+
+        .form-row input {
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* ボタンのスタイル */
         button {
             padding: 12px 25px;
             background-color: #4a90e2;
@@ -157,7 +212,16 @@
 
         <!-- モデル追加フォーム -->
         <form action="/models/add" method="post">
-            <textarea name="spice_string" placeholder=".model NPN (IS=1e-14 BF=100)" required></textarea>
+            <!-- SPICE Model テキストエリア -->
+            <textarea name="spice_string" placeholder=".model 2SK208 NJF Vto=-2.638 Beta=1.059m Lambda=2.8m Rs=56.63 Rd=56.63 Betatce=-.5  Vtotc=-2.5m Cgd=10.38p M=.4373 Pb=.3905 Fc=.5 Cgs=6.043p Isr=112.8p Nr=2 Is=11.28p N=1 Xti=3 Alpha=10u Vk=100 Kf=1E-18" required></textarea>
+
+            <!-- 名前とコメントの横並び -->
+            <div class="form-row">
+                <input type="text" name="author" placeholder="Your Name">
+                <input type="text" name="comment" placeholder="Add a comment" maxlength="100">
+            </div>
+
+            <!-- 送信ボタン -->
             <button type="submit">Add Model</button>
         </form>
 

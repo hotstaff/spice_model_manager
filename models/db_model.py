@@ -40,6 +40,19 @@ def init_db():
         """))
         conn.commit()  # 明示的にコミット
 
+def migrate_db_with_defaults():
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        # 'data' テーブルに新しいカラムを追加（デフォルト値を設定）
+        conn.execute(text("""
+        ALTER TABLE data
+        ADD COLUMN IF NOT EXISTS author TEXT DEFAULT 'Anonymous',
+        ADD COLUMN IF NOT EXISTS comment TEXT DEFAULT '',
+        ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        """))
+
+        conn.commit()  # 明示的にコミット
+
 # データを取得する関数 (全データ取得)
 def get_all_data():
     engine = get_db_connection()
