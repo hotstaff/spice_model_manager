@@ -247,6 +247,11 @@
                 <h4>{% block gm_vgs_curve_title %}Gm-Vgs Characteristic Curve{% endblock %}</h4>
                 <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_vgs') }}" alt="Gm-Vgs Characteristic Curve" />
             </div>
+            <div class="image-item">
+                <h4>{% block gm_id_curve_title %}Gm-Id Characteristic Curve{% endblock %}</h4>
+                <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
+            </div>
+        </div>
         </div>
         {% endif %}
         
