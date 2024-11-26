@@ -291,6 +291,9 @@ if __name__ == "__main__":
         
         # 各モデルデータに対してI-V特性またはVgs-Id特性を生成
         for model in jfet_models:
+
+            if model["simulation_done"]:
+                continue
             model_id = model["id"]
             device_name = model["device_name"]
             device_type = model["device_type"]
