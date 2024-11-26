@@ -1,0 +1,70 @@
+{% extends "index.html" %}
+
+{% block lang %}ja{% endblock %}
+
+{% block language_styles %}
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+        }
+        .container {
+            padding: 10px;
+        }
+    </style>
+{% endblock %}
+
+{% block title %}
+    SPICEモデルリポジトリ - LTspice JFET & BJTモデル
+{% endblock %}
+
+{% block header_title %}
+    SPICEモデルリポジトリ
+{% endblock %}
+
+{% block header_subtitle %}
+    LTspice JFET & BJTモデルデータストレージ
+{% endblock %}
+
+{% block description %}
+    このリポジトリには、JFETおよびBJTデバイスのSPICEモデルが含まれています。LTspiceでの使用向けに特別にフォーマットされています。以下の検索フィールドを使用して、デバイス名、タイプ、またはSPICE文字列でモデルを絞り込んでください。
+{% endblock %}
+
+{% block device_name_placeholder %}
+    デバイス名
+{% endblock %}
+
+{% block device_type_placeholder %}
+    デバイスタイプを選択
+{% endblock %}
+
+{% block search_button %}
+    検索
+{% endblock %}
+
+{% block no_results %}
+    モデルが見つかりません。検索条件を調整してください。
+{% endblock %}
+
+{% block pagination_first %}
+    最初
+{% endblock %}
+
+{% block pagination_previous %}
+    <
+{% endblock %}
+
+{% block pagination_info %}
+    {{ total_pages }}ページ中の{{ page }}ページ目
+{% endblock %}
+
+{% block pagination_next %}
+    >
+{% endblock %}
+
+{% block pagination_last %}
+    最後
+{% endblock %}
+
+{% block add_new_model_button %}
+    + 新しいモデル
+{% endblock %}

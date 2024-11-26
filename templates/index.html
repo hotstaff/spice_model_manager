@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPICE Model Repository - LTspice JFET & BJT Models</title>
+    <title>{% block title %}SPICE Model Repository - LTspice JFET & BJT Models{% endblock %}</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -217,17 +217,16 @@
 <body>
     <div class="container">
         <header>
-            <h1>SPICE Model Repository</h1>
-            <h2>LTspice JFET & BJT Model Data Storage</h2>
+            <h1>{% block header_title %}SPICE Model Repository{% endblock %}</h1>
+            <h2>{% block header_subtitle %}LTspice JFET & BJT Model Data Storage{% endblock %}</h2>
         </header>
 
-        <p>This repository contains a collection of SPICE models for JFET and BJT devices, specifically formatted for use with LTspice. Use the search fields below to filter models by name, type, or spice string.</p>
+        <p>{% block description %}This repository contains a collection of SPICE models for JFET and BJT devices, specifically formatted for use with LTspice. Use the search fields below to filter models by name, type, or spice string.{% endblock %}</p>
 
         <!-- 検索フォーム -->
+        {% block search_form %}
         <form action="/models" method="get">
             <input type="text" name="device_name" placeholder="Device Name" value="{{ device_name }}" />
-
-            <!-- Device Typeのドロップダウンリスト -->
             <select name="device_type" value="{{ device_type }}">
                 <option value="">Select Device Type</option>
                 <option value="NJF">NJF</option>
@@ -240,7 +239,10 @@
             </select>
             <button type="submit">Search</button>
         </form>
+        {% endblock %}
 
+        <!-- モデルのリスト表示 -->
+        {% block model_table %}
         <table>
             <thead>
                 <tr>
@@ -267,8 +269,10 @@
                 {% endif %}
             </tbody>
         </table>
+        {% endblock %}
 
         <!-- ページネーション -->
+        {% block pagination %}
         <div class="pagination">
             {% if page > 1 %}
             <a href="{{ url_for('model_views.list_models', page=1, device_name=device_name, device_type=device_type) }}" class="pagination-link">First</a>
@@ -288,11 +292,14 @@
             <span class="pagination-link disabled">Last</span>
             {% endif %}
         </div>
+        {% endblock %}
         
         <!-- 右上に新しいモデル追加ボタン -->
+        {% block add_model_button %}
         <a href="{{ url_for('model_views.add_new_model') }}">
             <button class="add-model-btn">+ New Model</button>
         </a>
+        {% endblock %}
     </div>
 </body>
 </html>

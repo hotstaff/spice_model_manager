@@ -220,7 +220,7 @@ def list_models():
         page_models = models[start_index:end_index]
         
         return render_template(
-            'index.html',
+            'index_ja.html',
             models=page_models.to_dict(orient="records"),
             device_name=device_name,
             device_type=device_type,
