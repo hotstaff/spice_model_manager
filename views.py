@@ -124,6 +124,19 @@ class AddModelForm(Form):
             return  # バリデーションエラーとして処理を終了
 
 
+CACHE_DIR = '/tmp/image_cache'  # Renderの一時ディスクのパス
+
+# キャッシュディレクトリがなければ作成
+if not os.path.exists(CACHE_DIR):
+    os.makedirs(CACHE_DIR)
+
+def get_image_cache_path(data_id, image_type):
+    """キャッシュされた画像ファイルのパスを決定"""
+    # data_idとimage_typeを使って、キャッシュのパスを作成
+    hash_key = hashlib.md5(f"{data_id}_{image_type}".encode()).hexdigest()
+    return os.path.join(CACHE_DIR, f"{hash_key}.cache")
+
+
 def get_template_name(base_template):
     """ブラウザの言語設定に基づいてテンプレートを選択"""
     lang = request.accept_languages.best_match(['en', 'ja']) or 'en'
@@ -132,7 +145,6 @@ def get_template_name(base_template):
         return base_template.replace('.html', '_ja.html')
     
     return base_template
-
 
 model_views = Blueprint('model_views', __name__)
 
@@ -274,18 +286,30 @@ def upload_image():
 @model_views.route('/get_image/<int:data_id>/<string:image_type>', methods=['GET'])
 def get_image(data_id, image_type):
     """Retrieve and return an image based on data_id and image_type."""
-    # Retrieve image data from the database where image_type matches the provided type
-    image_data = get_image_from_db(data_id, image_type=image_type)
+    # キャッシュパスの取得
+    cache_path = get_image_cache_path(data_id, image_type)
 
-    # If no image is found, return a 404 error
+    # キャッシュが存在する場合は、それを返す
+    if os.path.exists(cache_path):
+        return send_file(
+            cache_path,
+            mimetype=f'image/{image_type}',
+            as_attachment=False
+        )
+    
+    # キャッシュが存在しない場合は、データベースから画像を取得
+    image_data, image_format = get_image_from_db(data_id, image_type)
+
     if image_data is None:
         return jsonify({"error": "Image not found"}), 404
     
-    image_io, image_format, _ = image_data
+    # データベースから取得した画像データをキャッシュに保存
+    with open(cache_path, 'wb') as f:
+        f.write(image_data.getvalue())
 
-    # Use send_file to return the image to the client
+    # 画像を返す
     return send_file(
-        image_io,
+        image_data,
         mimetype=f'image/{image_format}',
         as_attachment=False
     )
