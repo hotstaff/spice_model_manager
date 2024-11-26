@@ -44,7 +44,7 @@ def init_db():
         """))
         conn.commit()  # 明示的にコミット
 
-def migrate_db_with_simulation_done():
+def migrate_db():
     engine = get_db_connection()
     with engine.connect() as conn:
         # 'data' テーブルに simulation_done カラムを追加（デフォルト値を False に設定）

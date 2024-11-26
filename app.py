@@ -1,6 +1,6 @@
 import os
 from flask import Flask, redirect, url_for
-from models.db_model import init_db, migrate_db_with_defaults
+from models.db_model import init_db, migrate_db
 from views import model_views  # views.pyからmodel_viewsをインポート
 
 app = Flask(__name__)
