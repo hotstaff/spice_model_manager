@@ -2,6 +2,7 @@
 import os
 import logging
 import re
+import hashlib
 
 # Third-party imports
 from flask import (
