@@ -124,6 +124,16 @@ class AddModelForm(Form):
             return  # バリデーションエラーとして処理を終了
 
 
+def get_template_name(base_template):
+    """ブラウザの言語設定に基づいてテンプレートを選択"""
+    lang = request.accept_languages.best_match(['en', 'ja']) or 'en'
+    
+    if lang == 'ja':
+        return base_template.replace('.html', '_ja.html')
+    
+    return base_template
+
+
 model_views = Blueprint('model_views', __name__)
 
 # 全モデルデータを取得するAPI
@@ -199,28 +209,24 @@ def list_models():
         device_name = form.device_name.data
         device_type = form.device_type.data
         models = search_data(device_name=device_name, device_type=device_type)
-        
-        # モデル数と1ページあたりの表示数
-        models_count = len(models)  # 例えばmodelsはリストまたはDataFrame
-        items_per_page = 100  # 1ページあたりのアイテム数
-        
-        # ページ数の計算 (ceilを使わずにビルトイン関数で処理)
+
+        models_count = len(models)
+        items_per_page = 100
         pages = (models_count + items_per_page - 1) // items_per_page
         
-        # 現在のページ番号を取得（デフォルトは1）
         page = int(request.args.get('page', 1))
         
-        # ページ番号が1より小さい場合は1に設定
-        if page < 1:
-            page = 1
-        
-        # ページごとのアイテムのスライスを取得
+        if page < 1 or page > pages:
+            return redirect(url_for('model_views.list_models', page=1))  # またはエラーメッセージ
+
         start_index = (page - 1) * items_per_page
         end_index = start_index + items_per_page
         page_models = models[start_index:end_index]
+
+        template_name = get_template_name('index.html')
         
         return render_template(
-            'index_ja.html',
+            template_name,
             models=page_models.to_dict(orient="records"),
             device_name=device_name,
             device_type=device_type,
