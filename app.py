@@ -9,7 +9,7 @@ app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24))
 
 # データベースの初期化
 init_db()
-# migrate_db_with_defaults()
+migrate_db()
 
 # APIエンドポイントを設定
 app.register_blueprint(model_views)
