@@ -366,7 +366,9 @@ def add_new_model():
             return redirect(url_for('model_views.add_new_model'))  # 失敗後リダイレクト
 
     # GETリクエストの場合、フォームを表示
-    return render_template('spice_model_add.html', form=form)
+
+    template_name = get_template_name('spice_model_add.html')
+    return render_template(template_name, form=form)
 
 # エラーハンドリング
 @model_views.errorhandler(404)

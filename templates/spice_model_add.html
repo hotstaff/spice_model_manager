@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Add SPICE Model - SPICE Model Repository</title>
+    <title>{% block title %}Add SPICE Model - SPICE Model Repository{% endblock %}</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -93,7 +93,6 @@
             outline: none;
             background-color: #fff; /* フォーカス時に背景色を白に */
         }
-
 
         /* 入力フィールド全般のフォーカス時のスタイル */
         textarea:focus, input:focus {
@@ -193,11 +192,11 @@
 <body>
     <div class="container">
         <header>
-            <h1>Add SPICE Model</h1>
-            <h2>Submit a new SPICE string for parsing</h2>
+            <h1>{% block header_title %}Add SPICE Model{% endblock %}</h1>
+            <h2>{% block header_subtitle %}Submit a new SPICE string for parsing{% endblock %}</h2>
         </header>
 
-        <p>Enter the complete SPICE model string below. The system will parse the string to extract the necessary data.</p>
+        <p>{% block instructions %}Enter the complete SPICE model string below. The system will parse the string to extract the necessary data.{% endblock %}</p>
 
         <!-- フラッシュメッセージの表示 -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -217,16 +216,16 @@
 
             <!-- 名前とコメントの横並び -->
             <div class="form-row">
-                <input type="text" name="author" placeholder="Your Name" maxlength="16">
-                <input type="text" name="comment" placeholder="Add a comment" maxlength="100">
+                <input type="text" name="author" placeholder="{% block author_placeholder %}Your Name{% endblock %}" maxlength="16">
+                <input type="text" name="comment" placeholder="{% block comment_placeholder %}Add a comment{% endblock %}" maxlength="100">
             </div>
 
             <!-- 送信ボタン -->
-            <button type="submit">Add Model</button>
+            <button type="submit">{% block submit_button %}Add Model{% endblock %}</button>
         </form>
 
         <!-- トップページに戻るリンク -->
-        <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+        <p><a href="{{ url_for('home') }}">{% block back_to_home %}Back to Home{% endblock %}</a></p>
     </div>
 </body>
 </html>
