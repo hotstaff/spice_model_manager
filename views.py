@@ -35,13 +35,19 @@ logging.basicConfig(level=logging.INFO)
 
 class SearchForm(Form):
     # 空白を許容するためにOptional()を使用
-    device_name = StringField('Device Name', 
-                              [Length(max=100), 
-                               Regexp('^[a-zA-Z0-9_ ]+$', message="Invalid characters are included"),
-                               Optional()])
-    device_type = StringField('Device Type', 
-                              [Length(max=100),
-                               Optional()])  # 空白も許容
+    device_name = StringField(
+        'Device Name', 
+        [Length(max=100), 
+         Regexp('^[a-zA-Z0-9_ ]+$', message="Invalid characters are included"),
+         Optional()],
+        default=''  # デフォルト値を空文字列に設定
+    )
+    device_type = StringField(
+        'Device Type', 
+        [Length(max=100),
+         Optional()],
+        default=''  # デフォルト値を空文字列に設定
+    )
 
 class AddModelForm(Form):
     # spice_string, author, comment の3つのフィールドを受け取る
