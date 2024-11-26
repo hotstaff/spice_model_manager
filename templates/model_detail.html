@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Model Detail</title>
+    <title>{% block title %}Model Detail{% endblock %}</title>
     <style>
+        /* スタイル部分は変更なし */
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f5f7fa;
@@ -196,7 +197,7 @@
             const spiceStringElement = document.getElementById("spiceString");
             const spiceString = spiceStringElement.innerText;
             navigator.clipboard.writeText(spiceString).then(() => {
-                alert("SPICE string copied to clipboard!");
+                alert("{% block copy_alert %}SPICE string copied to clipboard!{% endblock %}");
             }).catch(err => {
                 console.error("Failed to copy: ", err);
             });
@@ -210,50 +211,46 @@
 </head>
 <body>
     <div class="container">
-        <h1>Model Details</h1>
+        <h1>{% block title %}Model Details{% endblock %}</h1>
         <div class="model-info">
-            <h2>Device Name: {{ model.device_name }}</h2>
-            <h3>Device Type: {{ model.device_type }}</h3>
-            <h4>SPICE String:</h4>
+            <h2>{% block device_name %}Device Name{% endblock %}: {{ model.device_name }}</h2>
+            <h3>{% block device_type %}Device Type{% endblock %}: {{ model.device_type }}</h3>
+            <h4>{% block spice_string_title %}SPICE String:{% endblock %}</h4>
             <pre id="spiceString">{{ model.spice_string }}</pre>
             <div class="lowercase-toggle">
                 <input type="checkbox" id="lowercaseCheckbox" onclick="toggleLowercase()">
-                <label for="lowercaseCheckbox">Display SPICE string in lowercase</label>
+                <label for="lowercaseCheckbox">{% block lowercase_checkbox_label %}Display SPICE string in lowercase{% endblock %}</label>
             </div>
-            <button class="copy-button" onclick="copyToClipboard()">Copy SPICE String</button>
+            <button class="copy-button" onclick="copyToClipboard()">{% block copy_button %}Copy SPICE String{% endblock %}</button>
         </div>
 
         <!-- New Section for Author, Comment, Created_at -->
         <div class="model-info">
-            <h4>Author: <span class="small-text">{{ model.author }}</span></h4>
-            <h4>Comment:</h4>
+            <h4>{% block author_title %}Author:{% endblock %} <span class="small-text">{{ model.author }}</span></h4>
+            <h4>{% block comment_title %}Comment:{% endblock %}</h4>
             <pre class="small-text" style="background-color: #e9ecef; color: #333;">{{ model.comment }}</pre>
-            <h4>Created At: <span class="small-text">{{ model.created_at }}</span></h4>
+            <h4>{% block created_at_title %}Created At:{% endblock %} <span class="small-text">{{ model.created_at }}</span></h4>
         </div>
 
         <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
         {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
         <div class="image-grid">
             <div class="image-item">
-                <h4>IV Characteristic Curve</h4>
+                <h4>{% block iv_curve_title %}IV Characteristic Curve{% endblock %}</h4>
                 <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='iv') }}" alt="IV Characteristic Curve" />
             </div>
             <div class="image-item">
-                <h4>Vgs-Id Characteristic Curve</h4>
+                <h4>{% block vgs_id_curve_title %}Vgs-Id Characteristic Curve{% endblock %}</h4>
                 <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='vgs_id') }}" alt="Vgs-Id Characteristic Curve" />
             </div>
             <div class="image-item">
-                <h4>Gm-Vgs Characteristic Curve</h4>
+                <h4>{% block gm_vgs_curve_title %}Gm-Vgs Characteristic Curve{% endblock %}</h4>
                 <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_vgs') }}" alt="Gm-Vgs Characteristic Curve" />
-            </div>
-            <div class="image-item">
-                <h4>Gm-Id Characteristic Curve</h4>
-                <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
             </div>
         </div>
         {% endif %}
         
-        <a href="{{ url_for('model_views.list_models') }}">Back to Models List</a>
+        <a href="{{ url_for('model_views.index') }}}">{% block back_link %}Back to model list{% endblock %}</a>
     </div>
 </body>
 </html>

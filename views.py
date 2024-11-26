@@ -296,7 +296,9 @@ def model_detail(model_id):
     model = get_data_by_id(model_id)
     if model.empty:
         return abort(404, description="Model not found")
-    return render_template('model_detail.html', model=model.to_dict(orient="records")[0])
+    
+    template_name = get_template_name('model_detail.html')
+    return render_template(template_name, model=model.to_dict(orient="records")[0])
 
 @model_views.route('/models/add', methods=['GET', 'POST'])
 def add_new_model():
