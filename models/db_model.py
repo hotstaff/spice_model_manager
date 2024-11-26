@@ -28,7 +28,8 @@ def init_db():
             spice_string TEXT,
             author TEXT,
             comment TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            simulation_done BOOLEAN DEFAULT FALSE
         )
         """))
 
@@ -43,15 +44,13 @@ def init_db():
         """))
         conn.commit()  # 明示的にコミット
 
-def migrate_db_with_defaults():
+def migrate_db_with_simulation_done():
     engine = get_db_connection()
     with engine.connect() as conn:
-        # 'data' テーブルに新しいカラムを追加（デフォルト値を設定）
+        # 'data' テーブルに simulation_done カラムを追加（デフォルト値を False に設定）
         conn.execute(text("""
         ALTER TABLE data
-        ADD COLUMN IF NOT EXISTS author TEXT DEFAULT 'Anonymous',
-        ADD COLUMN IF NOT EXISTS comment TEXT DEFAULT '',
-        ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        ADD COLUMN IF NOT EXISTS simulation_done BOOLEAN DEFAULT FALSE
         """))
 
         conn.commit()  # 明示的にコミット
