@@ -299,7 +299,7 @@ def get_image(data_id, image_type):
         )
     
     # キャッシュが存在しない場合は、データベースから画像を取得
-    image_data, image_format = get_image_from_db(data_id, image_type)
+    image_data, image_format, _ = get_image_from_db(data_id, image_type)
 
     if image_data is None:
         return jsonify({"error": "Image not found"}), 404
