@@ -28,7 +28,8 @@ from models.db_model import (
     delete_data,
     search_data,
     save_image_to_db,
-    get_image_from_db
+    get_image_from_db,
+    update_simulation_done
 )
 from client.spice_model_parser import SpiceModelParser
 
@@ -279,6 +280,8 @@ def upload_image():
     # 画像データをデータベースに保存
     try:
         save_image_to_db(data_id, image_file, image_type, image_format)
+        # simulation_doneフラグを変える
+        update_simulation_done(data_id)
         return jsonify({"message": "Image uploaded successfully!"}), 200
     except Exception as e:
         return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500

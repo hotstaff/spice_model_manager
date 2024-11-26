@@ -185,6 +185,24 @@ def save_image_to_db(data_id, image_file, image_type, image_format):
             """), {"data_id": data_id, "image_type": image_type, "image_format": image_format, "image_data": image_data})
         conn.commit()  # 明示的にコミット
 
+def update_simulation_done(data_id):
+    """
+    指定された data_id に対応するレコードの simulation_done を TRUE に更新します。
+
+    :param data_id: 更新対象のデータID (dataテーブルのid)
+    """
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        # simulation_done フィールドを TRUE に更新
+        conn.execute(text("""
+        UPDATE data
+        SET simulation_done = TRUE
+        WHERE id = :data_id
+        """), {'data_id': data_id})
+        
+        conn.commit()  # 明示的にコミット
+
+
 def delete_image_from_db(data_id, image_type=None):
     """指定された data_id に関連する画像を削除（image_typeが指定されない場合は全て削除）"""
     engine = get_db_connection()
