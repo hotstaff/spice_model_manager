@@ -1,0 +1,8 @@
+* H:\spice_model_manager\simulation\TEST_JFET.asc
+J1 N002 N001 0 NJF
+V1 N001 0 DC 0
+V2 N002 0 DC 10
+
+.backanno
+.end
+
