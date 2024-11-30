@@ -228,11 +228,17 @@ def list_models():
         items_per_page = 100
         pages = (models_count + items_per_page - 1) // items_per_page
         
-        page = int(request.args.get('page', 1))
-        
-        if page < 1 or page > pages:
-            return redirect(url_for('model_views.list_models', page=1))  # またはエラーメッセージ
+        # モデルがない場合でもpagesとpageを1に設定
+        if models_count == 0:
+            pages = 1
+            page = 1
+        else:
+            page = int(request.args.get('page', 1))
 
+        # ページ数の異常を検知
+        if page < 1 or page > pages:
+            page = 1  # ページが不正なら1に設定
+        
         start_index = (page - 1) * items_per_page
         end_index = start_index + items_per_page
         page_models = models[start_index:end_index]
@@ -249,6 +255,7 @@ def list_models():
         )
     else:
         return "There are invalid inputs", 400
+
 
 @model_views.route('/api/upload_image', methods=['POST'])
 def upload_image():
