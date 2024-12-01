@@ -1,0 +1,7 @@
+Flask
+matplotlib
+numpy
+PyLTSpice
+Requests
+gunicorn
+
