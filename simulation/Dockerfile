@@ -1,3 +1,5 @@
+## ln -s ~/.wine .wine でシンボリックリンクを作ること
+
 # ベースイメージを指定 (軽量なDebianを使用)
 FROM debian:bullseye-slim
 
@@ -12,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # LTspice環境をホストからコピー (事前にインストール済みのフォルダ構成を使用)
-COPY ~/.wine /root/.wine
+COPY .wine /root/.wine
 
 # Python依存関係をインストール
 COPY requirements.txt .
