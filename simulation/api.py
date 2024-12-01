@@ -71,4 +71,4 @@ def simulate():
         return f"Failed to send .raw or .log file: {e}", 500
 
 if __name__ == "__main__":
-    app.run(debug=False)
+    app.run(debug=False, port=5900)
