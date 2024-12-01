@@ -6,7 +6,7 @@ WORKDIR /app
 
 # 必要なパッケージのインストール
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    wine64 \
+    wine64 wine32\
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
