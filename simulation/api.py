@@ -1,8 +1,11 @@
 import os
+from datetime import datetime
+from io import BytesIO
+import zipfile
+
 from flask import Flask, request, send_file
 from PyLTSpice import SimRunner, LTspice, SpiceEditor
-import zipfile
-from io import BytesIO
+
 
 app = Flask(__name__)
 
@@ -10,6 +13,12 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 
 os.makedirs(SIMULATION_DIR, exist_ok=True)
+
+# 月と日付、時刻の略記を使ってファイル名を生成
+def generate_short_zip_filename(net_file_path):
+    base_name = os.path.splitext(os.path.basename(net_file_path))[0]
+    timestamp = datetime.now().strftime("%b_%d_%H%M")  # 例: Dec_01_1345
+    return f"{base_name}_{timestamp}.zip"
 
 def run_simulation(net_file_path):
     """シミュレーションを実行してRAWデータとログを取得"""
@@ -69,7 +78,9 @@ def simulate():
         os.remove(raw_file_path)
         os.remove(log_file_path)
 
-        return send_file(zip_buffer, as_attachment=True, download_name="simulation_results.zip")
+        zip_filename = generate_short_zip_filename(net_file_path)
+
+        return send_file(zip_buffer, as_attachment=True, download_name=zip_filename)
 
     except Exception as e:
         return f"Failed to send .raw or .log file: {e}", 500
