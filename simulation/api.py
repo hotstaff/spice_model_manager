@@ -47,6 +47,7 @@ def simulate():
     try:
         raw_file_name = os.path.basename(raw_file_path)
         log_file_name = os.path.basename(log_file_path)
+        net_file_name = os.path.basename(net_file_path)  # .net ファイルの名前
 
         # メモリ上でZIPアーカイブを作成
         zip_buffer = BytesIO()
@@ -57,6 +58,9 @@ def simulate():
             # LOGファイルを圧縮
             with open(log_file_path, 'rb') as log_file:
                 zip_file.writestr(log_file_name, log_file.read())
+            # .net ファイルを圧縮
+            with open(net_file_path, 'rb') as net_file:
+                zip_file.writestr(net_file_name, net_file.read())
 
         zip_buffer.seek(0)
 
