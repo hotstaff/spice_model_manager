@@ -11,7 +11,6 @@ RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install -y --no-install-recommends \
     wine64 \
     wine32 \
-    winetricks \
     x11-utils \
     xvfb \
     && apt-get clean \
