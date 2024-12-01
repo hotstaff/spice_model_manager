@@ -22,7 +22,7 @@ def run_simulation(net_file_path):
     """シミュレーションを実行してRAWデータとログを取得"""
     runner = SimRunner(output_folder=SIMULATION_DIR, simulator=LTspice)
     net = SpiceEditor(net_file_path)
-    raw_path, log_path = runner.run_now(net, run_filename=net_file_path)
+    raw_path, log_path = runner.run_now(net, run_filename=net.netlist_file.name)
     return raw_path, log_path
 
 @app.route("/")
