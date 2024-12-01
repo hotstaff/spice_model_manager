@@ -16,9 +16,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# wineの設定を自動化（最初の起動時に必要な設定を実行）
-RUN wineboot --init
-
 # Python依存関係のインストール
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
