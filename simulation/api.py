@@ -2,10 +2,8 @@ import os
 from datetime import datetime
 from io import BytesIO
 import zipfile
-
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, render_template
 from PyLTSpice import SimRunner, LTspice, SpiceEditor
-
 
 app = Flask(__name__)
 
@@ -29,7 +27,7 @@ def run_simulation(net_file_path):
 
 @app.route("/")
 def home():
-    return "API is running!"  # トップページに表示するメッセージ
+    return render_template("index.html")  # テンプレートを表示
 
 @app.route("/simulate", methods=["POST"])
 def simulate():
@@ -86,4 +84,4 @@ def simulate():
         return f"Failed to send .raw or .log file: {e}", 500
 
 if __name__ == "__main__":
-    app.run(debug=False, port=5900)
+    app.run(debug=False, port=5000)

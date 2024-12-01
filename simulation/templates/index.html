@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ファイルアップロード</title>
+</head>
+<body>
+    <h1>LTspice ネットリストのアップロード</h1>
+    <form action="/simulate" method="POST" enctype="multipart/form-data">
+        <label for="file">ネットリストファイルを選択:</label>
+        <input type="file" name="file" id="file" required><br><br>
+        <button type="submit">シミュレーション開始</button>
+    </form>
+</body>
+</html>
