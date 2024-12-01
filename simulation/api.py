@@ -65,7 +65,7 @@ def simulate():
         os.remove(raw_file_path)
         os.remove(log_file_path)
 
-        return send_file(zip_buffer, as_attachment=True, attachment_filename="simulation_results.zip")
+        return send_file(zip_buffer, as_attachment=True, download_name="simulation_results.zip")
 
     except Exception as e:
         return f"Failed to send .raw or .log file: {e}", 500
