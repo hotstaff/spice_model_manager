@@ -18,6 +18,10 @@ def run_simulation(net_file_path):
     raw_path, log_path = runner.run_now(net, run_filename=net_file_path)
     return raw_path, log_path
 
+@app.route("/")
+def home():
+    return "API is running!"  # トップページに表示するメッセージ
+
 @app.route("/simulate", methods=["POST"])
 def simulate():
     if "file" not in request.files:
