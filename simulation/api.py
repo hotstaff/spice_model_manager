@@ -3,7 +3,7 @@ from datetime import datetime
 from io import BytesIO
 import zipfile
 from flask import Flask, request, send_file, render_template
-from PyLTSpice import SimRunner, LTspice, SimCommander, SpiceEditor
+from PyLTSpice import SimRunner, LTspice, SpiceEditor
 
 app = Flask(__name__)
 
@@ -13,26 +13,34 @@ SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
 
 # 月と日付、時刻の略記を使ってファイル名を生成
-def generate_short_zip_filename(net_file_path):
-    base_name = os.path.splitext(os.path.basename(net_file_path))[0]
+def generate_short_zip_filename(base_name):
     timestamp = datetime.now().strftime("%b_%d_%H%M")  # 例: Dec_01_1345
     return f"{base_name}_{timestamp}.zip"
 
-def run_simulation(net_file_path):
+def run_simulation(uploaded_file_path):
     """シミュレーションを実行してRAWデータとログを取得"""
+    runner = SimRunner(output_folder=SIMULATION_DIR, simulator=LTspice)
+
     # .ascファイルを元に、.netファイルを生成
-    if net_file_path.endswith('.asc'):
-        commander = SimCommander(net_file_path)
-        net_file_path_netlist = commander.create_netlist(net_file_path)  # .net ファイルの作成
+    if uploaded_file_path.endswith('.asc'):
+        netlist_path = runner.create_netlist(uploaded_file_path)  # .net ファイルの作成
     else:
-        net_file_path_netlist = net_file_path  # .netファイルがすでにある場合はそのまま使う
+        netlist_path = uploaded_file_path  # .netファイルがすでにある場合はそのまま使う
 
     # シミュレーションを実行
-    runner = SimRunner(output_folder=SIMULATION_DIR, simulator=LTspice)
-    net = SimCommander(net_file_path_netlist)  # 作成したまたはアップロードされた.netファイルを使う
-    raw_path, log_path = runner.run_now(net, run_filename=net_file_path_netlist)
+    net = SpiceEditor(netlist_path)  # 作成したまたはアップロードされた.netファイルを使う
+    raw_path, log_path = runner.run_now(net, run_filename=netlist_path)
     
-    return raw_path, log_path
+    return raw_path, log_path, netlist_path
+
+def cleanup_files(files):
+    """一時的に保存されたファイルを削除"""
+    for file in files:
+        try:
+            if os.path.exists(file):
+                os.remove(file)
+        except Exception as e:
+            print(f"Failed to delete file {file}: {e}")
 
 @app.route("/")
 def home():
@@ -52,45 +60,35 @@ def simulate():
 
     try:
         file.save(uploaded_file_path)
-    except Exception as e:
-        return f"Failed to save file: {e}", 500
-
-    try:
-        raw_file_path, log_file_path = run_simulation(uploaded_file_path)
-    except Exception as e:
-        return f"Simulation failed: {e}", 500
-
-    try:
-        raw_file_name = os.path.basename(raw_file_path)
-        log_file_name = os.path.basename(log_file_path)
-        uploaded_file_name = os.path.basename(uploaded_file_path)  # .asc または .net ファイルの名前
-
+        raw_file_path, log_file_path, netlist_path = run_simulation(uploaded_file_path)
+        
         # メモリ上でZIPアーカイブを作成
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
             # RAWファイルを圧縮
-            with open(raw_file_path, 'rb') as raw_file:
-                zip_file.writestr(raw_file_name, raw_file.read())
+            zip_file.write(raw_file_path, os.path.basename(raw_file_path))
             # LOGファイルを圧縮
-            with open(log_file_path, 'rb') as log_file:
-                zip_file.writestr(log_file_name, log_file.read())
-            # アップロードされたファイルを圧縮 (.asc または .net)
-            with open(uploaded_file_path, 'rb') as uploaded_file:
-                zip_file.writestr(uploaded_file_name, uploaded_file.read())
+            zip_file.write(log_file_path, os.path.basename(log_file_path))
+
+            # アップロードされたファイルと関連ファイルを圧縮
+            zip_file.write(uploaded_file_path, os.path.basename(uploaded_file_path))
+
+            if uploaded_file_path.endswith('.asc'):
+                zip_file.write(netlist_path, os.path.basename(netlist_path))
 
         zip_buffer.seek(0)
 
-        # レスポンスを返す前にファイルを削除
-        os.remove(uploaded_file_path)
-        os.remove(raw_file_path)
-        os.remove(log_file_path)
+        # ファイル削除
+        cleanup_files([uploaded_file_path, raw_file_path, log_file_path])
 
-        zip_filename = generate_short_zip_filename(uploaded_file_path)
+        zip_filename = generate_short_zip_filename(os.path.splitext(os.path.basename(netlist_path))[0])
 
         return send_file(zip_buffer, as_attachment=True, download_name=zip_filename)
 
     except Exception as e:
-        return f"Failed to send .raw or .log file: {e}", 500
+        # エラーハンドリング
+        cleanup_files([uploaded_file_path, raw_file_path, log_file_path])
+        return f"Error during simulation or file handling: {e}", 500
 
 if __name__ == "__main__":
     app.run(debug=False, port=5000)
