@@ -16,6 +16,9 @@ os.makedirs(SIMULATION_DIR, exist_ok=True)
 # ジョブ管理用辞書
 jobs = {}
 
+# ジョブの最大保存数を設定
+MAX_JOBS = 100  # 必要に応じて調整可能
+
 def generate_short_zip_filename(base_name):
     """月と日付、時刻の略記を使ってファイル名を生成"""
     timestamp = datetime.now().strftime("%b_%d_%H%M")  # 例: Dec_01_1345
@@ -45,13 +48,17 @@ def cleanup_files(files):
         except Exception as e:
             print(f"Failed to delete file {file}: {e}")
 
-
 def create_job(uploaded_file_path):
     """ジョブを作成し登録"""
     job_id = str(uuid.uuid4())
+    
+    # ジョブが最大数を超えた場合、古いものを削除
+    if len(jobs) >= MAX_JOBS:
+        oldest_job_id = next(iter(jobs))  # 最も古いジョブIDを取得
+        del jobs[oldest_job_id]
+    
     jobs[job_id] = {"status": "pending", "result": None, "error": None, "file_path": uploaded_file_path}
     return job_id
-
 
 def run_job(job_id, async_mode=False):
     """ジョブを実行"""
