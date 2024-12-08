@@ -24,7 +24,7 @@ class JFET_SimulationBase:
         self.net = None
         self.raw_data = None
 
-        self.api_url = "http://127.0.0.1:5000/simulate"
+        self.api_url = "http://34.42.32.189:5000/simulate"
 
     def modify_netlist(self):
         """ネットリストを修正してファイル名を変更して保存"""
@@ -111,7 +111,7 @@ class JFET_SimulationBase:
 
     def process_and_plot(self):
         self.modify_netlist()
-        self.run_simulation()
+        self.run_simulation_api()
         data = self.extract_data()
         try:
             return self.plot(*data)

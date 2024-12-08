@@ -160,8 +160,15 @@ def api_simulation_result(job_id):
 @app.route("/api/simulations", methods=["GET"])
 def api_simulations():
     """全ジョブの状態を取得"""
-    return jsonify(jobs)
-
+    # シリアライズ可能なデータだけを抽出
+    serializable_jobs = {
+        job_id: {
+            "status": job["status"],
+            "error": job.get("error"),
+        }
+        for job_id, job in jobs.items()
+    }
+    return jsonify(serializable_jobs)
 
 if __name__ == "__main__":
     app.run(debug=False, port=5000)
