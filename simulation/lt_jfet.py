@@ -111,7 +111,7 @@ class JFET_SimulationBase:
 
     def process_and_plot(self):
         self.modify_netlist()
-        self.run_simulation_api()
+        self.run_simulation()
         data = self.extract_data()
         try:
             return self.plot(*data)
@@ -355,12 +355,14 @@ if __name__ == "__main__":
         # 各モデルデータに対してI-V特性またはVgs-Id特性を生成
         for model in jfet_models:
 
-            if model["simulation_done"]:
-                pass
             model_id = model["id"]
             device_name = model["device_name"]
             device_type = model["device_type"]
             spice_string = model["spice_string"]
+
+            if model["simulation_done"]:
+                print(f"{device_name} is already simulated. skip...")
+                continue
 
             # # JFETのI-V特性をプロット
             print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
