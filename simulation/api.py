@@ -157,5 +157,11 @@ def api_simulation_result(job_id):
     zip_buffer.seek(0)
     return send_file(zip_buffer, as_attachment=True, download_name=f"{job_id}.zip")
 
+@app.route("/api/simulations", methods=["GET"])
+def api_simulations():
+    """全ジョブの状態を取得"""
+    return jsonify(jobs)
+
+
 if __name__ == "__main__":
     app.run(debug=False, port=5000)

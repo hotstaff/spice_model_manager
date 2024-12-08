@@ -3,6 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <title>ファイルアップロード</title>
+    <script>
+        async function fetchJobs() {
+            try {
+                const response = await fetch('/api/simulations');
+                const jobs = await response.json();
+
+                const tableBody = document.getElementById('jobs-table-body');
+                tableBody.innerHTML = '';
+
+                for (const jobId in jobs) {
+                    const job = jobs[jobId];
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td>${jobId}</td>
+                        <td>${job.status}</td>
+                        <td>
+                            ${job.status === 'completed' 
+                                ? `<a href="/api/simulations/${jobId}/result" download>ダウンロード</a>` 
+                                : 'N/A'}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+            }
+        }
+
+        // Fetch jobs every 5 seconds
+        setInterval(fetchJobs, 5000);
+        window.onload = fetchJobs;
+    </script>
 </head>
 <body>
     <h1>LTspice ネットリストのアップロード</h1>
@@ -11,5 +44,19 @@
         <input type="file" name="file" id="file" required><br><br>
         <button type="submit">シミュレーション開始</button>
     </form>
+
+    <h2>ジョブの状態</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ジョブID</th>
+                <th>ステータス</th>
+                <th>結果</th>
+            </tr>
+        </thead>
+        <tbody id="jobs-table-body">
+            <!-- Job data will be dynamically inserted here -->
+        </tbody>
+    </table>
 </body>
 </html>
