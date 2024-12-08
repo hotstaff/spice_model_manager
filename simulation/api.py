@@ -6,6 +6,8 @@ import zipfile
 from flask import Flask, request, send_file, render_template, jsonify
 from PyLTSpice import SimRunner, LTspice, SpiceEditor
 
+import threading
+
 app = Flask(__name__)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -16,8 +18,13 @@ os.makedirs(SIMULATION_DIR, exist_ok=True)
 # ジョブ管理用辞書
 jobs = {}
 
+# ロックを初期化
+jobs_lock = threading.Lock()
+
 # ジョブの最大保存数を設定
 MAX_JOBS = 100  # 必要に応じて調整可能
+
+
 
 def generate_short_zip_filename(base_name):
     """月と日付、時刻の略記を使ってファイル名を生成"""
@@ -48,16 +55,16 @@ def cleanup_files(files):
         except Exception as e:
             print(f"Failed to delete file {file}: {e}")
 
+
 def create_job(uploaded_file_path):
     """ジョブを作成し登録"""
     job_id = str(uuid.uuid4())
     
-    # ジョブが最大数を超えた場合、古いものを削除
-    if len(jobs) >= MAX_JOBS:
-        oldest_job_id = next(iter(jobs))  # 最も古いジョブIDを取得
-        del jobs[oldest_job_id]
-    
-    jobs[job_id] = {"status": "pending", "result": None, "error": None, "file_path": uploaded_file_path}
+    with jobs_lock:  # ロックで保護
+        if len(jobs) >= MAX_JOBS:
+            oldest_job_id = next(iter(jobs))
+            del jobs[oldest_job_id]
+        jobs[job_id] = {"status": "pending", "result": None, "error": None, "file_path": uploaded_file_path}
     return job_id
 
 def run_job(job_id, async_mode=False):
@@ -67,33 +74,28 @@ def run_job(job_id, async_mode=False):
             uploaded_file_path = jobs[job_id]["file_path"]
             raw_file_path, log_file_path, netlist_path = run_simulation(uploaded_file_path)
 
-            # 結果をZIPファイルとしてまとめる
             zip_buffer = BytesIO()
             with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                 zip_file.write(raw_file_path, os.path.basename(raw_file_path))
                 zip_file.write(log_file_path, os.path.basename(log_file_path))
                 zip_file.write(uploaded_file_path, os.path.basename(uploaded_file_path))
-
                 if uploaded_file_path.endswith('.asc'):
                     zip_file.write(netlist_path, os.path.basename(netlist_path))
-
             zip_buffer.seek(0)
-            jobs[job_id]["status"] = "completed"
-            jobs[job_id]["result"] = zip_buffer
 
-            # 一時ファイルをクリーンアップ
+            with jobs_lock:  # ロックで保護
+                jobs[job_id]["status"] = "completed"
+                jobs[job_id]["result"] = zip_buffer
+
             cleanup_files([uploaded_file_path, raw_file_path, log_file_path])
-
         except Exception as e:
-            jobs[job_id]["status"] = "failed"
-            jobs[job_id]["error"] = str(e)
+            with jobs_lock:  # ロックで保護
+                jobs[job_id]["status"] = "failed"
+                jobs[job_id]["error"] = str(e)
 
     if async_mode:
-        # 非同期処理用 (例: 本番環境でスレッドやCeleryを利用)
-        from threading import Thread
-        Thread(target=job_runner).start()
+        threading.Thread(target=job_runner).start()
     else:
-        # 同期処理（すぐに実行）
         job_runner()
 
 @app.route("/")
