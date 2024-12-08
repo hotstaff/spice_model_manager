@@ -33,7 +33,8 @@ def generate_job_id_from_timestamp(base_name):
 # Redisを使ったジョブ操作
 def create_job(uploaded_file_path):
     """ジョブをRedisに作成し登録"""
-    job_id = generate_job_id_from_timestamp(os.path.splitext(os.path.basename(file_path))[0])
+    base_name = os.path.splitext(os.path.basename(uploaded_file_path))[0]
+    job_id = generate_job_id_from_timestamp(base_name)
     job_data = {
         "status": "pending",
         "result": None,
