@@ -1,5 +1,6 @@
 import os
-import uuid
+import random
+import string
 from datetime import datetime
 from io import BytesIO
 import zipfile
@@ -22,10 +23,17 @@ redis = Redis(host="localhost", port=6379, db=0)
 REDIS_JOB_PREFIX = "job:"  # Redisキーのプレフィックス
 MAX_JOBS = 100  # 最大ジョブ数
 
+# 基本のファイル名から日付を使ってジョブIDを生成
+def generate_job_id_from_timestamp(base_name):
+    """月と日付、時刻の略記を使ってユニークなジョブIDを生成"""
+    timestamp = datetime.now().strftime("%b_%d_%H%M")  # 例: Dec_01_1345
+    random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7))
+    return f"{base_name}_{timestamp}_{random_suffix}"
+
 # Redisを使ったジョブ操作
 def create_job(uploaded_file_path):
     """ジョブをRedisに作成し登録"""
-    job_id = str(uuid.uuid4())
+    job_id = generate_job_id_from_timestamp(os.path.basename(uploaded_file_path))
     job_data = {
         "status": "pending",
         "result": None,
