@@ -39,6 +39,10 @@ def create_job(uploaded_file_path):
 
     return job_id
 
+@app.route("/")
+def home():
+    return render_template("index.html")
+
 @app.route("/api/simulate", methods=["POST"])
 def api_simulate():
     file = request.files.get("file")
