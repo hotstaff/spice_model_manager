@@ -64,7 +64,7 @@ def simulate():
 
     # ジョブを登録
     job_id = create_job(uploaded_file_path)
-    return f"Simulation job created with ID: {job_id}. Worker will process it.", 202
+    return jsonify({"job_id": job_id}), 202
 
 @app.route("/api/simulations", methods=["GET"])
 def api_simulations():
