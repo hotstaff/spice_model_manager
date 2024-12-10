@@ -24,7 +24,7 @@ class JFET_SimulationBase:
         self.net = None
         self.raw_data = None
 
-        self.api_url = "http://34.42.32.189:5000/simulate"
+        self.api_url = "http://35.238.147.89:5000/simulate"
 
     def modify_netlist(self):
         """ネットリストを修正してファイル名を変更して保存"""
@@ -362,7 +362,7 @@ if __name__ == "__main__":
 
             if model["simulation_done"]:
                 print(f"{device_name} is already simulated. skip...")
-                continue
+                pass
 
             # # JFETのI-V特性をプロット
             print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
