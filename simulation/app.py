@@ -3,7 +3,7 @@ import random
 import string
 import pickle
 from datetime import datetime
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, send_file, jsonify, render_template
 from redis import Redis
 
 app = Flask(__name__)
