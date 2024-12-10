@@ -56,6 +56,20 @@ def simulate():
     job_id = create_job(uploaded_file_path)
     return f"Simulation job created with ID: {job_id}. Worker will process it.", 202
 
+@app.route("/api/simulations", methods=["GET"])
+def api_simulations():
+    # Redisから全ジョブを取得
+    jobs = get_all_jobs()
+    
+    # ジョブのIDごとにstatusとerror情報を含むJSONレスポンスを作成
+    return jsonify({
+        job_id: {
+            "status": job["status"],
+            "error": job.get("error", None)  # errorが存在しない場合も考慮
+        }
+        for job_id, job in jobs.items()
+    })
+
 @app.route("/api/simulate", methods=["POST"])
 def api_simulate():
     file = request.files.get("file")
