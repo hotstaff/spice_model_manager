@@ -43,6 +43,19 @@ def create_job(uploaded_file_path):
 def home():
     return render_template("index.html")
 
+@app.route("/simulate", methods=["POST"])
+def simulate():
+    file = request.files.get("file")
+    if not file or file.filename == "":
+        return "No file uploaded or filename is empty", 400
+
+    uploaded_file_path = os.path.join(SIMULATION_DIR, file.filename)
+    file.save(uploaded_file_path)
+
+    # ジョブを登録
+    job_id = create_job(uploaded_file_path)
+    return f"Simulation job created with ID: {job_id}. Worker will process it.", 202
+
 @app.route("/api/simulate", methods=["POST"])
 def api_simulate():
     file = request.files.get("file")
