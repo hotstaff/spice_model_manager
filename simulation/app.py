@@ -39,6 +39,16 @@ def create_job(uploaded_file_path):
 
     return job_id
 
+def get_all_jobs():
+    """すべてのジョブをRedisから取得して辞書形式で返す"""
+    all_jobs = {}
+    # Redisから「job:」で始まる全てのキーを取得
+    for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*"):
+        job_id = job_key.decode("utf-8").replace(REDIS_JOB_PREFIX, "")
+        job_data = pickle.loads(redis.get(job_key))
+        all_jobs[job_id] = job_data
+    return all_jobs
+
 @app.route("/")
 def home():
     return render_template("index.html")
