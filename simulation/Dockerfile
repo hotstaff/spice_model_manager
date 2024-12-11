@@ -35,5 +35,5 @@ COPY redis_worker.py /app/redis_worker.py
 # REDISHOST環境変数を指定可能にする
 ENV REDISHOST=localhost
 
-# redis_worker.pyを実行
-CMD ["python3", "redis_worker.py"]
+# Xvfbを起動してDISPLAY環境変数を設定する
+ENTRYPOINT ["/bin/bash", "-c", "Xvfb :0 -screen 0 1024x768x16 & export DISPLAY=:0 && python3 redis_worker.py"]
