@@ -11,7 +11,12 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
 
-redis = Redis(host="localhost", port=6379, db=0)
+# 環境変数からRedisの接続情報を取得
+REDIS_HOST = os.environ.get("REDISHOST", "localhost")  # デフォルトはlocalhost
+REDIS_PORT = int(os.environ.get("REDISPORT", 6379))    # デフォルトは6379
+REDIS_DB = int(os.environ.get("REDISDB", 0))           # デフォルトはDB 0
+
+redis = Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB)
 REDIS_JOB_PREFIX = "job:"
 
 def run_simulation(uploaded_file_path):
