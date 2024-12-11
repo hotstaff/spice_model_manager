@@ -10,7 +10,8 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     python3-setuptools \
     redis-tools \
-    xvfb && \
+    xvfb \
+    tar && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Wineのリポジトリを追加してインストール
@@ -23,8 +24,11 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y \
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
 
-# .wineフォルダをコンテナにコピー
-COPY .wine /root/.wine
+# wine_backup.tar.gzをコンテナにコピー
+COPY wine_backup.tar.gz /app/wine_backup.tar.gz
+
+# wine_backup.tar.gzを解凍して.wineディレクトリに展開
+RUN tar -xzvf /app/wine_backup.tar.gz -C /root && rm /app/wine_backup.tar.gz
 
 # 作業ディレクトリを設定
 WORKDIR /app
