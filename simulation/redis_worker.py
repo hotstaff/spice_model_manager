@@ -81,6 +81,12 @@ def job_worker():
         for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*"):
             job_id = job_key.decode("utf-8").replace(REDIS_JOB_PREFIX, "")
             job_data = get_job(job_id)
+
+            # get_jobがNoneを返した場合に処理をスキップ
+            if job_data is None:
+                print(f"Job {job_id} not found or not valid.")
+                continue
+
             if job_data["status"] == "pending":
                 run_job(job_id)
 
