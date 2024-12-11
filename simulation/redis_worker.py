@@ -79,6 +79,7 @@ def job_worker():
     """ジョブを定期的に確認して実行"""
     while True:
         for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*"):
+            print(job_key)
             job_id = job_key.decode("utf-8").replace(REDIS_JOB_PREFIX, "")
             job_data = get_job(job_id)
 
