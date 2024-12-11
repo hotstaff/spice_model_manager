@@ -4,4 +4,4 @@ numpy
 PyLTSpice
 Requests
 gunicorn
-
+redis
