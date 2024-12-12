@@ -13,7 +13,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
 
-redis = Redis(host="localhost", port=6379, db=0, decode_responses=True)
+redis = Redis(host="localhost", port=6379, db=0, decode_responses=False)
 REDIS_JOB_PREFIX = "job:"
 REDIS_RESULT_PREFIX = "result:"
 MAX_JOBS = 100
@@ -22,7 +22,9 @@ def get_job_meta(job_id):
     """ジョブのメタデータを取得"""
     job_key = f"{REDIS_JOB_PREFIX}{job_id}:meta"
     job_data = redis.get(job_key)
-    return json.loads(job_data) if job_data else None
+    if job_data:
+        return json.loads(job_data.decode('utf-8'))  # 文字列としてデコードしてからJSONパース
+    return None
 
 def get_job_file(job_id):
     """ジョブのファイルデータを取得"""
@@ -69,7 +71,7 @@ def get_all_jobs():
     all_jobs = {}
     for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*:meta"):
         job_id = job_key.replace(REDIS_JOB_PREFIX, "").replace(":meta", "")
-        job_data = json.loads(redis.get(job_key))
+        job_data = json.loads(redis.get(job_key).decode('utf-8'))
         all_jobs[job_id] = job_data
     return all_jobs
 
