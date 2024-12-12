@@ -70,13 +70,19 @@ def get_all_jobs():
     """すべてのジョブをRedisから取得して辞書形式で返す"""
     all_jobs = {}
     for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*:meta"):
-        job_id = job_key.replace(REDIS_JOB_PREFIX, "").replace(":meta", "")
-        job_data = redis.get(job_key)
+        # job_keyがバイナリ形式で返されるので、文字列にデコードする
+        job_key_str = job_key.decode('utf-8')
+        
+        job_id = job_key_str.replace(REDIS_JOB_PREFIX, "").replace(":meta", "")
+        job_data = redis.get(job_key_str)
+        
         if isinstance(job_data, bytes):
             job_data = job_data.decode('utf-8')
+        
         job_data = json.loads(job_data)
         all_jobs[job_id] = job_data
     return all_jobs
+
 
 @app.route("/")
 def home():
