@@ -2,6 +2,7 @@ import os
 import random
 import string
 import json
+from io import BytesIO
 from datetime import datetime
 from flask import Flask, request, send_file, jsonify, render_template
 from redis import Redis
@@ -133,9 +134,13 @@ def api_simulation_result(job_id):
     if not binary_data:
         return jsonify({"error": "Result data not found"}), 404
 
+    # バイナリデータをBytesIOにラップ
+    binary_io = BytesIO(binary_data)
+
+
     # バイナリデータを返却
     return send_file(
-        binary_data,
+        binary_io,
         as_attachment=True,
         download_name=f"{job_id}.zip"
     )
