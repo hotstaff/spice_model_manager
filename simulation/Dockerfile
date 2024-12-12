@@ -29,7 +29,7 @@ COPY wine_backup.tar.gz /app/wine_backup.tar.gz
 
 # wine_backup.tar.gzを解凍して.wineディレクトリに展開
 RUN tar -xzvf /app/wine_backup.tar.gz -C /root && \
-    chown -R spice:spice /root/.wine && \
+    chown -R root:root /root/.wine && \
     rm /app/wine_backup.tar.gz
 
 # 作業ディレクトリを設定
