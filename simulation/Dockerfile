@@ -28,7 +28,9 @@ RUN pip3 install -r /app/requirements.txt
 COPY wine_backup.tar.gz /app/wine_backup.tar.gz
 
 # wine_backup.tar.gzを解凍して.wineディレクトリに展開
-RUN tar -xzvf /app/wine_backup.tar.gz -C /root && rm /app/wine_backup.tar.gz
+RUN tar -xzvf /app/wine_backup.tar.gz -C /root && \
+    chown -R root:root /root/.wine && \
+    rm /app/wine_backup.tar.gz
 
 # 作業ディレクトリを設定
 WORKDIR /app
