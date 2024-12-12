@@ -78,8 +78,9 @@ def run_job(job_id):
             return
 
         filename = job_data["file_path"]
-        print(filename)
+
         uploaded_file_path = os.path.join(SIMULATION_DIR, f"{filename}")
+        print(uploaded_file_path)
         with open(uploaded_file_path, "wb") as f:
             f.write(binary_file)
 
