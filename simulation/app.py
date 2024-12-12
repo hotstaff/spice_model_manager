@@ -134,9 +134,7 @@ def api_simulation_result(job_id):
     if not binary_data:
         return jsonify({"error": "Result data not found"}), 404
 
-    # バイナリデータをBytesIOにラップ
     binary_io = BytesIO(binary_data)
-
 
     # バイナリデータを返却
     return send_file(
