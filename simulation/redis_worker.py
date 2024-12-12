@@ -80,9 +80,17 @@ def run_job(job_id):
         filename = job_data["file_path"]
 
         uploaded_file_path = os.path.join(SIMULATION_DIR, filename)
+
         print(uploaded_file_path)
+        
         with open(uploaded_file_path, "wb") as f:
             f.write(binary_file)
+
+        if os.path.exists(uploaded_file_path):
+            print(f"File {uploaded_file_path} has been written successfully.")
+        else:
+            print(f"Failed to write file {uploaded_file_path}.")
+
 
         # シミュレーションを実行
         raw_file_path, log_file_path, netlist_path = run_simulation(uploaded_file_path)
