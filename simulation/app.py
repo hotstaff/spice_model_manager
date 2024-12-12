@@ -37,12 +37,11 @@ def create_job(uploaded_file_path):
         "file_path": uploaded_file_path,
     }
 
-    # アップロードファイルのバイナリデータを保存
-    redis.set(f"{REDIS_JOB_PREFIX}{job_id}:file", binary_data)
-
     # メタデータを保存
     redis.set(f"{REDIS_JOB_PREFIX}{job_id}:meta", json.dumps(job_data))
 
+    # アップロードファイルのバイナリデータを保存
+    redis.set(f"{REDIS_JOB_PREFIX}{job_id}:file", binary_data)
 
     # ジョブの過剰保存を防ぐ
     all_jobs = redis.keys(f"{REDIS_JOB_PREFIX}*:meta")
@@ -53,19 +52,16 @@ def create_job(uploaded_file_path):
 
     return job_id
 
+
+
 def get_all_jobs():
-    keys = redis.keys("job:*:meta")  # すべてのジョブキーを取得
-    jobs = {}
-    for job_key in keys:
-        raw_data = redis.get(job_key)
-        if raw_data:
-            try:
-                job_data = json.loads(raw_data.decode('utf-8'))  # デコードして JSON パース
-                jobs[job_key.decode('utf-8')] = job_data
-            except (json.JSONDecodeError, UnicodeDecodeError) as e:
-                print(f"Error decoding job data for key {job_key}: {e}")
-                print(f"Raw data: {raw_data}")  # デバッグ用
-    return jobs
+    """すべてのジョブをRedisから取得して辞書形式で返す"""
+    all_jobs = {}
+    for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*:meta"):
+        job_id = job_key.replace(REDIS_JOB_PREFIX, "")
+        job_data = json.loads(redis.get(job_key))
+        all_jobs[job_id] = job_data
+    return all_jobs
 
 @app.route("/")
 def home():
