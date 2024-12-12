@@ -28,7 +28,9 @@ RUN pip3 install -r /app/requirements.txt
 COPY wine_backup.tar.gz /app/wine_backup.tar.gz
 
 # wine_backup.tar.gzを解凍して.wineディレクトリに展開
-RUN tar -xzvf /app/wine_backup.tar.gz -C /root && rm /app/wine_backup.tar.gz
+RUN tar -xzvf /app/wine_backup.tar.gz -C /root && \
+    chown -R spice:spice /root/.wine && \
+    rm /app/wine_backup.tar.gz
 
 # 作業ディレクトリを設定
 WORKDIR /app
@@ -38,6 +40,8 @@ COPY redis_worker.py /app/redis_worker.py
 
 # REDISHOST環境変数を指定可能にする
 ENV REDISHOST=localhost
+
+USER spice
 
 # Xvfbを起動してDISPLAY環境変数を設定する
 ENTRYPOINT ["/bin/bash", "-c", "Xvfb :0 -screen 0 1024x768x16 & export DISPLAY=:0 && python3 redis_worker.py"]
