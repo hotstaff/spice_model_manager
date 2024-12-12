@@ -58,7 +58,7 @@ def get_all_jobs():
     """すべてのジョブをRedisから取得して辞書形式で返す"""
     all_jobs = {}
     for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*:meta"):
-        job_id = job_key.replace(REDIS_JOB_PREFIX, "")
+        job_id = job_key.replace(REDIS_JOB_PREFIX, "").replace(":meta", "")
         job_data = json.loads(redis.get(job_key))
         all_jobs[job_id] = job_data
     return all_jobs
