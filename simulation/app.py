@@ -84,6 +84,17 @@ def get_all_jobs():
     return all_jobs
 
 
+@app.before_first_request
+def clear_redis_jobs():
+    """Flaskアプリケーションが最初にリクエストを受ける前に、Redisのジョブをすべて削除"""
+    all_jobs = redis.keys(f"{REDIS_JOB_PREFIX}*:meta")
+    if all_jobs:
+        for job_key in all_jobs:
+            # ジョブのファイルとメタデータを削除
+            redis.delete(job_key)  # メタデータ削除
+            redis.delete(job_key.replace(":meta", ":file"))  # ファイルデータ削除
+    print("Redisのジョブをすべて削除しました。")
+
 @app.route("/")
 def home():
     return render_template("index.html")
