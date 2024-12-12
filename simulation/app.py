@@ -54,7 +54,7 @@ def create_job(uploaded_file_path):
     return job_id
 
 def get_all_jobs():
-    keys = redis.keys("job:*")  # すべてのジョブキーを取得
+    keys = redis.keys("job:*:meta")  # すべてのジョブキーを取得
     jobs = {}
     for job_key in keys:
         raw_data = redis.get(job_key)
