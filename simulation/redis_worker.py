@@ -59,7 +59,12 @@ def get_job_meta(job_id):
 def get_job_file(job_id):
     """ジョブのファイルデータを取得"""
     file_key = f"{REDIS_JOB_PREFIX}{job_id}:file"
-    return redis.get(file_key)
+    binary_data = redis.get(file_key)
+    if binary_data is None:
+        print(f"No file data found for job {job_id}.")
+    else:
+        print(f"File data retrieved for job {job_id}.")
+    return binary_data
 
 def run_job(job_id):
     """ジョブを実行"""
@@ -94,8 +99,6 @@ def run_job(job_id):
 
         # シミュレーションを実行
         raw_file_path, log_file_path, netlist_path = run_simulation(uploaded_file_path)
-
-        print("hi")
 
         # 結果をZIPにまとめる
         zip_buffer = BytesIO()
