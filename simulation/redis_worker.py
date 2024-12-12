@@ -74,7 +74,8 @@ def run_job(job_id):
             update_job(job_id, status="failed", error="File data missing.")
             return
 
-        uploaded_file_path = os.path.join(SIMULATION_DIR, f"{job_id}")
+        filename = job_data["file_path"]
+        uploaded_file_path = os.path.join(SIMULATION_DIR, f"{filename}")
         with open(uploaded_file_path, "wb") as f:
             f.write(binary_file)
 
