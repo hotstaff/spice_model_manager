@@ -7,9 +7,12 @@ from io import BytesIO
 import zipfile
 from PyLTSpice import SimRunner, LTspice, SpiceEditor
 
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
+
+print(SIMULATION_DIR)
 
 # 環境変数からRedisの接続情報を取得
 REDIS_HOST = os.environ.get("REDISHOST", "localhost")  # デフォルトはlocalhost
