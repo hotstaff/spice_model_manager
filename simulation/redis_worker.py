@@ -95,6 +95,8 @@ def run_job(job_id):
         # シミュレーションを実行
         raw_file_path, log_file_path, netlist_path = run_simulation(uploaded_file_path)
 
+        print("hi")
+
         # 結果をZIPにまとめる
         zip_buffer = BytesIO()
         with zipfile.ZipFile(zip_buffer, 'w', zipfile.ZIP_DEFLATED) as zip_file:
