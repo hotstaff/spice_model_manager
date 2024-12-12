@@ -17,6 +17,17 @@ REDIS_JOB_PREFIX = "job:"
 REDIS_RESULT_PREFIX = "result:"
 MAX_JOBS = 100
 
+def get_job_meta(job_id):
+    """ジョブのメタデータを取得"""
+    job_key = f"{REDIS_JOB_PREFIX}{job_id}:meta"
+    job_data = redis.get(job_key)
+    return json.loads(job_data) if job_data else None
+
+def get_job_file(job_id):
+    """ジョブのファイルデータを取得"""
+    file_key = f"{REDIS_JOB_PREFIX}{job_id}:file"
+    return redis.get(file_key)
+
 def generate_job_id_from_timestamp(base_name):
     timestamp = datetime.now().strftime("%b_%d_%H%M")
     random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7))
@@ -51,8 +62,6 @@ def create_job(uploaded_file_path):
         redis.delete(oldest_job_key)
 
     return job_id
-
-
 
 def get_all_jobs():
     """すべてのジョブをRedisから取得して辞書形式で返す"""
@@ -106,24 +115,17 @@ def api_simulate():
 
 @app.route("/api/simulations/<job_id>", methods=["GET"])
 def api_simulation_status(job_id):
-    job_key = f"{REDIS_JOB_PREFIX}{job_id}"
-    job_data = redis.get(job_key)
-    if not job_data:
-        return jsonify({"error": "Job not found"}), 404
-
-    job_data = json.loads(job_data)
+    job_data = get_job_meta(job_id)
     return jsonify({"job_id": job_id, "status": job_data["status"]})
 
 @app.route("/api/simulations/<job_id>/result", methods=["GET"])
 def api_simulation_result(job_id):
-    job_key = f"{REDIS_JOB_PREFIX}{job_id}"
     result_key = f"{REDIS_RESULT_PREFIX}{job_id}"
+    job_data = get_job_meta(job_id)
 
-    job_data = redis.get(job_key)
     if not job_data:
         return jsonify({"error": "Job not found"}), 404
 
-    job_data = json.loads(job_data)
     if job_data["status"] != "completed":
         return jsonify({"error": "Job not completed"}), 400
 
