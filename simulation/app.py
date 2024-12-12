@@ -87,12 +87,16 @@ def get_all_jobs():
 @app.route("/clear")
 def clear_redis_jobs():
     """Flaskアプリケーションが最初にリクエストを受ける前に、Redisのジョブをすべて削除"""
+    # すべてのジョブキーを取得
     all_jobs = redis.keys(f"{REDIS_JOB_PREFIX}*:meta")
     if all_jobs:
         for job_key in all_jobs:
-            # ジョブのファイルとメタデータを削除
-            redis.delete(job_key)  # メタデータ削除
-            redis.delete(job_key.replace(":meta", ":file"))  # ファイルデータ削除
+            # バイナリキーを文字列にデコード
+            job_key_str = job_key.decode('utf-8')
+            
+            # メタデータとファイルデータを削除
+            redis.delete(job_key_str)  # メタデータ削除
+            redis.delete(job_key_str.replace(":meta", ":file"))  # ファイルデータ削除
     return "Redisのジョブをすべて削除しました。"
 
 
