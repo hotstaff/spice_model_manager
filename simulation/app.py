@@ -48,7 +48,7 @@ def create_job(uploaded_file_path):
     job_data = {
         "status": "pending",
         "error": None,
-        "file_path": uploaded_file_path,
+        "file_path": os.path.basename(uploaded_file_path),
     }
 
     # メタデータを保存
