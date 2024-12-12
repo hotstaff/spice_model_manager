@@ -130,6 +130,8 @@ def api_simulation_result(job_id):
     if job_data["status"] != "completed":
         return jsonify({"error": "Job not completed"}), 400
 
+    print(result_key)
+
     binary_data = redis.get(result_key)
     if not binary_data:
         return jsonify({"error": "Result data not found"}), 404
