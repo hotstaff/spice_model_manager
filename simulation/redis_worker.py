@@ -8,7 +8,7 @@ import zipfile
 from PyLTSpice import SimRunner, LTspice, SpiceEditor
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SIMULATION_DIR = os.path.join(BASE_DIR, "data")
+SIMULATION_DIR = os.path.join(BASE_DIR, "work")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
 
 # 環境変数からRedisの接続情報を取得
