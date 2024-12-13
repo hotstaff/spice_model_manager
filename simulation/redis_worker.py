@@ -12,8 +12,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
 
-print(SIMULATION_DIR)
-
 # 環境変数からRedisの接続情報を取得
 REDIS_HOST = os.environ.get("REDISHOST", "localhost")  # デフォルトはlocalhost
 REDIS_PORT = int(os.environ.get("REDISPORT", 6379))    # デフォルトは6379
@@ -115,6 +113,7 @@ def job_worker():
     while True:
         for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*:meta"):
             job_id = job_key.decode("utf-8").replace(f"{REDIS_JOB_PREFIX}", "").replace(":meta", "")
+            print(job_id)
             job_data = get_job_meta(job_id)
 
             # ジョブが存在しない場合や処理中の場合スキップ
