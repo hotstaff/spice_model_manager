@@ -11,7 +11,8 @@ RUN apt-get update && apt-get install -y \
     python3-setuptools \
     redis-tools \
     xvfb \
-    tar && \
+    tar \
+    supervisor && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Wineのリポジトリを追加してインストール
@@ -32,6 +33,9 @@ RUN tar -xzvf /app/wine_and_ltspice_backup.tar.gz -C /root && \
     chown -R root:root /root/.wine && \
     rm /app/wine_and_ltspice_backup.tar.gz
 
+# supervisordの設定ファイルをコピー
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # 作業ディレクトリを設定
 WORKDIR /app
 
@@ -41,5 +45,5 @@ COPY redis_worker.py /app/redis_worker.py
 # REDISHOST環境変数を指定可能にする
 ENV REDISHOST=localhost
 
-# Xvfbを起動してDISPLAY環境変数を設定する
-ENTRYPOINT ["/bin/bash", "-c", "Xvfb :0 -screen 0 1024x768x16 & export DISPLAY=:0 && python3 redis_worker.py"]
+# supervisordをエントリポイントとして使用
+ENTRYPOINT ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
