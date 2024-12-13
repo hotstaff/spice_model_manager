@@ -113,13 +113,13 @@ def job_worker():
     while True:
         for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*:meta"):
             job_id = job_key.decode("utf-8").replace(f"{REDIS_JOB_PREFIX}", "").replace(":meta", "")
-            print(job_id)
             job_data = get_job_meta(job_id)
 
             # ジョブが存在しない場合や処理中の場合スキップ
             if not job_data or job_data["status"] != "pending":
                 continue
 
+            print(job_id)
             run_job(job_id)
 
 if __name__ == "__main__":
