@@ -11,7 +11,6 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
 
-
 # 環境変数からRedisの接続情報を取得
 REDIS_HOST = os.environ.get("REDISHOST", "localhost")  # デフォルトはlocalhost
 REDIS_PORT = int(os.environ.get("REDISPORT", 6379))    # デフォルトは6379
@@ -114,18 +113,23 @@ def run_job(job_id):
         update_job(job_id, status="failed", error=str(e))
 
 def job_worker():
-    """ジョブを定期的に確認して実行"""
+    """ジョブをブロックして待機し、ジョブが来たら処理する"""
     while True:
-        for job_key in redis.keys(f"{REDIS_JOB_PREFIX}*:meta"):
-            job_id = job_key.decode("utf-8").replace(f"{REDIS_JOB_PREFIX}", "").replace(":meta", "")
-            job_data = get_job_meta(job_id)
+        # BLPOPを使ってジョブをブロックして取得
+        job_id = redis.blpop("job_queue", timeout=0)[1].decode("utf-8")
+        print(f"Received job {job_id} from queue")
 
-            # ジョブが存在しない場合や処理中の場合スキップ
-            if not job_data or job_data["status"] != "pending":
-                continue
+        # ジョブのメタ情報を取得して、処理が可能か確認
+        job_data = get_job_meta(job_id)
 
-            print(f"Starting job {job_id}...")
-            run_job(job_id)
+        # ジョブが存在しない場合や処理中の場合スキップ
+        if not job_data or job_data["status"] != "pending":
+            print(f"Skipping job {job_id} as it is not pending.")
+            continue
+
+        # ジョブを処理
+        print(f"Starting job {job_id}...")
+        run_job(job_id)
 
 if __name__ == "__main__":
     job_worker()
