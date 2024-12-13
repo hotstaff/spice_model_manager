@@ -57,6 +57,9 @@ def create_job(uploaded_file_path):
     # アップロードファイルのバイナリデータを保存
     redis.set(f"{REDIS_JOB_PREFIX}{job_id}:file", binary_data)
 
+    # ジョブIDをキューに追加
+    redis.rpush("job_queue", job_id)  # "job_queue"リストにジョブIDを追加
+
     # ジョブの過剰保存を防ぐ
     all_jobs = redis.keys(f"{REDIS_JOB_PREFIX}*:meta")
     if len(all_jobs) > MAX_JOBS:
