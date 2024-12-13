@@ -7,10 +7,10 @@ from io import BytesIO
 import zipfile
 from PyLTSpice import SimRunner, LTspice, SpiceEditor
 
-
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 SIMULATION_DIR = os.path.join(BASE_DIR, "data")
 os.makedirs(SIMULATION_DIR, exist_ok=True)
+
 
 # 環境変数からRedisの接続情報を取得
 REDIS_HOST = os.environ.get("REDISHOST", "localhost")  # デフォルトはlocalhost
@@ -68,6 +68,8 @@ def run_job(job_id):
             print(f"Job {job_id} metadata not found.")
             return
 
+        print(f"Processing job {job_id} - status: {job_data['status']}")
+
         # ファイルデータを取得して一時ファイルに保存
         binary_file = get_job_file(job_id)
         if not binary_file:
@@ -82,12 +84,8 @@ def run_job(job_id):
         with open(uploaded_file_path, "wb") as f:
             f.write(binary_file)
 
-        print(f"simulator {job_id} start")
-
         # シミュレーションを実行
         raw_file_path, log_file_path, netlist_path = run_simulation(uploaded_file_path)
-
-        print(f"simulator {job_id} end")
 
         # 結果をZIPにまとめる
         zip_buffer = BytesIO()
@@ -108,6 +106,9 @@ def run_job(job_id):
 
         # 一時ファイルを削除
         cleanup_files([uploaded_file_path, raw_file_path, log_file_path])
+
+        print(f"Job {job_id} completed successfully.")
+
     except Exception as e:
         print(f"Error processing job {job_id}: {e}")
         update_job(job_id, status="failed", error=str(e))
@@ -123,6 +124,7 @@ def job_worker():
             if not job_data or job_data["status"] != "pending":
                 continue
 
+            print(f"Starting job {job_id}...")
             run_job(job_id)
 
 if __name__ == "__main__":
