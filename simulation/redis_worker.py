@@ -82,8 +82,12 @@ def run_job(job_id):
         with open(uploaded_file_path, "wb") as f:
             f.write(binary_file)
 
+        print(f"simulator {job_id} start")
+
         # シミュレーションを実行
         raw_file_path, log_file_path, netlist_path = run_simulation(uploaded_file_path)
+
+        print(f"simulator {job_id} end")
 
         # 結果をZIPにまとめる
         zip_buffer = BytesIO()
@@ -119,7 +123,6 @@ def job_worker():
             if not job_data or job_data["status"] != "pending":
                 continue
 
-            print(job_id)
             run_job(job_id)
 
 if __name__ == "__main__":
