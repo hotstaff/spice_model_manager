@@ -24,13 +24,13 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y \
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
 
-# wine_backup.tar.gzをコンテナにコピー
-COPY wine_backup.tar.gz /app/wine_backup.tar.gz
+# wine_and_ltspice_backup.tar.gzをコンテナにコピー
+COPY wine_and_ltspice_backup.tar.gz /app/wine_and_ltspice_backup.tar.gz
 
-# wine_backup.tar.gzを解凍して.wineディレクトリに展開
-RUN tar -xzvf /app/wine_backup.tar.gz -C /root && \
+# wine_and_ltspice_backup.tar.gzを解凍して.wineディレクトリに展開
+RUN tar -xzvf /app/wine_and_ltspice_backup.tar.gz -C /root && \
     chown -R root:root /root/.wine && \
-    rm /app/wine_backup.tar.gz
+    rm /app/wine_and_ltspice_backup.tar.gz
 
 # 作業ディレクトリを設定
 WORKDIR /app
