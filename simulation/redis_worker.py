@@ -1,6 +1,5 @@
 import time
 import os
-import threading
 import json
 from redis import Redis
 from datetime import datetime
