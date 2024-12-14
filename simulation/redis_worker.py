@@ -1,3 +1,4 @@
+import time
 import os
 import threading
 import json
@@ -113,6 +114,8 @@ def run_job(job_id):
         update_job(job_id, status="failed", error=str(e))
 
 
+import time
+
 def job_worker():
     """ジョブをブロックして待機し、ジョブが来たら処理する (処理中リストを導入)"""
     while True:
@@ -136,7 +139,10 @@ def job_worker():
 
             # ジョブを処理
             print(f"Starting job {job_id}...")
+            start_time = time.time()  # 処理開始時刻を記録
             run_job(job_id)
+            elapsed_time = time.time() - start_time  # 経過時間を計算
+            print(f"Job {job_id} completed in {elapsed_time:.2f} seconds.")
 
             # 処理が成功した場合、処理中リストから削除
             redis.lrem("processing_jobs", 0, job_id)
