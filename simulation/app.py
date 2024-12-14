@@ -16,7 +16,7 @@ os.makedirs(SIMULATION_DIR, exist_ok=True)
 redis = Redis(host="localhost", port=6379, db=0, decode_responses=False)
 REDIS_JOB_PREFIX = "job:"
 REDIS_RESULT_PREFIX = "result:"
-MAX_JOBS = 100
+MAX_JOBS = 30
 
 def get_job_meta(job_id):
     """ジョブのメタデータを取得"""
