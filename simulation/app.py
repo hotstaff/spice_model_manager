@@ -35,11 +35,14 @@ def generate_job_id_from_timestamp(base_name):
     # Redisでインクリメント（job_id_counterが存在しない場合は初期値1から開始）
     job_prefix = redis.incr("job_id_counter")  # job_id_counterをインクリメント
 
+    # インクリメント値を5桁にゼロ埋め
+    job_prefix_padded = str(job_prefix).zfill(5)
+
     # タイムスタンプの取得
     timestamp = datetime.now().strftime("%b_%d_%H%M")
 
     # インクリメント値を先頭に追加したジョブIDを作成
-    job_id = f"{job_prefix}_{base_name}_{timestamp}"
+    job_id = f"{job_prefix_padded}_{base_name}_{timestamp}"
     return job_id
 
 def create_job(uploaded_file_path):

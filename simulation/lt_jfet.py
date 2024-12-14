@@ -456,15 +456,22 @@ if __name__ == "__main__":
         """画像をアップロードする関数"""
         url = 'https://spice-model-manager.onrender.com/api/upload_image'
         data = {
-            'image_type': image_type,  # 任意の値
-            'data_id': model_id  # 任意のデータID
+            'image_type': image_type,
+            'data_id': model_id
         }
 
-        with open(image_path, 'rb') as image_file:
-            files = {'image': ('image.png', image_file, 'image/png')}
-            response = requests.post(url, data=data, files=files)
+        try:
+            with open(image_path, 'rb') as image_file:
+                files = {'image': ('image.png', image_file, 'image/png')}
+                response = requests.post(url, data=data, files=files)
 
-        print(response.json(), model_id)
+            if response.status_code == 200:
+                print(f"Upload successful: {model_id}")
+            else:
+                print(f"Upload failed (status: {response.status_code}): {model_id}")
+
+        except Exception as e:
+            print(f"Error during upload: {e}")
 
     def main():
         """メイン処理"""
@@ -488,27 +495,27 @@ if __name__ == "__main__":
             jfet_iv = JFET_IV_Characteristic(device_name, device_type, spice_string)
             image_path_iv = jfet_iv.process_and_plot()
 
-            upload_image(model_id, image_path_iv, 'iv')
+            # upload_image(model_id, image_path_iv, 'iv')
 
             # # JFETのVgs-Id特性をプロット
             print(f"Generating Vgs-Id characteristics for {device_name} ({model['device_type']})")
             jfet_vgs_id = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
             image_path_vgs_id = jfet_vgs_id.process_and_plot()
 
-            upload_image(model_id, image_path_vgs_id, 'vgs_id')
+            # upload_image(model_id, image_path_vgs_id, 'vgs_id')
 
             # JFETのgm-Vgs特性をプロット
             print(f"Generating gm-Vgs characteristics for {device_name} ({model['device_type']})")
             jfet_gm_vgs = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
             image_path_gm_vgs = jfet_gm_vgs.process_and_plot()
 
-            upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
+            # upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
 
             # # JFETのgm-Id特性をプロット
             print(f"Generating gm-Id characteristics for {device_name} ({model['device_type']})")
             jfet_gm_id = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
             image_path_gm_id = jfet_gm_id.process_and_plot()
             
-            upload_image(model_id, image_path_gm_id, 'gm_id')
+            # upload_image(model_id, image_path_gm_id, 'gm_id')
 
     main()
