@@ -38,11 +38,8 @@ def generate_job_id_from_timestamp(base_name):
     # タイムスタンプの取得
     timestamp = datetime.now().strftime("%b_%d_%H%M")
 
-    # ランダムなサフィックスを生成
-    random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7))
-
     # インクリメント値を先頭に追加したジョブIDを作成
-    job_id = f"{job_prefix}_{base_name}_{timestamp}_{random_suffix}"
+    job_id = f"{job_prefix}_{base_name}_{timestamp}"
     return job_id
 
 def create_job(uploaded_file_path):
@@ -71,8 +68,16 @@ def create_job(uploaded_file_path):
 
     # ジョブの過剰保存を防ぐ
     all_jobs = redis.keys(f"{REDIS_JOB_PREFIX}*:meta")
-    if len(all_jobs) > MAX_JOBS:
-        oldest_job_key = sorted(all_jobs)[0].decode('utf-8')
+
+    # バイナリのキーを文字列にデコードしてソート
+    all_jobs_str = [key.decode('utf-8') for key in all_jobs]
+    all_jobs_str.sort()
+
+    if len(all_jobs_str) > MAX_JOBS:
+        # 最も古いジョブのキーを取得
+        oldest_job_key = all_jobs_str[0]
+        
+        # メタデータとファイルデータを削除
         redis.delete(oldest_job_key.replace(":meta", ":file"))
         redis.delete(oldest_job_key)
 
