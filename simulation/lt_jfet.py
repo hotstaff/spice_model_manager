@@ -1,16 +1,148 @@
-import tempfile
-import matplotlib.pyplot as plt
 import os
+import tempfile
+import shutil
 import zipfile
 from io import BytesIO
+import requests
+import time
 import numpy as np
+import matplotlib.pyplot as plt
+
 from PyLTSpice import SimRunner, SpiceEditor, LTspice, RawRead
+
+
+class SimulationClient:
+    def __init__(self, api_url):
+        self.api_url = api_url
+        self.job_id = None  # ジョブIDを格納する変数
+        self.temp_files = {}  # job_idごとの一時ファイルを格納する辞書
+
+    def simulation_run(self, netlist_file):
+        """ネットリストを一時ファイルに保存し、APIに送信してジョブを開始する関数"""
+        if not os.path.exists(netlist_file):
+            print(f"Error: The netlist file '{netlist_file}' does not exist.")
+            return None
+
+        with open(netlist_file, 'rb') as f:
+            files = {'file': (os.path.basename(netlist_file), f, 'application/octet-stream')}
+            response = requests.post(f"{self.api_url}/api/simulate", files=files)
+
+        if response.status_code == 202:
+            job_data = response.json()
+            self.job_id = job_data.get("job_id")
+            print(f"Job started with ID: {self.job_id}")
+            return self.job_id
+        else:
+            print(f"Error starting simulation: {response.status_code}, {response.text}")
+            return None
+
+    def get_result(self, job_id=None, wait=False):
+        """ジョブIDを指定して結果を取得し、ZIPファイルを解凍して.raw と .log ファイルを返す関数"""
+        if job_id is None:
+            job_id = self.job_id
+
+        if not job_id:
+            print("Error: No job ID provided.")
+            return None, None
+
+        if wait:
+            while True:
+                status = self.get_job_status(job_id)
+                if status == "completed":
+                    print(f"Job {job_id} completed.")
+                    break
+                elif status == "failed":
+                    print(f"Job {job_id} failed.")
+                    return None, None
+                else:
+                    print(f"Job {job_id} is still running. Waiting...")
+                    time.sleep(1)
+
+        result_response = requests.get(f"{self.api_url}/api/simulations/{job_id}/result")
+        
+        if result_response.status_code == 200:
+            raw_file, log_file = self.extract_zip_contents(result_response.content, job_id)
+            return raw_file, log_file
+        else:
+            print(f"Error retrieving result for job {job_id}: {result_response.status_code}")
+            return None, None
+
+    def get_job_status(self, job_id=None):
+        """ジョブの状態を取得する関数"""
+        if job_id is None:
+            job_id = self.job_id
+
+        if not job_id:
+            print("Error: No job ID provided.")
+            return None
+
+        status_response = requests.get(f"{self.api_url}/api/simulations/{job_id}")
+        
+        if status_response.status_code == 200:
+            job_data = status_response.json()
+            return job_data["status"]
+        else:
+            print(f"Error retrieving status for job {job_id}: {status_response.status_code}")
+            return None
+
+    def extract_zip_contents(self, zip_data, job_id):
+        """ZIPデータを解凍して、.raw と .log ファイルのパスを返す関数"""
+        with zipfile.ZipFile(BytesIO(zip_data)) as zip_ref:
+            extraction_dir = tempfile.mkdtemp()
+
+            raw_file = None
+            log_file = None
+            for file_name in zip_ref.namelist():
+                zip_ref.extract(file_name, extraction_dir)
+                if file_name.endswith('.raw'):
+                    raw_file = os.path.join(extraction_dir, file_name)
+                elif file_name.endswith('.log'):
+                    log_file = os.path.join(extraction_dir, file_name)
+
+            if raw_file and log_file:
+                print(f"Job results extracted: {raw_file}, {log_file}")
+                # job_idをキーに一時ファイルを保存
+                self.temp_files[job_id] = {'raw': raw_file, 'log': log_file, 'dir': extraction_dir}
+                return raw_file, log_file
+            else:
+                raise ValueError("エラー: .raw または .log ファイルが見つかりません")
+
+    def cleanup_temp_files(self, job_id=None):
+        """job_idを指定して一時ファイルを削除する関数"""
+        if job_id is None:
+            job_id = self.job_id
+
+        if job_id not in self.temp_files:
+            print(f"Error: No temporary files found for job ID {job_id}.")
+            return
+
+        try:
+            # 一時ファイルを削除
+            temp_files = self.temp_files.pop(job_id)
+            raw_file = temp_files.get('raw')
+            log_file = temp_files.get('log')
+            extraction_dir = temp_files.get('dir')
+
+            if raw_file and os.path.exists(raw_file):
+                os.remove(raw_file)
+                # print(f"Deleted temporary file: {raw_file}")
+            if log_file and os.path.exists(log_file):
+                os.remove(log_file)
+                # print(f"Deleted temporary file: {log_file}")
+
+            # 一時ディレクトリも削除
+            if os.path.exists(extraction_dir):
+                shutil.rmtree(extraction_dir)
+                print(f"Deleted temporary directory: {extraction_dir}")
+        except Exception as e:
+            print(f"Error during cleanup: {e}")
+
 
 class JFET_SimulationBase:
 
     _simulation_name = 'jfet_dc' # default
 
-    def __init__(self, device_name, device_type, spice_string):
+    def __init__(self, device_name, device_type, spice_string, remote=True):
         self.device_name = device_name
         self.device_type = device_type
         self.spice_string = spice_string
@@ -20,11 +152,17 @@ class JFET_SimulationBase:
         self.template_path = os.path.join(script_dir, 'net', 'jfet_dc.net')  # テンプレートファイルのパス
         self.output_folder = os.path.join(script_dir, 'data')
 
-        self.runner = SimRunner(output_folder=self.output_folder, simulator=LTspice)
         self.net = None
         self.raw_data = None
 
-        self.api_url = "http://35.238.147.89:5000/simulate"
+        self.remote = remote
+
+        if remote:
+            self.simulation_client = SimulationClient(api_url="http://34.30.181.119:5000")
+            self.runner = None
+        else:
+            self.simulation_client = None
+            self.runner = SimRunner(output_folder=self.output_folder, simulator=LTspice)
 
     def modify_netlist(self):
         """ネットリストを修正してファイル名を変更して保存"""
@@ -35,65 +173,27 @@ class JFET_SimulationBase:
     def run_simulation(self):
         """シミュレーションを実行してRAWデータを取得"""
         run_filename = f"{self.simulation_name}_{self.device_name}.net"
-        raw_path, log = self.runner.run_now(self.net, run_filename=run_filename)
-        self.raw_data = RawRead(raw_path)
-
-    def extract_zip_contents(self, zip_data):
-        """ZIPデータを解凍して、.raw と .log ファイルのパスを返す関数"""
-        # ZIPファイルをメモリ上で解凍
-        with zipfile.ZipFile(BytesIO(zip_data)) as zip_ref:
-            # 解凍したファイルのディレクトリを作成
-            extraction_dir = tempfile.mkdtemp()
-
-            # .raw と .log のファイルを抽出
-            raw_file = None
-            log_file = None
-            for file_name in zip_ref.namelist():
-                zip_ref.extract(file_name, extraction_dir)
-                if file_name.endswith('.raw'):
-                    raw_file = os.path.join(extraction_dir, file_name)
-                elif file_name.endswith('.log'):
-                    log_file = os.path.join(extraction_dir, file_name)
-
-            # .raw と .log ファイルが存在することを確認
-            if raw_file and log_file:
-                return raw_file, log_file
-            else:
-                raise ValueError("エラー: .raw または .log ファイルが見つかりません")
-
+        raw_file, log = self.runner.run_now(self.net, run_filename=run_filename)
+        self.raw_data = RawRead(raw_file)
 
     def run_simulation_api(self):
-        """ネットリストを一時ファイルに保存し、APIに送信する関数"""
-
+        """ネットリストを指定したフォルダに保存し、APIに送信する関数"""
         run_filename = f"{self.simulation_name}_{self.device_name}.net"
 
-        # 一時的なネットリストファイルを作成
-        with tempfile.NamedTemporaryFile(delete=True, suffix='.net') as temp_net_file:
-            # ネットリストをファイルに保存
-            self.net.save_netlist(temp_net_file.name)
+        # フォルダ内にネットリストファイルを保存
+        netlist_path = os.path.join(self.output_folder, run_filename)
+        
+        # ネットリストをファイルに保存
+        self.net.save_netlist(netlist_path)
+        job_id = self.simulation_client.simulation_run(netlist_path)
 
-            # APIにネットリストを送信
-            with open(temp_net_file.name, 'rb') as f:
-                files = {'file': (run_filename, f, 'application/octet-stream')}
-                response = requests.post(self.api_url, files=files)
+        # 待つ
+        raw_file, log_file = self.simulation_client.get_result(job_id=job_id, wait=True)
 
-            # レスポンスの確認
-            if response.status_code == 200:
-                try:
-                    # ZIPファイルを解凍し、.raw と .log ファイルを取得
-                    raw_file, log_file = self.extract_zip_contents(response.content)
+        self.raw_data = RawRead(raw_file)
 
-                    # RawReadで処理
-                    self.raw_data = RawRead(raw_file)
-
-                    # ファイル処理後に削除
-                    os.remove(raw_file)
-                    os.remove(log_file)
-
-                except ValueError as e:
-                    print(str(e))
-            else:
-                print(f"エラー: {response.status_code}, メッセージ: {response.text}")
+        # 必要に応じてファイルを手動で削除
+        os.remove(netlist_path)
 
 
     def extract_data(self):
@@ -117,6 +217,8 @@ class JFET_SimulationBase:
             return self.plot(*data)
         finally:
             plt.close('all')  # メモリを解放
+            if self.remote:
+                self.simulation_client.cleanup_temp_files()
 
 
 class JFET_IV_Characteristic(JFET_SimulationBase):

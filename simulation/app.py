@@ -147,7 +147,13 @@ def api_simulate():
 @app.route("/api/simulations/<job_id>", methods=["GET"])
 def api_simulation_status(job_id):
     job_data = get_job_meta(job_id)
-    return jsonify({"job_id": job_id, "status": job_data["status"]})
+    
+    # job_dataがNoneの場合にエラーメッセージを返す
+    if job_data is None:
+        return jsonify({"error": f"Job with ID {job_id} not found."}), 404
+
+    # job_dataが存在する場合はstatusを返す
+    return jsonify({"job_id": job_id, "status": job_data.get("status", "unknown")})
 
 @app.route("/api/simulations/<job_id>/result", methods=["GET"])
 def api_simulation_result(job_id):
