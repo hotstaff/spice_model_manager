@@ -6,7 +6,7 @@ from io import BytesIO
 app = Flask(__name__)
 
 # JobModelのインスタンスを作成
-job_model = JobModel()
+job_model = JobModel(redis_host="localhost", redis_port=6379, redis_db=0)
 
 @app.route("/api/clear_jobs", methods=["POST"])
 def clear_redis_jobs():
