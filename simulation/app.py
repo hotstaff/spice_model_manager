@@ -32,9 +32,18 @@ def get_job_file(job_id):
     return redis.get(file_key)
 
 def generate_job_id_from_timestamp(base_name):
+    # Redisでインクリメント（job_id_counterが存在しない場合は初期値1から開始）
+    job_prefix = redis.incr("job_id_counter")  # job_id_counterをインクリメント
+
+    # タイムスタンプの取得
     timestamp = datetime.now().strftime("%b_%d_%H%M")
+
+    # ランダムなサフィックスを生成
     random_suffix = ''.join(random.choices(string.ascii_lowercase + string.digits, k=7))
-    return f"{base_name}_{timestamp}_{random_suffix}"
+
+    # インクリメント値を先頭に追加したジョブIDを作成
+    job_id = f"{job_prefix}_{base_name}_{timestamp}_{random_suffix}"
+    return job_id
 
 def create_job(uploaded_file_path):
     base_name = os.path.splitext(os.path.basename(uploaded_file_path))[0]

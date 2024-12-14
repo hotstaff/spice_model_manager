@@ -10,6 +10,7 @@ import matplotlib.pyplot as plt
 
 from PyLTSpice import SimRunner, SpiceEditor, LTspice, RawRead
 
+import time
 
 class SimulationClient:
     def __init__(self, api_url):
@@ -17,24 +18,31 @@ class SimulationClient:
         self.job_id = None  # ジョブIDを格納する変数
         self.temp_files = {}  # job_idごとの一時ファイルを格納する辞書
 
-    def simulation_run(self, netlist_file):
+    def simulation_run(self, netlist_file, max_retries=3, retry_delay=5):
         """ネットリストを一時ファイルに保存し、APIに送信してジョブを開始する関数"""
         if not os.path.exists(netlist_file):
             print(f"Error: The netlist file '{netlist_file}' does not exist.")
             return None
 
-        with open(netlist_file, 'rb') as f:
-            files = {'file': (os.path.basename(netlist_file), f, 'application/octet-stream')}
-            response = requests.post(f"{self.api_url}/api/simulate", files=files)
+        # 最大リトライ回数分ループして再試行
+        for attempt in range(1, max_retries + 1):
+            with open(netlist_file, 'rb') as f:
+                files = {'file': (os.path.basename(netlist_file), f, 'application/octet-stream')}
+                response = requests.post(f"{self.api_url}/api/simulate", files=files)
 
-        if response.status_code == 202:
-            job_data = response.json()
-            self.job_id = job_data.get("job_id")
-            print(f"Job started with ID: {self.job_id}")
-            return self.job_id
-        else:
-            print(f"Error starting simulation: {response.status_code}, {response.text}")
-            return None
+            if response.status_code == 202:
+                job_data = response.json()
+                self.job_id = job_data.get("job_id")
+                print(f"Job started with ID: {self.job_id}")
+                return self.job_id
+            else:
+                print(f"Error starting simulation (attempt {attempt}/{max_retries}): {response.status_code}, {response.text}")
+                if attempt < max_retries:
+                    print(f"Retrying in {retry_delay} seconds...")
+                    time.sleep(retry_delay)
+                else:
+                    print("Max retries reached. Job registration failed.")
+                    return None
 
     def get_result(self, job_id=None, wait=False):
         """ジョブIDを指定して結果を取得し、ZIPファイルを解凍して.raw と .log ファイルを返す関数"""
@@ -76,12 +84,21 @@ class SimulationClient:
             print("Error: No job ID provided.")
             return None
 
+        # ジョブのステータスを取得
         status_response = requests.get(f"{self.api_url}/api/simulations/{job_id}")
         
         if status_response.status_code == 200:
+            # 成功した場合、ステータスを返す
             job_data = status_response.json()
             return job_data["status"]
+        
+        elif status_response.status_code == 404:
+            # 404エラーの場合、ジョブ登録が失敗したとみなす
+            print(f"Error: Job with ID {job_id} not found. Job registration may have failed.")
+            return None
+
         else:
+            # 他のエラーの場合
             print(f"Error retrieving status for job {job_id}: {status_response.status_code}")
             return None
 
