@@ -112,24 +112,41 @@ def run_job(job_id):
         print(f"Error processing job {job_id}: {e}")
         update_job(job_id, status="failed", error=str(e))
 
+
 def job_worker():
-    """ジョブをブロックして待機し、ジョブが来たら処理する"""
+    """ジョブをブロックして待機し、ジョブが来たら処理する (処理中リストを導入)"""
     while True:
         # BLPOPを使ってジョブをブロックして取得
-        job_id = redis.blpop("job_queue", timeout=0)[1].decode("utf-8")
+        job = redis.blpop("job_queue", timeout=0)
+        job_id = job[1].decode("utf-8")
         print(f"Received job {job_id} from queue")
 
-        # ジョブのメタ情報を取得して、処理が可能か確認
-        job_data = get_job_meta(job_id)
+        # 処理中ジョブリストに追加
+        redis.rpush("processing_jobs", job_id)
 
-        # ジョブが存在しない場合や処理中の場合スキップ
-        if not job_data or job_data["status"] != "pending":
-            print(f"Skipping job {job_id} as it is not pending.")
-            continue
+        try:
+            # ジョブのメタ情報を取得して、処理が可能か確認
+            job_data = get_job_meta(job_id)
 
-        # ジョブを処理
-        print(f"Starting job {job_id}...")
-        run_job(job_id)
+            # ジョブが存在しない場合や処理中の場合スキップ
+            if not job_data or job_data["status"] != "pending":
+                print(f"Skipping job {job_id} as it is not pending.")
+                redis.lrem("processing_jobs", 0, job_id)  # 処理中リストから削除
+                continue
+
+            # ジョブを処理
+            print(f"Starting job {job_id}...")
+            run_job(job_id)
+
+            # 処理が成功した場合、処理中リストから削除
+            redis.lrem("processing_jobs", 0, job_id)
+
+        except Exception as e:
+            # エラーが発生した場合、ジョブを再度キューに戻す
+            print(f"Error processing job {job_id}: {e}")
+            redis.rpush("job_queue", job_id)
+            redis.lrem("processing_jobs", 0, job_id)
+
 
 if __name__ == "__main__":
     job_worker()
