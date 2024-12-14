@@ -16,7 +16,7 @@ os.makedirs(SIMULATION_DIR, exist_ok=True)
 redis = Redis(host="localhost", port=6379, db=0, decode_responses=False)
 REDIS_JOB_PREFIX = "job:"
 REDIS_RESULT_PREFIX = "result:"
-MAX_JOBS = 30
+MAX_JOBS = 15
 
 def get_job_meta(job_id):
     """ジョブのメタデータを取得"""
@@ -63,7 +63,7 @@ def create_job(uploaded_file_path):
     # ジョブの過剰保存を防ぐ
     all_jobs = redis.keys(f"{REDIS_JOB_PREFIX}*:meta")
     if len(all_jobs) > MAX_JOBS:
-        oldest_job_key = sorted(all_jobs)[0]
+        oldest_job_key = sorted(all_jobs)[0].decode('utf-8')
         redis.delete(oldest_job_key.replace(":meta", ":file"))
         redis.delete(oldest_job_key)
 
