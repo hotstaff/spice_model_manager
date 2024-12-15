@@ -1,4 +1,4 @@
-FROM debian:stable-slim
+FROM ubuntu:22.04
 
 # ベースイメージの更新と基本ツールのインストール
 RUN apt-get update && apt-get install -y \
