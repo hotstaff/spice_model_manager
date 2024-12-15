@@ -3,7 +3,7 @@ from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 from simulation.job_model import JobModel
 from io import BytesIO
 
-simu_views = Blueprint('simu_views', __name__, url_prefix='/simulation')
+simu_views = Blueprint('simu_views', __name__)
 
 redis_host = os.getenv("REDIS_HOST", "localhost")  # デフォルトはlocalhost
 
@@ -17,7 +17,7 @@ def clear_redis_jobs():
     return jsonify({"message": result})
 
 
-@simu_views.route("/")
+@simu_views.route("/job")
 def home():
     return render_template("job.html")
 
