@@ -2,7 +2,7 @@ import os
 from flask import Flask, redirect, url_for
 from models.db_model import init_db, migrate_db
 from views import model_views  # views.pyからmodel_viewsをインポート
-from simulation_view import simulation
+from simulation_view import simu_views
 
 app = Flask(__name__)
 
@@ -14,6 +14,7 @@ migrate_db()
 
 # APIエンドポイントを設定
 app.register_blueprint(model_views)
+app.register_blueprint(simu_views)
 
 @app.route('/')
 def home():
