@@ -8,7 +8,7 @@ from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 from simulation.job_model import JobModel
 from io import BytesIO
 
-simulation = Blueprint('simulation', __name__)
+simulation = Blueprint('simulation')
 
 redis_host = os.getenv("REDIS_HOST", "localhost")  # デフォルトはlocalhost
 
