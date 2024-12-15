@@ -6,7 +6,7 @@
     <script>
         async function fetchJobs() {
             try {
-                const response = await fetch('/simulation/simulations');
+                const response = await fetch('/simulations');
                 const jobs = await response.json();
 
                 const tableBody = document.getElementById('jobs-table-body');
@@ -21,7 +21,7 @@
                         <td>${job.status}</td>
                         <td>
                             ${job.status === 'completed' 
-                                ? `<a href="/simulation/simulations/${jobId}/result" download>ダウンロード</a>` 
+                                ? `<a href="/simulations/${jobId}/result" download>ダウンロード</a>` 
                                 : 'N/A'}
                         </td>
                     `;
@@ -36,7 +36,7 @@
             event.preventDefault();  // ページのリロードを防止
 
             const formData = new FormData(event.target);
-            const response = await fetch('/simulation/simulate', {
+            const response = await fetch('/simulate', {
                 method: 'POST',
                 body: formData,
             });
