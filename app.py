@@ -19,7 +19,7 @@ migrate_db()
 
 # APIエンドポイントを設定
 app.register_blueprint(model_views)
-app.register_blueprint(simulation, __name__, url_prefix='/simulation')
+app.register_blueprint(simulation)
 
 @app.route('/')
 def home():
