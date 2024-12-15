@@ -1,4 +1,4 @@
-FROM debian:stable-slima
+FROM debian:stable-slim
 
 # ベースイメージの更新と基本ツールのインストール
 RUN apt-get update && apt-get install -y \
