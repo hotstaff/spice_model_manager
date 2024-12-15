@@ -1,13 +1,8 @@
-#インポート用
-import sys
-sys.path.append("simulation")
-
-
 import os
 from flask import Flask, redirect, url_for
 from models.db_model import init_db, migrate_db
 from views import model_views  # views.pyからmodel_viewsをインポート
-from simulation.endpoints import simulation
+from simulation_view import simulation
 
 app = Flask(__name__)
 
@@ -19,7 +14,6 @@ migrate_db()
 
 # APIエンドポイントを設定
 app.register_blueprint(model_views)
-app.register_blueprint(simulation)
 
 @app.route('/')
 def home():
