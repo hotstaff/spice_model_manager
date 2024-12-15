@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from simulation.endpoints import simulation 
+from endpoints import simulation 
 
 app = Flask(__name__)
 
