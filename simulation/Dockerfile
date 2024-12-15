@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+FROM debian:stable-slima
 
 # ベースイメージの更新と基本ツールのインストール
 RUN apt-get update && apt-get install -y \
