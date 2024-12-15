@@ -1,14 +1,9 @@
-# #インポート用
-# import sys
-# sys.path.append("simulation")
-
-
 import os
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 from simulation.job_model import JobModel
 from io import BytesIO
 
-simulation = Blueprint('simulation')
+simulation = Blueprint('simulation', __name__)
 
 redis_host = os.getenv("REDIS_HOST", "localhost")  # デフォルトはlocalhost
 
