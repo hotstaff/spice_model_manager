@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ファイルアップロード</title>
+    <script>
+        async function fetchJobs() {
+            try {
+                const response = await fetch('/api/simulations');
+                const jobs = await response.json();
+
+                const tableBody = document.getElementById('jobs-table-body');
+                tableBody.innerHTML = '';
+
+                for (const jobId in jobs) {
+                    const job = jobs[jobId];
+                    const row = document.createElement('tr');
+
+                    row.innerHTML = `
+                        <td>${jobId}</td>
+                        <td>${job.status}</td>
+                        <td>
+                            ${job.status === 'completed' 
+                                ? `<a href="/api/simulations/${jobId}/result" download>ダウンロード</a>` 
+                                : 'N/A'}
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                }
+            } catch (error) {
+                console.error('Error fetching jobs:', error);
+            }
+        }
+
+        async function handleFormSubmit(event) {
+            event.preventDefault();  // ページのリロードを防止
+
+            const formData = new FormData(event.target);
+            const response = await fetch('/simulate', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (response.ok) {
+                // シミュレーションジョブの作成成功時の処理
+                alert('シミュレーションジョブが作成されました。結果が準備できるまでお待ちください。');
+                fetchJobs();  // ジョブの状態を取得
+            } else {
+                // エラーがあった場合
+                alert('ファイルアップロードに失敗しました。');
+            }
+        }
+
+        // Fetch jobs every 5 seconds
+        setInterval(fetchJobs, 5000);
+        window.onload = fetchJobs;
+    </script>
+</head>
+<body>
+    <h1>LTspice ネットリストのアップロード</h1>
+    <form id="uploadForm" onsubmit="handleFormSubmit(event)">
+        <label for="file">ネットリストファイルを選択:</label>
+        <input type="file" name="file" id="file" required><br><br>
+        <button type="submit">シミュレーション開始</button>
+    </form>
+
+    <h2>ジョブの状態</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ジョブID</th>
+                <th>ステータス</th>
+                <th>結果</th>
+            </tr>
+        </thead>
+        <tbody id="jobs-table-body">
+            <!-- Job data will be dynamically inserted here -->
+        </tbody>
+    </table>
+</body>
+</html>

@@ -19,7 +19,7 @@ def clear_redis_jobs():
 
 @simu_views.route("/")
 def home():
-    return render_template("index.html")
+    return render_template("job.html")
 
 
 @simu_views.route("/simulate", methods=["POST"])
