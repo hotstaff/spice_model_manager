@@ -1,3 +1,5 @@
+import sys
+sys.path.append("simulation")
 import os
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 from job_model import JobModel
