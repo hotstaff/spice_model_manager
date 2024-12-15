@@ -41,6 +41,7 @@ WORKDIR /app
 
 # 必要なPythonスクリプトをコンテナにコピー
 COPY redis_worker.py /app/redis_worker.py
+COPY app.py /app/app.py
 
 # REDISHOST環境変数を指定可能にする
 ENV REDISHOST=localhost
