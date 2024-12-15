@@ -8,7 +8,7 @@ simu_views = Blueprint('simu_views', __name__)
 redis_host = os.getenv("REDIS_HOST", "localhost")  # デフォルトはlocalhost
 
 # JobModelのインスタンスを作成
-job_model = JobModel(redis_host=redis_host, redis_port=6379, redis_db=0)
+job_model = JobModel(redis_host=redis_host)
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
 def clear_redis_jobs():
