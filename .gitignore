@@ -8,3 +8,4 @@ simulation/images/*
 !simulation/data/.gitkeep
 !simulation/images/.gitkeep
 
+*/__pycache__

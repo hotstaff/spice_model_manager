@@ -156,7 +156,7 @@ class SimulationClient:
 # メイン処理
 if __name__ == "__main__":
 
-    API_URL = "https://spice-model-manager.onrender.com/api/models"  # APIのURL
+    API_URL = "https://spice-model-manager-72390409021.asia-northeast2.run.app/api/models"  # APIのURL
 
     def fetch_model_data():
         """APIから全モデルデータを取得し、NJF/PJFのものを抽出"""
@@ -179,7 +179,7 @@ if __name__ == "__main__":
 
     def upload_image(model_id, image_path, image_type):
         """画像をアップロードする関数"""
-        url = 'https://spice-model-manager.onrender.com/api/upload_image'
+        url = 'https://spice-model-manager-72390409021.asia-northeast2.run.app/api/upload_image'
         data = {
             'image_type': image_type,
             'data_id': model_id
@@ -206,7 +206,7 @@ if __name__ == "__main__":
             raw_file, log_file = runner.run_now(obj.net, run_filename=os.path.basename(netlist_path))
             return raw_file, log_file
         else:
-            simulation_client = SimulationClient(api_url="http://34.30.181.119:5000")
+            simulation_client = SimulationClient(api_url="https://spice-model-manager-72390409021.asia-northeast2.run.app")
             job_id = simulation_client.simulation_run(netlist_path)
             raw_file, log_file = simulation_client.get_result(job_id=job_id, wait=True)
             return raw_file, log_file
@@ -238,7 +238,7 @@ if __name__ == "__main__":
             jfet_iv.load_results(raw_file, log_file)
             image_path_iv = jfet_iv.plot()
 
-            # upload_image(model_id, image_path_iv, 'iv')
+            upload_image(model_id, image_path_iv, 'iv')
 
             # JFETのVgs-Id特性をプロット
             print(f"Generating Vgs-Id characteristics for {device_name} ({model['device_type']})")
@@ -249,7 +249,7 @@ if __name__ == "__main__":
             jfet_vgs_id.load_results(raw_file, log_file)
             image_path_vgs_id = jfet_vgs_id.plot()
 
-            # upload_image(model_id, image_path_vgs_id, 'vgs_id')
+            upload_image(model_id, image_path_vgs_id, 'vgs_id')
 
             # JFETのgm-Vgs特性をプロット
             print(f"Generating gm-Vgs characteristics for {device_name} ({model['device_type']})")
@@ -260,7 +260,7 @@ if __name__ == "__main__":
             jfet_gm_vgs.load_results(raw_file, log_file)
             image_path_gm_vgs = jfet_gm_vgs.plot()
 
-            # upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
+            upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
 
             # JFETのgm-Id特性をプロット
             print(f"Generating gm-Id characteristics for {device_name} ({model['device_type']})")
@@ -271,7 +271,7 @@ if __name__ == "__main__":
             jfet_gm_id.load_results(raw_file, log_file)
             image_path_gm_id = jfet_gm_id.plot()
 
-            # upload_image(model_id, image_path_gm_id, 'gm_id')
+            upload_image(model_id, image_path_gm_id, 'gm_id')
 
 
     main()
