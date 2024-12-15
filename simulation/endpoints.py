@@ -1,11 +1,11 @@
-#インポート用
-import sys
-sys.path.append("simulation")
+# #インポート用
+# import sys
+# sys.path.append("simulation")
 
 
 import os
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
-from job_model import JobModel
+from simulation.job_model import JobModel
 from io import BytesIO
 
 simulation = Blueprint('simulation', __name__)
