@@ -2,7 +2,7 @@ import os
 from flask import Flask, redirect, url_for
 from models.db_model import init_db, migrate_db
 from views import model_views  # views.pyからmodel_viewsをインポート
-from simulation_view import simu_views
+from simulation_views import simu_views
 
 app = Flask(__name__)
 
