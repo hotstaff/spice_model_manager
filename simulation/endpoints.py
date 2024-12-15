@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, send_file, jsonify, render_template
+from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 from job_model import JobModel
 from io import BytesIO
 
