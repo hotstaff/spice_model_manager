@@ -1,10 +1,6 @@
-#インポート用
-import sys
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-
 import os
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
-from job_model import JobModel
+from .job_model import JobModel
 from io import BytesIO
 
 simulation = Blueprint('simulation', __name__)
