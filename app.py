@@ -1,3 +1,8 @@
+#インポート用
+import sys
+sys.path.append("simulation")
+
+
 import os
 from flask import Flask, redirect, url_for
 from models.db_model import init_db, migrate_db
