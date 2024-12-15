@@ -214,6 +214,43 @@ def delete_model(model_id):
     
     return jsonify({"message": "Model deleted successfully"}), 200
 
+@model_views.route('/api/upload_image', methods=['POST'])
+def upload_image():
+    if 'image' not in request.files:
+        return jsonify({"error": "No image file part"}), 400
+    
+    image_file = request.files['image']
+    
+    if image_file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+
+    # 画像ファイルがpngまたはjpegであることを確認
+    if image_file.content_type not in ['image/png', 'image/jpeg']:
+        return jsonify({"error": "File must be a PNG or JPEG image"}), 400
+    
+    # ユーザー指定のimage_typeとimage_formatをフォームから取得
+    image_type = request.form.get('image_type', 'default')  # 'default'をデフォルトに設定
+    image_format = 'png' if image_file.content_type == 'image/png' else 'jpeg'
+    
+    data_id = request.form.get('data_id')  # データIDをフォームから取得
+    if not data_id:
+        return jsonify({"error": "No data_id provided"}), 400
+    
+    try:
+        data_id = int(data_id)
+    except ValueError:
+        return jsonify({"error": "data_id must be an integer"}), 400
+
+    # 画像データをデータベースに保存
+    try:
+        save_image_to_db(data_id, image_file, image_type, image_format)
+        # simulation_doneフラグを変える
+        update_simulation_done(data_id)
+        return jsonify({"message": "Image uploaded successfully!"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
+
+
 # モデルの一覧をHTMLで表示
 @model_views.route('/models', methods=['GET'])
 def list_models():
@@ -256,42 +293,6 @@ def list_models():
     else:
         return "There are invalid inputs", 400
 
-
-@model_views.route('/api/upload_image', methods=['POST'])
-def upload_image():
-    if 'image' not in request.files:
-        return jsonify({"error": "No image file part"}), 400
-    
-    image_file = request.files['image']
-    
-    if image_file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
-    # 画像ファイルがpngまたはjpegであることを確認
-    if image_file.content_type not in ['image/png', 'image/jpeg']:
-        return jsonify({"error": "File must be a PNG or JPEG image"}), 400
-    
-    # ユーザー指定のimage_typeとimage_formatをフォームから取得
-    image_type = request.form.get('image_type', 'default')  # 'default'をデフォルトに設定
-    image_format = 'png' if image_file.content_type == 'image/png' else 'jpeg'
-    
-    data_id = request.form.get('data_id')  # データIDをフォームから取得
-    if not data_id:
-        return jsonify({"error": "No data_id provided"}), 400
-    
-    try:
-        data_id = int(data_id)
-    except ValueError:
-        return jsonify({"error": "data_id must be an integer"}), 400
-
-    # 画像データをデータベースに保存
-    try:
-        save_image_to_db(data_id, image_file, image_type, image_format)
-        # simulation_doneフラグを変える
-        update_simulation_done(data_id)
-        return jsonify({"message": "Image uploaded successfully!"}), 200
-    except Exception as e:
-        return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
 
 
 @model_views.route('/get_image/<int:data_id>/<string:image_type>', methods=['GET'])
