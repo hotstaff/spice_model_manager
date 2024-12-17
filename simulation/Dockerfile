@@ -24,6 +24,9 @@ RUN dpkg --add-architecture i386 && apt-get update && apt-get install -y \
 # ユーザー 'spice' を追加し、ホームディレクトリを作成
 RUN useradd -m -s /bin/bash spice
 
+# spice ユーザーを tty グループに追加
+RUN usermod -aG tty spice
+
 # Python依存ライブラリのインストール
 COPY requirements.txt /app/requirements.txt
 RUN pip3 install -r /app/requirements.txt
@@ -36,6 +39,7 @@ RUN tar -xzvf /app/wine_and_ltspice_backup.tar.gz -C /home/spice && \
     chown -R spice:spice /home/spice/.wine && \
     chown -R spice:spice /home/spice/LTspiceXVII && \
     rm /app/wine_and_ltspice_backup.tar.gz
+
 
 # supervisordの設定ファイルをコピー
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
