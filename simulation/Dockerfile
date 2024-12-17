@@ -34,6 +34,7 @@ COPY wine_and_ltspice_backup.tar.gz /app/wine_and_ltspice_backup.tar.gz
 # wine_and_ltspice_backup.tar.gzを解凍して 'spice' ユーザーのホームディレクトリに展開
 RUN tar -xzvf /app/wine_and_ltspice_backup.tar.gz -C /home/spice && \
     chown -R spice:spice /home/spice/.wine && \
+    chown -R spice:spice /home/spice/LTspiceXVII && \
     rm /app/wine_and_ltspice_backup.tar.gz
 
 # supervisordの設定ファイルをコピー
