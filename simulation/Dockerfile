@@ -40,6 +40,8 @@ RUN tar -xzvf /app/wine_and_ltspice_backup.tar.gz -C /home/spice && \
     chown -R spice:spice /home/spice/LTspiceXVII && \
     rm /app/wine_and_ltspice_backup.tar.gz
 
+# /appディレクトリを spice ユーザーに所有させる
+RUN chown -R spice:spice /app
 
 # supervisordの設定ファイルをコピー
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
@@ -50,8 +52,6 @@ WORKDIR /app
 # 必要なPythonスクリプトをコンテナにコピー
 COPY redis_worker.py /app/redis_worker.py
 COPY app.py /app/app.py
-
-RUN touch /app/supervisord.log && chmod 777 /app/supervisord.log
 
 # REDISHOST環境変数を指定可能にする
 ENV REDISHOST=localhost
