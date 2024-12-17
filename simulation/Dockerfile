@@ -47,6 +47,8 @@ WORKDIR /app
 COPY redis_worker.py /app/redis_worker.py
 COPY app.py /app/app.py
 
+RUN touch /app/supervisord.log && chmod 777 /app/supervisord.log
+
 # REDISHOST環境変数を指定可能にする
 ENV REDISHOST=localhost
 
