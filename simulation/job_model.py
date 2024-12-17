@@ -75,16 +75,23 @@ class JobModel:
         return job_id
 
     def get_all_jobs(self):
-        """すべてのジョブをRedisから取得"""
+        """すべてのジョブをRedisから取得（MGET使用）"""
         all_jobs = {}
-        for job_key in self.redis.keys(f"{self.REDIS_JOB_PREFIX}*:meta"):
-            job_key_str = job_key.decode('utf-8')
-            job_id = job_key_str.replace(self.REDIS_JOB_PREFIX, "").replace(":meta", "")
-            job_data = self.redis.get(job_key_str)
-            if isinstance(job_data, bytes):
-                job_data = job_data.decode('utf-8')
-            job_data = json.loads(job_data)
-            all_jobs[job_id] = job_data
+        job_keys = self.redis.keys(f"{self.REDIS_JOB_PREFIX}*:meta")
+        
+        if not job_keys:
+            return all_jobs
+        
+        # Redisから一度にデータを取得
+        job_values = self.redis.mget(job_keys)
+        
+        for key, value in zip(job_keys, job_values):
+            if value:
+                job_key_str = key.decode('utf-8')
+                job_id = job_key_str.replace(self.REDIS_JOB_PREFIX, "").replace(":meta", "")
+                job_data = json.loads(value.decode('utf-8'))
+                all_jobs[job_id] = job_data
+        
         return all_jobs
 
     def clear_all_jobs(self):
