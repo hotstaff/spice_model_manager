@@ -3,6 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <title>ファイルアップロード</title>
+    <style>
+        /* メッセージのスタイル */
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+    </style>
     <script>
         async function fetchJobs() {
             try {
@@ -41,13 +58,32 @@
                 body: formData,
             });
 
+            const messageContainer = document.getElementById('message-container');
+
             if (response.ok) {
                 // シミュレーションジョブの作成成功時の処理
-                alert('シミュレーションジョブが作成されました。結果が準備できるまでお待ちください。');
+                const successMessage = document.createElement('div');
+                successMessage.classList.add('message', 'success');
+                successMessage.textContent = 'シミュレーションジョブが作成されました。結果が準備できるまでお待ちください。';
+                messageContainer.appendChild(successMessage);
+
+                // メッセージを3秒後に非表示にする
+                setTimeout(() => {
+                    successMessage.remove();
+                }, 3000);
+
                 fetchJobs();  // ジョブの状態を取得
             } else {
                 // エラーがあった場合
-                alert('ファイルアップロードに失敗しました。');
+                const errorMessage = document.createElement('div');
+                errorMessage.classList.add('message', 'error');
+                errorMessage.textContent = 'ファイルアップロードに失敗しました。';
+                messageContainer.appendChild(errorMessage);
+
+                // メッセージを3秒後に非表示にする
+                setTimeout(() => {
+                    errorMessage.remove();
+                }, 3000);
             }
         }
 
@@ -63,6 +99,9 @@
         <input type="file" name="file" id="file" required><br><br>
         <button type="submit">シミュレーション開始</button>
     </form>
+
+    <!-- メッセージ表示エリア -->
+    <div id="message-container"></div>
 
     <h2>ジョブの状態</h2>
     <table border="1">
