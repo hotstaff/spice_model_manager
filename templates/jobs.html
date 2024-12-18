@@ -18,7 +18,7 @@
             color: white;
             padding: 20px 0;
             text-align: center;
-            font-size: 2rem;
+            font-size: 1.8rem; /* 少し小さめに変更 */
             letter-spacing: 1px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
@@ -34,7 +34,7 @@
 
         h1, h2 {
             color: #333;
-            font-size: 1.8rem;
+            font-size: 1.6rem; /* 少し小さめに変更 */
             margin-bottom: 20px;
         }
 
@@ -42,7 +42,7 @@
             padding: 15px;
             margin: 15px 0;
             border-radius: 8px;
-            font-size: 16px;
+            font-size: 14px; /* 少し小さめに変更 */
             display: inline-block;
             width: 100%;
             box-sizing: border-box;
@@ -69,7 +69,7 @@
         .loading-indicator {
             display: none;
             margin-top: 20px;
-            font-size: 18px;
+            font-size: 16px; /* 少し小さめに変更 */
             color: #007bff;
             text-align: center;
             font-weight: bold;
@@ -146,7 +146,7 @@
             }
 
             h1, h2 {
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
 
             button {
@@ -164,8 +164,10 @@
                 const tableBody = document.getElementById('jobs-table-body');
                 tableBody.innerHTML = '';
 
-                for (const jobId in jobs) {
-                    const job = jobs[jobId];
+                // 最新のジョブが上に来るように順番を反転
+                const jobEntries = Object.entries(jobs).reverse();
+
+                for (const [jobId, job] of jobEntries) {
                     const row = document.createElement('tr');
 
                     row.innerHTML = `
