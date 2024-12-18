@@ -62,13 +62,14 @@ class JobModel:
 
         # 古いジョブを削除
         all_jobs = self.redis.keys(f"{self.REDIS_JOB_PREFIX}*:meta")
-        all_jobs.sort()
+        all_jobs_str = [key.decode('utf-8') for key in all_jobs]
+        all_jobs_str.sort()
 
-        if len(all_jobs) > self.MAX_JOBS:
+        if len(all_jobs_str) > self.MAX_JOBS:
+            oldest_job_key = all_jobs_str[0]
             pipeline = self.redis.pipeline()
-            for oldest_job_key in all_jobs[:len(all_jobs) - self.MAX_JOBS]:
-                pipeline.delete(oldest_job_key.replace(":meta", ":file"))
-                pipeline.delete(oldest_job_key)
+            pipeline.delete(oldest_job_key.replace(":meta", ":file"))
+            pipeline.delete(oldest_job_key)
             pipeline.execute()
 
         return job_id
