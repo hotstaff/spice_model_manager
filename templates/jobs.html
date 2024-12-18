@@ -156,6 +156,7 @@
         }
     </style>
     <script>
+        // ジョブの状態を取得する関数
         async function fetchJobs() {
             try {
                 const response = await fetch('/api/simulations');
@@ -186,6 +187,7 @@
             }
         }
 
+        // フォーム送信時の処理
         async function handleFormSubmit(event) {
             event.preventDefault();  // ページのリロードを防止
 
@@ -211,7 +213,8 @@
                     successMessage.remove();
                 }, 3000);
 
-                fetchJobs();  // ジョブの状態を取得
+                // ジョブの状態を再取得して更新
+                fetchJobs();
             } else {
                 // エラーがあった場合
                 const errorMessage = document.createElement('div');
@@ -231,8 +234,11 @@
             }, 3000);
         }
 
-        // ページが読み込まれたときにジョブの状態を取得
-        window.onload = fetchJobs;
+        // ページが読み込まれたときにジョブの状態を定期的に取得
+        window.onload = () => {
+            fetchJobs(); // 初回ロード時にジョブを取得
+            setInterval(fetchJobs, 2000); // 2秒おきにジョブの状態をポーリング
+        };
     </script>
 </head>
 <body>
