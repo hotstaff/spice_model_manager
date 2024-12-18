@@ -30,6 +30,7 @@
             padding: 30px;
             border-radius: 10px;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            position: relative; /* 相対位置に設定 */
         }
 
         h1, h2 {
@@ -68,17 +69,17 @@
 
         .loading-indicator {
             display: none;
-            margin-top: 20px;
-            font-size: 16px; /* 少し小さめに変更 */
-            color: #007bff;
-            text-align: center;
+            position: fixed; /* 固定位置に設定 */
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+            padding: 10px 20px;
+            font-size: 16px;
             font-weight: bold;
-        }
-
-        /* メッセージ表示エリアに固定の高さを設定 */
-        #message-container {
-            min-height: 60px; /* メッセージ表示エリアの最小高さを設定 */
-            margin-bottom: 20px;
+            z-index: 999; /* 最前面に表示 */
         }
 
         table {
@@ -262,9 +263,6 @@
         <!-- メッセージ表示エリア -->
         <div id="message-container"></div>
 
-        <!-- ローディングインジケーター -->
-        <div id="loading-indicator" class="loading-indicator">シミュレーションを実行中です...</div>
-
         <h2>ジョブの状態</h2>
         <table>
             <thead>
@@ -274,4 +272,13 @@
                     <th>結果</th>
                 </tr>
             </thead>
-            <tbody id="jobs-table-body
+            <tbody id="jobs-table-body">
+                <!-- Job data will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ローディングインジケーター -->
+    <div id="loading-indicator" class="loading-indicator">シミュレーションを実行中です...</div>
+</body>
+</html>
