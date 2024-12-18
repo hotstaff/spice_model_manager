@@ -17,9 +17,9 @@ def clear_redis_jobs():
     return jsonify({"message": result})
 
 
-@simu_views.route("/job")
+@simu_views.route("/jobs")
 def home():
-    return render_template("job.html")
+    return render_template("jobs.html")
 
 
 @simu_views.route("/simulate", methods=["POST"])
