@@ -4,20 +4,155 @@
     <meta charset="UTF-8">
     <title>ファイルアップロード</title>
     <style>
-        /* メッセージのスタイル */
+        body {
+            font-family: 'Roboto', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333;
+        }
+
+        header {
+            background-color: #007bff; /* 青色 */
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 2rem;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .container {
+            width: 70%;
+            margin: 40px auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        h1, h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+        }
+
         .message {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
             font-size: 16px;
+            display: inline-block;
+            width: 100%;
+            box-sizing: border-box;
         }
+
         .success {
-            background-color: #d4edda;
-            color: #155724;
+            background-color: #d1ecf1; /* 青系の成功メッセージ */
+            color: #0c5460;
+            border: 1px solid #bee5eb;
         }
+
         .error {
             background-color: #f8d7da;
             color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+
+        .loading-indicator {
+            display: none;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #007bff;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            color: #555;
+        }
+
+        td {
+            background-color: #fff;
+        }
+
+        td a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        td a:hover {
+            text-decoration: underline;
+        }
+
+        button {
+            background-color: #6c757d; /* グレー系のボタン */
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #5a6268;
+        }
+
+        input[type="file"] {
+            margin: 15px 0;
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        input[type="file"]:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+
+            h1, h2 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                width: 100%;
+                padding: 15px;
+            }
         }
     </style>
     <script>
@@ -59,6 +194,8 @@
             });
 
             const messageContainer = document.getElementById('message-container');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            loadingIndicator.style.display = 'block';  // ローディングインジケーターを表示
 
             if (response.ok) {
                 // シミュレーションジョブの作成成功時の処理
@@ -85,36 +222,48 @@
                     errorMessage.remove();
                 }, 3000);
             }
+
+            // ローディングインジケーターを非表示にする
+            setTimeout(() => {
+                loadingIndicator.style.display = 'none';
+            }, 3000);
         }
 
-        // Fetch jobs every 2 seconds
-        setInterval(fetchJobs, 2000);
+        // ページが読み込まれたときにジョブの状態を取得
         window.onload = fetchJobs;
     </script>
 </head>
 <body>
-    <h1>LTspice ネットリストのアップロード</h1>
-    <form id="uploadForm" onsubmit="handleFormSubmit(event)">
-        <label for="file">ネットリストファイルを選択:</label>
-        <input type="file" name="file" id="file" required><br><br>
-        <button type="submit">シミュレーション開始</button>
-    </form>
+    <header>
+        LTspice ネットリストのアップロード
+    </header>
 
-    <!-- メッセージ表示エリア -->
-    <div id="message-container"></div>
+    <div class="container">
+        <form id="uploadForm" onsubmit="handleFormSubmit(event)">
+            <label for="file">ネットリストファイルを選択:</label><br>
+            <input type="file" name="file" id="file" required><br><br>
+            <button type="submit">シミュレーション開始</button>
+        </form>
 
-    <h2>ジョブの状態</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>ジョブID</th>
-                <th>ステータス</th>
-                <th>結果</th>
-            </tr>
-        </thead>
-        <tbody id="jobs-table-body">
-            <!-- Job data will be dynamically inserted here -->
-        </tbody>
-    </table>
+        <!-- メッセージ表示エリア -->
+        <div id="message-container"></div>
+
+        <!-- ローディングインジケーター -->
+        <div id="loading-indicator" class="loading-indicator">シミュレーションを実行中です...</div>
+
+        <h2>ジョブの状態</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ジョブID</th>
+                    <th>ステータス</th>
+                    <th>結果</th>
+                </tr>
+            </thead>
+            <tbody id="jobs-table-body">
+                <!-- Job data will be dynamically inserted here -->
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>
