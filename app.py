@@ -5,6 +5,7 @@ from views import model_views  # views.pyからmodel_viewsをインポート
 from simulation_views import simu_views
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
 
 app.secret_key = os.getenv('FLASK_SECRET_KEY', os.urandom(24))
 

@@ -10,6 +10,11 @@ redis_host = os.getenv("REDIS_HOST", "localhost")  # デフォルトはlocalhost
 # JobModelのインスタンスを作成
 job_model = JobModel(redis_host=redis_host)
 
+@simu_views.errorhandler(413)
+def request_entity_too_large(error):
+    """ファイルサイズ超過エラーのハンドリング"""
+    return jsonify({"error": "File size exceeds the 1MB limit"}), 413
+
 @simu_views.route("/api/clear_jobs", methods=["POST"])
 def clear_redis_jobs():
     """Redisのジョブをすべて削除"""
