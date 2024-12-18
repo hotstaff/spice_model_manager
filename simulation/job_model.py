@@ -38,7 +38,7 @@ class JobModel:
         return f"{job_prefix_padded}_{base_name}_{timestamp}"
 
     def create_job(self, uploaded_file_path):
-        """ジョブを作成"""
+        """ジョブを作成（Redisパイプラインを使用）"""
         base_name = os.path.splitext(os.path.basename(uploaded_file_path))[0]
         job_id = self.generate_job_id_from_timestamp(base_name)
 
@@ -53,26 +53,26 @@ class JobModel:
             "file_path": os.path.basename(uploaded_file_path),
         }
 
-        # メタデータを保存
-        self.redis.set(f"{self.REDIS_JOB_PREFIX}{job_id}:meta", json.dumps(job_data))
+        # Redisパイプラインで一括保存
+        pipeline = self.redis.pipeline()
+        pipeline.set(f"{self.REDIS_JOB_PREFIX}{job_id}:meta", json.dumps(job_data))
+        pipeline.set(f"{self.REDIS_JOB_PREFIX}{job_id}:file", binary_data)
+        pipeline.rpush("job_queue", job_id)
+        pipeline.execute()
 
-        # アップロードファイルのバイナリデータを保存
-        self.redis.set(f"{self.REDIS_JOB_PREFIX}{job_id}:file", binary_data)
-
-        # ジョブIDをキューに追加
-        self.redis.rpush("job_queue", job_id)
-
-        # ジョブの過剰保存を防ぐ
+        # 古いジョブを削除
         all_jobs = self.redis.keys(f"{self.REDIS_JOB_PREFIX}*:meta")
-        all_jobs_str = [key.decode('utf-8') for key in all_jobs]
-        all_jobs_str.sort()
+        all_jobs.sort()
 
-        if len(all_jobs_str) > self.MAX_JOBS:
-            oldest_job_key = all_jobs_str[0]
-            self.redis.delete(oldest_job_key.replace(":meta", ":file"))
-            self.redis.delete(oldest_job_key)
+        if len(all_jobs) > self.MAX_JOBS:
+            pipeline = self.redis.pipeline()
+            for oldest_job_key in all_jobs[:len(all_jobs) - self.MAX_JOBS]:
+                pipeline.delete(oldest_job_key.replace(":meta", ":file"))
+                pipeline.delete(oldest_job_key)
+            pipeline.execute()
 
         return job_id
+
 
     def get_all_jobs(self):
         """すべてのジョブをRedisから取得（MGET使用）"""
