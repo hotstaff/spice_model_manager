@@ -175,7 +175,8 @@
                 // 最新のジョブが上に来るように順番を反転
                 const jobEntries = Object.entries(jobs).reverse();
 
-                for (const [jobId, job] of jobEntries) {
+                for (const jobId in jobs) {
+                    const job = jobs[jobId];
                     const row = document.createElement('tr');
 
                     row.innerHTML = `
@@ -241,11 +242,11 @@
             }, 3000);
         }
 
-        // ページが読み込まれたときにジョブの状態を定期的に取得
-        window.onload = () => {
-            fetchJobs(); // 初回ロード時にジョブを取得
-            setInterval(fetchJobs, 2000); // 2秒おきにジョブの状態をポーリング
-        };
+window.onload = () => {
+    fetchJobs();  // ページロード時にジョブを取得
+    setInterval(fetchJobs, 2000);  // 2秒ごとにジョブを更新
+};
+
     </script>
 </head>
 <body>
