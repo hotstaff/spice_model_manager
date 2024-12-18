@@ -71,6 +71,7 @@ class JobModel:
             pipeline.delete(oldest_job_key.replace(":meta", ":file"))
             pipeline.delete(oldest_job_key)
             pipeline.execute()
+            
 
         return job_id
 
