@@ -75,6 +75,12 @@
             font-weight: bold;
         }
 
+        /* メッセージ表示エリアに固定の高さを設定 */
+        #message-container {
+            min-height: 60px; /* メッセージ表示エリアの最小高さを設定 */
+            margin-bottom: 20px;
+        }
+
         table {
             width: 100%;
             margin-top: 20px;
@@ -268,10 +274,4 @@
                     <th>結果</th>
                 </tr>
             </thead>
-            <tbody id="jobs-table-body">
-                <!-- Job data will be dynamically inserted here -->
-            </tbody>
-        </table>
-    </div>
-</body>
-</html>
+            <tbody id="jobs-table-body
