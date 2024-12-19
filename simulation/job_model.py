@@ -71,9 +71,51 @@ class JobModel:
             pipeline.delete(oldest_job_key.replace(":meta", ":file"))
             pipeline.delete(oldest_job_key)
             pipeline.execute()
-            
+
 
         return job_id
+
+    def get_job_result_with_notification(self, job_id, timeout=30):
+        """
+        Pub/Subを使用してジョブの結果を取得。
+        タイムアウト期間内に通知がない場合は、直接Redisキーを確認。
+
+        Args:
+            job_id (str): ジョブID。
+            timeout (int): タイムアウト秒数。
+
+        Returns:
+            bytes: ジョブ結果のバイナリデータ。
+            None: 結果が存在しない場合。
+        """
+        pubsub = self.redis.pubsub()
+        pubsub.subscribe("job_notifications")
+        result_key = f"{self.REDIS_RESULT_PREFIX}{job_id}"
+
+        try:
+            start_time = datetime.now()
+            for message in pubsub.listen():
+                # タイムアウトチェック
+                if (datetime.now() - start_time).seconds > timeout:
+                    break
+
+                # 通知を受信した場合
+                if message["type"] == "message" and message["data"].decode() == job_id:
+                    # Redisから結果を取得して返す
+                    result = self.redis.get(result_key)
+                    return result  # 結果が見つからなければNoneを返す
+
+        except Exception as e:
+            print(f"Error getting job result for job_id {job_id}: {str(e)}")
+            return None  # エラーが発生した場合、Noneを返す
+
+        finally:
+            # Pub/Subリソースをクリーンアップ
+            pubsub.unsubscribe()
+            pubsub.close()
+
+        # タイムアウト後にRedisキーを直接確認
+        return self.redis.get(result_key)
 
 
     def get_all_jobs(self):
