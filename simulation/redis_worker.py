@@ -112,9 +112,6 @@ def run_job(job_id):
         print(f"Error processing job {job_id}: {e}")
         update_job(job_id, status="failed", error=str(e))
 
-
-import time
-
 def job_worker():
     """ジョブをブロックして待機し、ジョブが来たら処理する (処理中リストを導入)"""
     while True:
