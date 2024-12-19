@@ -15,31 +15,6 @@ def request_entity_too_large(error):
     """ファイルサイズ超過エラーのハンドリング"""
     return jsonify({"error": "File size exceeds the 1MB limit"}), 413
 
-@simu_views.route("/api/clear_jobs", methods=["POST"])
-def clear_redis_jobs():
-    """Redisのジョブをすべて削除"""
-    result = job_model.clear_all_jobs()  # JobModelのメソッドを呼び出し
-    return jsonify({"message": result})
-
-
-@simu_views.route("/jobs")
-def home():
-    return render_template("jobs.html")
-
-
-@simu_views.route("/simulate", methods=["POST"])
-def simulate():
-    file = request.files.get("file")
-    if not file or file.filename == "":
-        return "No file uploaded or filename is empty", 400
-
-    uploaded_file_path = os.path.join(job_model.SIMULATION_DIR, file.filename)
-    file.save(uploaded_file_path)
-
-    # ジョブを登録
-    job_id = job_model.create_job(uploaded_file_path)
-    return jsonify({"job_id": job_id}), 202
-
 
 @simu_views.route("/api/simulations", methods=["GET"])
 def api_simulations():
@@ -51,19 +26,6 @@ def api_simulations():
         }
         for job_id, job in jobs.items()
     })
-
-
-@simu_views.route("/api/simulate", methods=["POST"])
-def api_simulate():
-    file = request.files.get("file")
-    if not file or file.filename == "":
-        return jsonify({"error": "No file uploaded or filename is empty"}), 400
-
-    uploaded_file_path = os.path.join(job_model.SIMULATION_DIR, file.filename)
-    file.save(uploaded_file_path)
-
-    job_id = job_model.create_job(uploaded_file_path)
-    return jsonify({"job_id": job_id}), 202
 
 
 @simu_views.route("/api/simulations/<job_id>", methods=["GET"])
@@ -93,3 +55,28 @@ def api_simulation_result(job_id):
         as_attachment=True,
         download_name=f"{job_id}.zip"
     )
+
+@simu_views.route("/api/simulate", methods=["POST"])
+def api_simulate():
+    file = request.files.get("file")
+    if not file or file.filename == "":
+        return jsonify({"error": "No file uploaded or filename is empty"}), 400
+
+    uploaded_file_path = os.path.join(job_model.SIMULATION_DIR, file.filename)
+    file.save(uploaded_file_path)
+
+    job_id = job_model.create_job(uploaded_file_path)
+    return jsonify({"job_id": job_id}), 202
+
+
+
+@simu_views.route("/api/clear_jobs", methods=["POST"])
+def clear_redis_jobs():
+    """Redisのジョブをすべて削除"""
+    result = job_model.clear_all_jobs()  # JobModelのメソッドを呼び出し
+    return jsonify({"message": result})
+
+
+@simu_views.route("/jobs")
+def home():
+    return render_template("jobs.html")

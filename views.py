@@ -214,6 +214,9 @@ def delete_model(model_id):
     
     return jsonify({"message": "Model deleted successfully"}), 200
 
+#### model api
+
+
 @model_views.route('/api/upload_image', methods=['POST'])
 def upload_image():
     if 'image' not in request.files:
@@ -249,6 +252,37 @@ def upload_image():
         return jsonify({"message": "Image uploaded successfully!"}), 200
     except Exception as e:
         return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
+
+@model_views.route('/get_image/<int:data_id>/<string:image_type>', methods=['GET'])
+def get_image(data_id, image_type):
+    """Retrieve and return an image based on data_id and image_type."""
+    # キャッシュパスの取得
+    cache_path = get_image_cache_path(data_id, image_type)
+
+    # キャッシュが存在する場合は、それを返す
+    if os.path.exists(cache_path):
+        return send_file(
+            cache_path,
+            mimetype=f'image/{image_type}',
+            as_attachment=False
+        )
+    
+    # キャッシュが存在しない場合は、データベースから画像を取得
+    image_data, image_format, _ = get_image_from_db(data_id, image_type)
+
+    if image_data is None:
+        return jsonify({"error": "Image not found"}), 404
+    
+    # データベースから取得した画像データをキャッシュに保存
+    with open(cache_path, 'wb') as f:
+        f.write(image_data.getvalue())
+
+    # 画像を返す
+    return send_file(
+        image_data,
+        mimetype=f'image/{image_format}',
+        as_attachment=False
+    )
 
 
 # モデルの一覧をHTMLで表示
@@ -293,38 +327,6 @@ def list_models():
     else:
         return "There are invalid inputs", 400
 
-
-
-@model_views.route('/get_image/<int:data_id>/<string:image_type>', methods=['GET'])
-def get_image(data_id, image_type):
-    """Retrieve and return an image based on data_id and image_type."""
-    # キャッシュパスの取得
-    cache_path = get_image_cache_path(data_id, image_type)
-
-    # キャッシュが存在する場合は、それを返す
-    if os.path.exists(cache_path):
-        return send_file(
-            cache_path,
-            mimetype=f'image/{image_type}',
-            as_attachment=False
-        )
-    
-    # キャッシュが存在しない場合は、データベースから画像を取得
-    image_data, image_format, _ = get_image_from_db(data_id, image_type)
-
-    if image_data is None:
-        return jsonify({"error": "Image not found"}), 404
-    
-    # データベースから取得した画像データをキャッシュに保存
-    with open(cache_path, 'wb') as f:
-        f.write(image_data.getvalue())
-
-    # 画像を返す
-    return send_file(
-        image_data,
-        mimetype=f'image/{image_format}',
-        as_attachment=False
-    )
 
 # モデルの詳細をHTMLで表示
 @model_views.route('/models/<int:model_id>', methods=['GET'])

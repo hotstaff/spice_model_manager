@@ -62,7 +62,7 @@ class SimulationClient:
                     return None, None
                 else:
                     print(f"Job {job_id} is still running. Waiting...")
-                    time.sleep(1)
+                    time.sleep(0.5)
 
         result_response = requests.get(f"{self.api_url}/api/simulations/{job_id}/result")
         
@@ -238,7 +238,6 @@ if __name__ == "__main__":
             jfet_iv.load_results(raw_file, log_file)
             image_path_iv = jfet_iv.plot()
 
-            upload_image(model_id, image_path_iv, 'iv')
 
             # JFETのVgs-Id特性をプロット
             print(f"Generating Vgs-Id characteristics for {device_name} ({model['device_type']})")
@@ -249,7 +248,6 @@ if __name__ == "__main__":
             jfet_vgs_id.load_results(raw_file, log_file)
             image_path_vgs_id = jfet_vgs_id.plot()
 
-            upload_image(model_id, image_path_vgs_id, 'vgs_id')
 
             # JFETのgm-Vgs特性をプロット
             print(f"Generating gm-Vgs characteristics for {device_name} ({model['device_type']})")
@@ -260,7 +258,6 @@ if __name__ == "__main__":
             jfet_gm_vgs.load_results(raw_file, log_file)
             image_path_gm_vgs = jfet_gm_vgs.plot()
 
-            upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
 
             # JFETのgm-Id特性をプロット
             print(f"Generating gm-Id characteristics for {device_name} ({model['device_type']})")
@@ -271,6 +268,9 @@ if __name__ == "__main__":
             jfet_gm_id.load_results(raw_file, log_file)
             image_path_gm_id = jfet_gm_id.plot()
 
+            upload_image(model_id, image_path_iv, 'iv')
+            upload_image(model_id, image_path_vgs_id, 'vgs_id')
+            upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
             upload_image(model_id, image_path_gm_id, 'gm_id')
 
 
