@@ -100,6 +100,9 @@ def run_job(job_id):
         result_key = f"{REDIS_RESULT_PREFIX}{job_id}"
         redis.set(result_key, zip_buffer.getvalue())
 
+        # Pub/Subでジョブの完了通知を送信
+        redis.publish("job_notifications", job_id)
+
         # ジョブステータス更新
         update_job(job_id, status="completed", result_key=result_key)
 
