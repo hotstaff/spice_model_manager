@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Add SPICE Model - SPICE Model Repository{% endblock %}</title>
-<style>
+    <style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -187,7 +187,82 @@
             color: #721c24;
             border-color: #f5c6cb;
         }
+        .result-section {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .result-section h3 {
+            font-size: 20px;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .result-section img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-section p {
+            font-size: 16px;
+            color: #555;
+            margin-top: 10px;
+        }
     </style>
+    <script>
+        document.querySelector('form').addEventListener('submit', async function (event) {
+            event.preventDefault(); // フォームのデフォルト送信を防ぐ
+
+            // クリックされたボタンの `formaction` を取得
+            const clickedButton = event.submitter; // `submitter` でクリックされたボタンが分かる
+            const action = clickedButton.getAttribute('formaction');
+
+            // シミュレーション実行ボタンかどうかを判定
+            if (action === '/api/simulate_now') {
+                const formData = new FormData(event.target); // フォームデータを取得
+
+                try {
+                    // 非同期でPOSTリクエストを送信
+                    const response = await fetch(action, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch simulation result');
+                    }
+
+                    // バイナリデータを取得
+                    const blob = await response.blob();
+
+                    // 画像URLを生成
+                    const imageUrl = URL.createObjectURL(blob);
+
+                    // 結果セクションを更新
+                    const resultSection = document.getElementById('result-section');
+                    const resultImage = document.getElementById('result-image');
+                    resultImage.src = imageUrl;
+                    resultSection.style.display = 'block';
+
+                    // 必要なら追加のメッセージを表示
+                    const resultMessage = document.getElementById('result-message');
+                    resultMessage.textContent = 'Simulation completed successfully!';
+                } catch (error) {
+                    console.error(error);
+                    alert('An error occurred while processing the simulation.');
+                }
+            } else {
+                // シミュレーション実行以外の処理（通常のフォーム送信など）は通常通り送信
+                event.target.submit();
+            }
+        });
+    </script>
 </head>
 <body>
     <div class="container">
@@ -226,6 +301,13 @@
             <button type="submit" formaction="/models/add" style="margin-left: 20px;">{% block submit_button %}Add Model{% endblock %}</button>
             
         </form>
+
+        <!-- シミュレーション結果表示エリア -->
+        <div class="result-section" id="result-section" style="display: none;">
+            <h3>Simulation Result</h3>
+            <img id="result-image" alt="Simulation Result">
+            <p id="result-message"></p>
+        </div>
 
         <!-- トップページに戻るリンク -->
         <p><a href="{{ url_for('home') }}">{% block back_to_home %}Back to Home{% endblock %}</a></p>

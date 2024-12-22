@@ -170,7 +170,8 @@ def api_simulate_now():
                     return send_file(
                         BytesIO(f.read()),
                         as_attachment=True,
-                        download_name=f"{job_id}.png"
+                        download_name=f"{job_id}.png",
+                        mimetype='image/png'
                     )
             except FileNotFoundError:
                 return jsonify({"error": f"Plot file {plot_file} not found."}), 500
