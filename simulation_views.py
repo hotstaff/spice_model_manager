@@ -1,11 +1,22 @@
 import os
-from flask import Flask, Blueprint, request, send_file, jsonify, render_template
-from simulation.job_model import JobModel
 from io import BytesIO
+from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 
+# 自作モジュールのインポート
+from simulation.job_model import JobModel
+from file_extractor import FileExtractor
+from jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic
+from client.spice_parser import SpiceModelParser  # SpiceModelParserをインポート
+from forms import AddModelForm  # AddModelFormをインポート
+
+# Blueprintの定義
 simu_views = Blueprint('simu_views', __name__)
 
+# Redisホストの設定
 redis_host = os.getenv("REDIS_HOST", "localhost")  # デフォルトはlocalhost
+
+# Zipファイル用
+file_extractor = FileExtractor()
 
 # JobModelのインスタンスを作成
 job_model = JobModel(redis_host=redis_host)
@@ -67,6 +78,108 @@ def api_simulate():
 
     job_id = job_model.create_job(uploaded_file_path)
     return jsonify({"job_id": job_id}), 202
+
+
+@simu_views.route("/api/simulate_now", methods=["POST"])
+def api_simulate_now():
+    """
+    /api/simulate_nowエンドポイント
+    - Webから送られたSPICE文字列を受け取ってシミュレーションを実行
+    - シミュレーション結果を取得して、解凍し、JFETクラスに渡す
+    """
+    # 1. AddModelFormのインスタンスを作成し、フォームデータをバリデート
+    form = AddModelForm(request.form)
+
+    # 2. POSTリクエストの場合、フォームのバリデーションを実行
+    if request.method == 'POST':
+        if form.validate():  # バリデーションが通った場合
+
+            spice_string = form.spice_string.data
+            # authorとcommentは使用しないが、バリデーションは行う
+            author = form.author.data
+            comment = form.comment.data
+
+            try:
+                # 3. SpiceStringの解析
+                parser = SpiceModelParser()
+                parsed_params = parser.parse(spice_string)
+
+                device_name = parsed_params['device_name']
+                device_type = parsed_params['device_type']
+            except Exception as e:
+                return jsonify({"error": f"Error parsing spice_string: {str(e)}"}), 400
+
+            # 4. デバイスタイプを確認し、JFETクラスをインスタンス化
+            if device_type in ['NJF', 'PJF']:
+                model = JFET_IV_Characteristic(device_name, device_type, spice_string)
+            else:
+                return jsonify({"error": f"Unsupported device type: {device_type}"}), 400
+
+            # 5. JFETクラスでネットリストを作成（build関数）
+            try:
+                netfile_path = model.build()
+            except Exception as e:
+                return jsonify({"error": f"Error building netlist: {str(e)}"}), 500
+
+            # 6. シミュレーションサーバーに送信して結果を取得
+            try:
+                job_id = job_model.create_job(netfile_path)
+            except Exception as e:
+                return jsonify({"error": f"Error creating job: {str(e)}"}), 500
+
+            # 7. シミュレーション結果を待機
+            try:
+                zip_data = job_model.get_job_result_with_notification(job_id)
+                if not zip_data:
+                    return jsonify({"error": "No simulation result received."}), 500
+            except Exception as e:
+                return jsonify({"error": f"Error waiting for job result: {str(e)}"}), 500
+
+            # 8. ZIPファイルを解凍する
+            try:
+                extracted_files = file_extractor.extract(zip_data, job_id)
+                if not extracted_files:
+                    return jsonify({"error": "Failed to extract files from simulation result."}), 500
+            except Exception as e:
+                return jsonify({"error": f"Error extracting files: {str(e)}"}), 500
+
+            # 9. .raw と .log ファイルをJFETクラスに渡す
+            raw_file = extracted_files.get(".raw")
+            log_file = extracted_files.get(".log")
+
+            if raw_file and log_file:
+                try:
+                    model.load_results(raw_file, log_file)
+                except Exception as e:
+                    return jsonify({"error": f"Error loading results: {str(e)}"}), 500
+            else:
+                return jsonify({"error": "Missing .raw or .log files."}), 500
+
+            # 10. プロットを生成
+            try:
+                plot_file = model.plot()
+            except Exception as e:
+                return jsonify({"error": f"Error generating plot: {str(e)}"}), 500
+
+            # 11. 一時ファイルを消す
+            file_extractor.cleanup(job_id)
+
+            # 12. プロットの画像をウェブで表示するために返す
+            try:
+                with open(plot_file, 'rb') as f:
+                    return send_file(
+                        BytesIO(f.read()),
+                        as_attachment=True,
+                        download_name=f"{job_id}.png"
+                    )
+            except FileNotFoundError:
+                return jsonify({"error": f"Plot file {plot_file} not found."}), 500
+            except Exception as e:
+                return jsonify({"error": f"Error sending plot file: {str(e)}"}), 500
+
+        else:
+            return jsonify({"error": "Invalid spice_string format or missing fields."}), 400
+
 
 
 
