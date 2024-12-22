@@ -6,7 +6,7 @@ from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 from simulation.job_model import JobModel
 from simulation.file_extractor import FileExtractor
 from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic
-from client.spice_parser import SpiceModelParser  # SpiceModelParserをインポート
+from client.spice_model_parser import SpiceModelParser
 from forms import AddModelForm  # AddModelFormをインポート
 
 # Blueprintの定義
