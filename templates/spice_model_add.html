@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Add SPICE Model - SPICE Model Repository{% endblock %}</title>
-    <style>
+<style>
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -222,6 +222,11 @@
 
             <!-- 送信ボタン -->
             <button type="submit">{% block submit_button %}Add Model{% endblock %}</button>
+        </form>
+
+        <!-- シミュレーション実行ボタン -->
+        <form action="/simulate_now" method="post">
+            <button type="submit" style="margin-top: 20px;">Run Simulation</button>
         </form>
 
         <!-- トップページに戻るリンク -->
