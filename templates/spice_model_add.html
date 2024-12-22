@@ -221,7 +221,7 @@
             </div>
 
             <!-- シミュレーション実行ボタン -->
-            <button type="submit" formaction="/api/simulate_now">Run Simulation</button>
+            <button type="submit" formaction="/api/simulate_now">{% block run_simulation_button %}Run Simulation{% endblock %}</button>
             <!-- 送信ボタン -->
             <button type="submit" formaction="/models/add" style="margin-left: 20px;">{% block submit_button %}Add Model{% endblock %}</button>
             
