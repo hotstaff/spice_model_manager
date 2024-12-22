@@ -216,51 +216,59 @@
         }
     </style>
     <script>
-        document.querySelector('form').addEventListener('submit', async function (event) {
-            event.preventDefault(); // フォームのデフォルト送信を防ぐ
-
-            // クリックされたボタンの `formaction` を取得
-            const clickedButton = event.submitter; // `submitter` でクリックされたボタンが分かる
-            const action = clickedButton.getAttribute('formaction');
-
-            // シミュレーション実行ボタンかどうかを判定
-            if (action === '/api/simulate_now') {
-                const formData = new FormData(event.target); // フォームデータを取得
-
-                try {
-                    // 非同期でPOSTリクエストを送信
-                    const response = await fetch(action, {
-                        method: 'POST',
-                        body: formData
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to fetch simulation result');
-                    }
-
-                    // バイナリデータを取得
-                    const blob = await response.blob();
-
-                    // 画像URLを生成
-                    const imageUrl = URL.createObjectURL(blob);
-
-                    // 結果セクションを更新
-                    const resultSection = document.getElementById('result-section');
-                    const resultImage = document.getElementById('result-image');
-                    resultImage.src = imageUrl;
-                    resultSection.style.display = 'block';
-
-                    // 必要なら追加のメッセージを表示
-                    const resultMessage = document.getElementById('result-message');
-                    resultMessage.textContent = 'Simulation completed successfully!';
-                } catch (error) {
-                    console.error(error);
-                    alert('An error occurred while processing the simulation.');
-                }
-            } else {
-                // シミュレーション実行以外の処理（通常のフォーム送信など）は通常通り送信
-                event.target.submit();
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            if (!form) {
+                console.error('Form not found');
+                return;
             }
+
+            form.addEventListener('submit', async function (event) {
+                event.preventDefault(); // フォームのデフォルト送信を防ぐ
+
+                // クリックされたボタンの `formaction` を取得
+                const clickedButton = event.submitter; // `submitter` でクリックされたボタンが分かる
+                const action = clickedButton.getAttribute('formaction');
+
+                // シミュレーション実行ボタンかどうかを判定
+                if (action === '/api/simulate_now') {
+                    const formData = new FormData(event.target); // フォームデータを取得
+
+                    try {
+                        // 非同期でPOSTリクエストを送信
+                        const response = await fetch(action, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Failed to fetch simulation result');
+                        }
+
+                        // バイナリデータを取得
+                        const blob = await response.blob();
+
+                        // 画像URLを生成
+                        const imageUrl = URL.createObjectURL(blob);
+
+                        // 結果セクションを更新
+                        const resultSection = document.getElementById('result-section');
+                        const resultImage = document.getElementById('result-image');
+                        resultImage.src = imageUrl;
+                        resultSection.style.display = 'block';
+
+                        // 必要なら追加のメッセージを表示
+                        const resultMessage = document.getElementById('result-message');
+                        resultMessage.textContent = 'Simulation completed successfully!';
+                    } catch (error) {
+                        console.error(error);
+                        alert('An error occurred while processing the simulation.');
+                    }
+                } else {
+                    // シミュレーション実行以外の処理（通常のフォーム送信など）は通常通り送信
+                    event.target.submit();
+                }
+            });
         });
     </script>
 </head>
