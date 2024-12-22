@@ -220,13 +220,11 @@
                 <input type="text" name="comment" placeholder="{% block comment_placeholder %}Add a comment{% endblock %}" maxlength="100">
             </div>
 
+            <!-- シミュレーション実行ボタン -->
+            <button type="submit" formaction="/simulate_now">Run Simulation</button>
             <!-- 送信ボタン -->
-            <button type="submit">{% block submit_button %}Add Model{% endblock %}</button>
-        </form>
-
-        <!-- シミュレーション実行ボタン -->
-        <form action="/simulate_now" method="post">
-            <button type="submit" style="margin-top: 20px;">Run Simulation</button>
+            <button type="submit" formaction="/models/add" style="margin-left: 20px;">{% block submit_button %}Add Model{% endblock %}</button>
+            
         </form>
 
         <!-- トップページに戻るリンク -->
