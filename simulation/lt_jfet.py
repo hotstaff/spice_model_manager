@@ -8,7 +8,7 @@ import time
 
 from PyLTSpice import SimRunner, LTspice
 
-from jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic
+from jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic, JFET_Basic_Performance
 
 class SimulationClient:
     def __init__(self, api_url):
@@ -229,49 +229,61 @@ if __name__ == "__main__":
                 print(f"{device_name} is already simulated. skip...")
                 pass
 
-            # JFETのI-V特性をプロット
-            print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
-            jfet_iv = JFET_IV_Characteristic(device_name, device_type, spice_string)
+            print(f"Generating Basic Performance for {device_name} ({model['device_type']})")
+            jfet_basic = JFET_Basic_Performance(device_name, device_type, spice_string)
+            raw_file, log_file = simulate(jfet_basic, local=False)
+            jfet_basic.load_results(raw_file, log_file)
+            performance_data = jfet_basic.get_basic_performance()
 
-            raw_file, log_file = simulate(jfet_iv, local=False)
-
-            jfet_iv.load_results(raw_file, log_file)
-            image_path_iv = jfet_iv.plot()
-
-
-            # JFETのVgs-Id特性をプロット
-            print(f"Generating Vgs-Id characteristics for {device_name} ({model['device_type']})")
-            jfet_vgs_id = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
-
-            raw_file, log_file = simulate(jfet_vgs_id, local=False)
-
-            jfet_vgs_id.load_results(raw_file, log_file)
-            image_path_vgs_id = jfet_vgs_id.plot()
+            # 結果を表示
+            for key, value in performance_data.items():
+                print(f"{key}: {value}")
 
 
-            # JFETのgm-Vgs特性をプロット
-            print(f"Generating gm-Vgs characteristics for {device_name} ({model['device_type']})")
-            jfet_gm_vgs = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
 
-            raw_file, log_file = simulate(jfet_gm_vgs, local=False)
+            # # JFETのI-V特性をプロット
+            # print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
+            # jfet_iv = JFET_IV_Characteristic(device_name, device_type, spice_string)
 
-            jfet_gm_vgs.load_results(raw_file, log_file)
-            image_path_gm_vgs = jfet_gm_vgs.plot()
+            # raw_file, log_file = simulate(jfet_iv, local=False)
+
+            # jfet_iv.load_results(raw_file, log_file)
+            # image_path_iv = jfet_iv.plot()
 
 
-            # JFETのgm-Id特性をプロット
-            print(f"Generating gm-Id characteristics for {device_name} ({model['device_type']})")
-            jfet_gm_id = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
+            # # JFETのVgs-Id特性をプロット
+            # print(f"Generating Vgs-Id characteristics for {device_name} ({model['device_type']})")
+            # jfet_vgs_id = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
 
-            raw_file, log_file = simulate(jfet_gm_id, local=False)
+            # raw_file, log_file = simulate(jfet_vgs_id, local=False)
 
-            jfet_gm_id.load_results(raw_file, log_file)
-            image_path_gm_id = jfet_gm_id.plot()
+            # jfet_vgs_id.load_results(raw_file, log_file)
+            # image_path_vgs_id = jfet_vgs_id.plot()
 
-            upload_image(model_id, image_path_iv, 'iv')
-            upload_image(model_id, image_path_vgs_id, 'vgs_id')
-            upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
-            upload_image(model_id, image_path_gm_id, 'gm_id')
+
+            # # JFETのgm-Vgs特性をプロット
+            # print(f"Generating gm-Vgs characteristics for {device_name} ({model['device_type']})")
+            # jfet_gm_vgs = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
+
+            # raw_file, log_file = simulate(jfet_gm_vgs, local=False)
+
+            # jfet_gm_vgs.load_results(raw_file, log_file)
+            # image_path_gm_vgs = jfet_gm_vgs.plot()
+
+
+            # # JFETのgm-Id特性をプロット
+            # print(f"Generating gm-Id characteristics for {device_name} ({model['device_type']})")
+            # jfet_gm_id = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
+
+            # raw_file, log_file = simulate(jfet_gm_id, local=False)
+
+            # jfet_gm_id.load_results(raw_file, log_file)
+            # image_path_gm_id = jfet_gm_id.plot()
+
+            # upload_image(model_id, image_path_iv, 'iv')
+            # upload_image(model_id, image_path_vgs_id, 'vgs_id')
+            # upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
+            # upload_image(model_id, image_path_gm_id, 'gm_id')
 
 
     main()

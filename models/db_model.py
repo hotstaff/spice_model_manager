@@ -42,6 +42,19 @@ def init_db():
             image_data BYTEA
         )
         """))
+
+        conn.execute(text("""
+        CREATE TABLE IF NOT EXISTS basic_performance (
+            id SERIAL PRIMARY KEY,
+            data_id INT REFERENCES data(id) ON DELETE CASCADE,  -- dataテーブルと結合
+            idss DOUBLE PRECISION,  -- Idss (Drain current) 浮動小数点型
+            gm DOUBLE PRECISION,    -- Transconductance (Gm) 浮動小数点型
+            cgs DOUBLE PRECISION,   -- Gate-Source capacitance (Cgs) 浮動小数点型
+            cgd DOUBLE PRECISION,   -- Gate-Drain capacitance (Cgd) 浮動小数点型
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """))
+        
         conn.commit()  # 明示的にコミット
 
 def migrate_db():

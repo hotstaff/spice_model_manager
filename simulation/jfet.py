@@ -1,4 +1,5 @@
 import os  # ファイルパスやディレクトリ操作
+import re
 import numpy as np  # 数値計算
 import matplotlib.pyplot as plt  # プロットの作成
 from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要な機能
@@ -68,6 +69,79 @@ class JFET_SimulationBase:
     def plot_data(self, *args):
         """データをプロットするメソッド（サブクラスで実装）"""
         raise NotImplementedError("このメソッドはサブクラスで実装してください")
+
+class JFET_Basic_Performance(JFET_SimulationBase):
+
+    _simulation_name = 'basic_performance'
+
+    def modify_netlist(self):
+        super().modify_netlist()
+
+        if self.device_type == 'NJF':
+            self.net.set_element_model('V2', "DC 10")
+        elif self.device_type == 'PJF':
+            self.net.set_element_model('V2', "DC -10")
+
+        # .op解析（定常状態解析）
+        self.net.add_instructions('.op')
+
+    def extract_data(self, include_units=True):
+        """.logファイルから基本性能指標に必要なデータを抽出"""
+        performance_data = {}
+
+        # .logファイルの内容を読み込む
+        log_content = self.log_data
+
+        # 正規表現を使って必要な性能指標を抽出
+        patterns = {
+            'id': r"Id:\s+([\d\.\-e\+]+)",  # "Id: 1.34e-02" の形式
+            'vgs': r"Vgs:\s+([\d\.\-e\+]+)",  # "Vgs: 0.00e+00" の形式
+            'vds': r"Vds:\s+([\d\.\-e\+]+)",  # "Vds: 1.00e+01" の形式
+            'gm': r"Gm:\s+([\d\.\-e\+]+)",  # "Gm: 3.83e-02" の形式
+            'gds': r"Gds:\s+([\d\.\-e\+]+)",  # "Gds: 3.22e-05" の形式
+            'cgs': r"Cgs:\s+([\d\.\-e\+]+)",  # "Cgs: 1.34e-11" の形式
+            'cgd': r"Cgd:\s+([\d\.\-e\+]+)"  # "Cgd: 3.27e-12" の形式
+        }
+
+        for key, pattern in patterns.items():
+            match = re.search(pattern, log_content)
+            if match:
+                value = float(match.group(1))
+                if key == 'id':
+                    performance_data[key] = value * 1e3  # ミリアンペアに変換
+                elif key == 'vgs' or key == 'vds':
+                    performance_data[key] = value  # ボルトに変換
+                elif key == 'gm':
+                    performance_data[key] = value * 1e3  # ミリジーメンスに変換
+                elif key == 'gds':
+                    performance_data[key] = value * 1e3  # ミリジーメンスに変換
+                elif key == 'cgs' or key == 'cgd':
+                    performance_data[key] = value * 1e12  # ピコファラッドに変換
+
+        # 単位を含める場合
+        if include_units:
+            for key in performance_data:
+                if key == 'id':
+                    performance_data[key] = f"{performance_data[key]:.2f} mA"
+                elif key == 'vgs' or key == 'vds':
+                    performance_data[key] = f"{performance_data[key]:.2f} V"
+                elif key == 'gm':
+                    performance_data[key] = f"{performance_data[key]:.2f} mS"
+                elif key == 'gds':
+                    performance_data[key] = f"{performance_data[key]:.2f} mS"
+                elif key == 'cgs' or key == 'cgd':
+                    performance_data[key] = f"{performance_data[key]:.2f} pF"
+
+        return performance_data
+
+    def get_basic_performance(self, include_units=False):
+        """基本性能指標を返す"""
+        if not self.log_data:
+            raise ValueError("シミュレーション結果が読み込まれていません")
+
+        data = self.extract_data(include_units=include_units)
+        return data
+
 
 class JFET_IV_Characteristic(JFET_SimulationBase):
 
