@@ -184,12 +184,15 @@ def api_simulate_now():
             return jsonify({"error": "Invalid spice_string format or missing fields."}), 400
 
 
-@app.route('/start_simulation', methods=['POST'])
+@app.route('/start_simulation', methods=['GET'])
 def start_simulation():
-    data_id = request.json.get('data_id')
+    data_id = request.args.get('data_id')
+    if not data_id:
+        return jsonify({"message": "data_id is required"}), 400
+
     # 非同期タスクをキューに追加
     run_simulation.apply_async(args=[data_id])
-    return jsonify({"message": "Simulation started!"}), 202
+    return jsonify({"message": f"Simulation started for data_id {data_id}!"}), 202
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
