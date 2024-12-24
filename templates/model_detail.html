@@ -235,14 +235,15 @@
         <!-- Basic Performance Section (moved above images) -->
         {% if basic_performance %}
         <div class="model-info">
-            <h2>{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
+            <h2>Basic Performance</h2>
             <ul>
-                {% for performance in basic_performance %}
-                    <li><strong>Idss:</strong> {{ performance.idss }}</li>
-                    <li><strong>Gm:</strong> {{ performance.gm }}</li>
-                    <li><strong>Cgs:</strong> {{ performance.cgs }}</li>
-                    <li><strong>Cgd:</strong> {{ performance.cgd }}</li>
-                {% endfor %}
+                {% if basic_performance %}
+                    {% for param, value in basic_performance.items() %}
+                        <li><strong>{{ param }}:</strong> {{ value }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>No basic performance data available.</li>
+                {% endif %}
             </ul>
         </div>
         {% else %}
