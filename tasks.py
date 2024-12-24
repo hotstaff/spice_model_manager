@@ -61,7 +61,7 @@ def run_basic_performance_simulation(data_id):
         result = model.get_basic_performance()
 
         # 6. 必要なパラメータを抽出
-        idss = result.get('idss')
+        idss = result.get('id')
         gm = result.get('gm')
         cgs = result.get('cgs')
         cgd = result.get('cgd')
