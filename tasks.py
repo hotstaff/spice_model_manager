@@ -2,7 +2,7 @@ import os
 from celery import Celery
 
 # 環境変数からREDISHOSTを取得
-redis_host = os.getenv('REDISHOST', 'localhost')
+redis_host = os.getenv('REDIS_HOST', 'localhost')
 
 # Celeryインスタンスを作成
 celery = Celery(
