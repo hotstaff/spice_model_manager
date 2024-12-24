@@ -54,7 +54,7 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """))
-        
+
         conn.commit()  # 明示的にコミット
 
 def migrate_db():
@@ -261,3 +261,43 @@ def get_image_from_db(data_id, image_type=None):
     image_io = BytesIO(image_data)
 
     return image_io, image_format, image_type
+
+
+# basic_performanceテーブルのデータを追加・更新する関数
+def update_basic_performance(data_id, idss=None, gm=None, cgs=None, cgd=None):
+    engine = get_db_connection()
+    with engine.connect() as conn:
+        # data_idに対応するデータが存在するか確認
+        result = conn.execute(text("SELECT * FROM basic_performance WHERE data_id = :data_id"), {"data_id": data_id}).fetchone()
+        
+        if result is None:
+            # データが存在しない場合は新しく挿入
+            conn.execute(text("""
+                INSERT INTO basic_performance (data_id, idss, gm, cgs, cgd)
+                VALUES (:data_id, :idss, :gm, :cgs, :cgd)
+            """), {"data_id": data_id, "idss": idss, "gm": gm, "cgs": cgs, "cgd": cgd})
+        else:
+            # データが存在する場合は更新
+            conn.execute(text("""
+                UPDATE basic_performance
+                SET idss = COALESCE(:idss, idss),
+                    gm = COALESCE(:gm, gm),
+                    cgs = COALESCE(:cgs, cgs),
+                    cgd = COALESCE(:cgd, cgd)
+                WHERE data_id = :data_id
+            """), {"idss": idss, "gm": gm, "cgs": cgs, "cgd": cgd, "data_id": data_id})
+        
+        conn.commit()  # 明示的にコミット
+    return True  # 更新または追加成功
+
+def get_basic_performance_by_data_id(data_id):
+    engine = get_db_connection()
+    query = """
+        SELECT * FROM basic_performance 
+        WHERE data_id = :data_id
+    """
+    query = text(query)  # クエリを text() でラップ
+    
+    # パラメータを辞書として渡す
+    df = pd.read_sql(query, engine, params={"data_id": data_id})
+    return df

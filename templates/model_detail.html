@@ -232,6 +232,23 @@
             <h4>{% block created_at_title %}Created At:{% endblock %} <span class="small-text">{{ model.created_at }}</span></h4>
         </div>
 
+        <!-- Basic Performance Section (moved above images) -->
+        {% if basic_performance %}
+        <div class="model-info">
+            <h2>{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
+            <ul>
+                {% for performance in basic_performance %}
+                    <li><strong>Idss:</strong> {{ performance.idss }}</li>
+                    <li><strong>Gm:</strong> {{ performance.gm }}</li>
+                    <li><strong>Cgs:</strong> {{ performance.cgs }}</li>
+                    <li><strong>Cgd:</strong> {{ performance.cgd }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% else %}
+        <p>No basic performance data available.</p>
+        {% endif %}
+
         <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
         {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
         <div class="image-grid">
