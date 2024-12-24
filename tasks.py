@@ -2,8 +2,8 @@ import os  # 環境変数の取得
 from celery import Celery  # Celeryタスクの作成
 
 # データベース関連
-from db_model import get_db_connection, update_basic_performance, get_data_by_id  # データベース操作
-from job_model import create_job, get_job_result_with_notification  # シミュレーションジョブの管理
+from models.db_model import get_db_connection, update_basic_performance, get_data_by_id  # データベース操作
+from models.job_model import create_job, get_job_result_with_notification  # シミュレーションジョブの管理
 
 # シミュレーション関連
 from simulation.jfet import JFET_Basic_Performance  # JFETのシミュレーションクラス
