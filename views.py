@@ -253,7 +253,7 @@ def model_detail(model_id):
     if basic_performance.empty:
         basic_performance_data = None
     else:
-        basic_performance.to_dict(orient="records")[0]
+        basic_performance_data = basic_performance.to_dict(orient="records")[0]
     
     # テンプレート名を取得
     template_name = get_template_name('model_detail.html')
