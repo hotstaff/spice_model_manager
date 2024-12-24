@@ -9,6 +9,8 @@ from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, 
 from client.spice_model_parser import SpiceModelParser
 from forms import AddModelForm  # AddModelFormをインポート
 
+from tasks import run_simulation  # Celeryタスクをインポート
+
 # Blueprintの定義
 simu_views = Blueprint('simu_views', __name__)
 
@@ -182,6 +184,12 @@ def api_simulate_now():
             return jsonify({"error": "Invalid spice_string format or missing fields."}), 400
 
 
+@app.route('/start_simulation', methods=['POST'])
+def start_simulation():
+    data_id = request.json.get('data_id')
+    # 非同期タスクをキューに追加
+    run_simulation.apply_async(args=[data_id])
+    return jsonify({"message": "Simulation started!"}), 202
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
