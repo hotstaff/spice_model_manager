@@ -233,22 +233,20 @@
         </div>
 
         <!-- Basic Performance Section (moved above images) -->
-        {% if basic_performance %}
         <div class="model-info">
             <h2>Basic Performance</h2>
             <ul>
-                {% if basic_performance %}
-                    {% for param, value in basic_performance.items() %}
-                        <li><strong>{{ param }}:</strong> {{ value }}</li>
-                    {% endfor %}
+                {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
+                    <li><strong>Idss:</strong> {{ basic_performance.idss }} mA</li>
+                    <li><strong>Gm:</strong> {{ basic_performance.gm }} mS</li>
+                    <li><strong>Cgs:</strong> {{ basic_performance.cgs }} pF</li>
+                    <li><strong>Cgd:</strong> {{ basic_performance.cgd }} pF</li>
                 {% else %}
-                    <li>No basic performance data available.</li>
+                    <li>No basic performance data available for this device type.</li>
                 {% endif %}
             </ul>
         </div>
-        {% else %}
-        <p>No basic performance data available.</p>
-        {% endif %}
+
 
         <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
         {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
