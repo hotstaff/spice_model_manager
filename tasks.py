@@ -14,11 +14,15 @@ redis_host = os.getenv('REDIS_HOST', 'localhost')
 
 file_extractor = FileExtractor()
 
+# simulation
+job_model = JobModel(redis_host=redis_host)
+
 # Celeryインスタンスを作成
 celery = Celery(
     __name__,  # アプリケーション名
     broker=f'redis://{redis_host}:6379/1'  # RedisのURL、DB番号は1に設定
 )
+
 
 @celery.task
 def run_basic_performance_simulation(data_id):
