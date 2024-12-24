@@ -7,7 +7,7 @@ from models.db_model import get_db_connection, update_basic_performance, get_dat
 # シミュレーション関連
 from simulation.jfet import JFET_Basic_Performance  # JFETのシミュレーションクラス
 from simulation.file_extractor import FileExtractor  # ファイル抽出
-from simulation.job_model import create_job, get_job_result_with_notification  # シミュレーションジョブの管理
+from simulation.job_model import JobModel
 
 # 環境変数からREDIS_HOSTを取得（デフォルトはlocalhost）
 redis_host = os.getenv('REDIS_HOST', 'localhost')
