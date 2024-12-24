@@ -3,11 +3,11 @@ from celery import Celery  # Celeryタスクの作成
 
 # データベース関連
 from models.db_model import get_db_connection, update_basic_performance, get_data_by_id  # データベース操作
-from models.job_model import create_job, get_job_result_with_notification  # シミュレーションジョブの管理
 
 # シミュレーション関連
 from simulation.jfet import JFET_Basic_Performance  # JFETのシミュレーションクラス
 from simulation.file_extractor import extract  # ファイル抽出
+from simulation.job_model import create_job, get_job_result_with_notification  # シミュレーションジョブの管理
 
 # 環境変数からREDIS_HOSTを取得（デフォルトはlocalhost）
 redis_host = os.getenv('REDIS_HOST', 'localhost')
