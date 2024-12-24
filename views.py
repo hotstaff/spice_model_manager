@@ -246,9 +246,9 @@ def model_detail(model_id):
     model = get_data_by_id(model_id)
     if model.empty:
         return abort(404, description="Model not found")
-    
+
     # basic_performance テーブルから関連するデータを取得
-    basic_performance = get_basic_performance_by_data_id(model_id)
+    basic_performance_data = basic_performance.to_dict(orient="records") or None
     
     # テンプレート名を取得
     template_name = get_template_name('model_detail.html')
@@ -256,7 +256,7 @@ def model_detail(model_id):
     # model と basic_performance のデータをテンプレートに渡す
     return render_template(template_name,
         model=model.to_dict(orient="records")[0],
-        basic_performance=basic_performance.to_dict(orient="records")[0])
+        basic_performance=basic_performance_data)
 
 
 @model_views.route('/models/add', methods=['GET', 'POST'])
