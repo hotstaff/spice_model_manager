@@ -26,7 +26,8 @@ from models.db_model import (
     search_data,
     save_image_to_db,
     get_image_from_db,
-    update_simulation_done
+    update_simulation_done,
+    get_basic_performance_by_data_id
 )
 from client.spice_model_parser import SpiceModelParser
 
@@ -248,7 +249,11 @@ def model_detail(model_id):
         return abort(404, description="Model not found")
 
     # basic_performance テーブルから関連するデータを取得
-    basic_performance_data = basic_performance.to_dict(orient="records") or None
+    basic_performance = get_basic_performance_by_data_id(model_id)
+    if basic_performance.empty:
+        basic_performance_data = None
+    else:
+        basic_performance.to_dict(orient="records")[0]
     
     # テンプレート名を取得
     template_name = get_template_name('model_detail.html')
