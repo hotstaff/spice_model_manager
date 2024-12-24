@@ -184,13 +184,13 @@ def api_simulate_now():
 
 @simu_views.route('/start_simulation', methods=['GET'])
 def start_simulation():
-    from tasks import run_simulation  # 遅延インポート
+    from tasks import run_basic_performance_simulation  # 遅延インポート
     data_id = request.args.get('data_id')  # クエリパラメータからdata_idを取得
     if not data_id:
         return jsonify({"error": "data_id is required"}), 400  # data_idがない場合のエラーハンドリング
     
     # 非同期タスクをキューに追加
-    run_simulation.apply_async(args=[data_id])
+    run_basic_performance_simulation.apply_async(args=[data_id])
     
     return jsonify({"message": "Simulation started!"}), 202
 
