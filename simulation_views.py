@@ -3,6 +3,8 @@ from io import BytesIO
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 
 # 自作モジュールのインポート
+from models.db_model import get_all_device_ids
+
 from simulation.job_model import JobModel
 from simulation.file_extractor import FileExtractor
 from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic
@@ -182,18 +184,19 @@ def api_simulate_now():
             return jsonify({"error": "Invalid spice_string format or missing fields."}), 400
 
 
-@simu_views.route('/start_simulation', methods=['GET'])
-def start_simulation():
-    from tasks import run_basic_performance_simulation  # 遅延インポート
-    data_id = request.args.get('data_id')  # クエリパラメータからdata_idを取得
-    if not data_id:
-        return jsonify({"error": "data_id is required"}), 400  # data_idがない場合のエラーハンドリング
+@simu_views.route('/start_all_simulations', methods=['GET'])
+def start_all_simulations():
+    # データベースからすべてのデバイスのdata_idを取得
+    device_ids = get_all_device_ids()
+    
+    if not device_ids:
+        return jsonify({"error": "No devices found for simulation"}), 404  # デバイスが見つからない場合のエラーハンドリング
     
     # 非同期タスクをキューに追加
-    run_basic_performance_simulation.apply_async(args=[data_id])
+    for data_id in device_ids:
+        run_basic_performance_simulation.apply_async(args=[data_id])
     
-    return jsonify({"message": "Simulation started!"}), 202
-
+    return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])

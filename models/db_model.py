@@ -301,3 +301,14 @@ def get_basic_performance_by_data_id(data_id):
     # パラメータを辞書として渡す
     df = pd.read_sql(query, engine, params={"data_id": data_id})
     return df
+
+def get_all_device_ids():
+    # データベースからすべてのデバイスIDを取得
+    # 現在のテーブル名とカラム名に合わせて修正
+    query = "SELECT id FROM data"  # 'id' を使用
+    connection = get_db_connection()
+    cursor = connection.cursor()
+    cursor.execute(query)
+    device_ids = [row[0] for row in cursor.fetchall()]
+    connection.close()
+    return device_ids
