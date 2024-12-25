@@ -11,6 +11,8 @@ from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, 
 from client.spice_model_parser import SpiceModelParser
 from forms import AddModelForm  # AddModelFormをインポート
 
+from tasks import run_basic_performance_simulation
+
 # Blueprintの定義
 simu_views = Blueprint('simu_views', __name__)
 
