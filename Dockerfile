@@ -17,6 +17,7 @@ COPY . .
 # supervisordの設定ファイルをコピー
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
-# supervisordを起動
-CMD ["supervisord", "-n"]
+# 起動
+CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT & celery -A tasks.celery worker --loglevel=info"]
+
 
