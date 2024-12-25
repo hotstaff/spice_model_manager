@@ -5,7 +5,7 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # 必要なパッケージのインストール
-# RUN apt-get update && apt-get install -y ngspice
+RUN apt-get update && apt-get install -y supervisor && rm -rf /var/lib/apt/lists/*
 
 # Python依存関係をインストール
 COPY requirements.txt .
@@ -14,6 +14,8 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 # アプリケーションのコピー
 COPY . .
 
-# サービスを開始するためのコマンド
-CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT"]
+# supervisordの設定ファイルをコピー
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+# supervisordを起動
+CMD ["supervisord", "-n"]

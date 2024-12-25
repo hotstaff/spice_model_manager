@@ -5,3 +5,4 @@ PyLTSpice
 Requests
 gunicorn
 redis
+celery
