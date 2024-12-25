@@ -14,9 +14,6 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 # アプリケーションのコピー
 COPY . .
 
-# supervisordの設定ファイルをコピー
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
 # 起動
 CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT & celery -A tasks.celery worker --loglevel=info"]
 
