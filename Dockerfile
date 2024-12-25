@@ -19,3 +19,4 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # supervisordを起動
 CMD ["supervisord", "-n"]
+
