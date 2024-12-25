@@ -1,3 +1,29 @@
+import os  # 環境変数の取得
+from celery import Celery  # Celeryタスクの作成
+
+# データベース関連
+from models.db_model import get_db_connection, update_basic_performance, get_data_by_id  # データベース操作
+
+# シミュレーション関連
+from simulation.jfet import JFET_Basic_Performance  # JFETのシミュレーションクラス
+from simulation.file_extractor import FileExtractor  # ファイル抽出
+from simulation.job_model import JobModel
+
+# 環境変数からREDIS_HOSTを取得（デフォルトはlocalhost）
+redis_host = os.getenv('REDIS_HOST', 'localhost')
+
+file_extractor = FileExtractor()
+
+# simulation
+job_model = JobModel(redis_host=redis_host)
+
+# Celeryインスタンスを作成
+celery = Celery(
+    __name__,  # アプリケーション名
+    broker=f'redis://{redis_host}:6379/1'  # RedisのURL、DB番号は1に設定
+)
+
+
 @celery.task
 def run_basic_performance_simulation(data_id):
     """
