@@ -212,9 +212,29 @@
 <body>
     <div class="container">
         <h1>{% block title %}Model Details{% endblock %}</h1>
+
+        <!-- Model Information Section -->
         <div class="model-info">
             <h2>{% block device_name %}Device Name{% endblock %}: {{ model.device_name }}</h2>
             <h3>{% block device_type %}Device Type{% endblock %}: {{ model.device_type }}</h3>
+
+            <!-- Basic Performance Section -->
+            <div class="model-info">
+                <h2>{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
+                <ul>
+                    {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
+                        <li><strong>Idss:</strong> {{ basic_performance.idss }} mA</li>
+                        <li><strong>Gm:</strong> {{ basic_performance.gm }} mS</li>
+                        <li><strong>Cgs:</strong> {{ basic_performance.cgs }} pF</li>
+                        <li><strong>Cgd:</strong> {{ basic_performance.cgd }} pF</li>
+                    {% else %}
+                        <li>No basic performance data available for this device type.</li>
+                    {% endif %}
+                </ul>
+                <p><em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation.{% endblock %}</em></p>
+            </div>
+
+            <!-- SPICE String Section -->
             <h4>{% block spice_string_title %}SPICE String:{% endblock %}</h4>
             <pre id="spiceString">{{ model.spice_string }}</pre>
             <div class="lowercase-toggle">
@@ -224,7 +244,7 @@
             <button class="copy-button" onclick="copyToClipboard()">{% block copy_button %}Copy SPICE String{% endblock %}</button>
         </div>
 
-        <!-- New Section for Author, Comment, Created_at -->
+        <!-- Author, Comment, and Created At Section -->
         <div class="model-info">
             <h4>{% block author_title %}Author:{% endblock %} <span class="small-text">{{ model.author }}</span></h4>
             <h4>{% block comment_title %}Comment:{% endblock %}</h4>
@@ -232,24 +252,7 @@
             <h4>{% block created_at_title %}Created At:{% endblock %} <span class="small-text">{{ model.created_at }}</span></h4>
         </div>
 
-        <!-- Basic Performance Section (moved above images) -->
-        <div class="model-info">
-            <h2>{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
-            <ul>
-                {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
-                    <li><strong>Idss:</strong> {{ basic_performance.idss }} mA</li>
-                    <li><strong>Gm:</strong> {{ basic_performance.gm }} mS</li>
-                    <li><strong>Cgs:</strong> {{ basic_performance.cgs }} pF</li>
-                    <li><strong>Cgd:</strong> {{ basic_performance.cgd }} pF</li>
-                {% else %}
-                    <li>No basic performance data available for this device type.</li>
-                {% endif %}
-            </ul>
-            <p><em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation.{% endblock %}</em></p>
-        </div>
-
-
-        <!-- 画像の表示エリア (device_typeがNJFまたはPJFのときのみ表示) -->
+        <!-- Image Display Section (Only for NJF or PJF) -->
         {% if model.device_type == 'NJF' or model.device_type == 'PJF' %}
         <div class="image-grid">
             <div class="image-item">
@@ -269,10 +272,11 @@
                 <img src="{{ url_for('model_views.get_image', data_id=model.id, image_type='gm_id') }}" alt="Gm-Id Characteristic Curve" />
             </div>
         </div>
-        </div>
         {% endif %}
-        
+
+        <!-- Back Link -->
         <a href="{{ url_for('model_views.list_models') }}">{% block back_link %}Back to model list{% endblock %}</a>
     </div>
 </body>
+
 </html>
