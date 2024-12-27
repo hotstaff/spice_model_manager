@@ -135,6 +135,7 @@ def run_and_store_plots(data_id):
             JFET_Gm_Id_Characteristic
         ]
         
+        
         for characteristic_class in characteristic_models:
             model = run_simulation(data_id, characteristic_class)
             image_path = model.plot()  # 画像生成メソッド
