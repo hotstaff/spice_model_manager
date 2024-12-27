@@ -7,6 +7,7 @@ from models.db_model import get_db_connection, update_basic_performance, get_dat
 # シミュレーション関連
 from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic, JFET_Basic_Performance
 
+
 from simulation.file_extractor import FileExtractor  # ファイル抽出
 from simulation.job_model import JobModel
 
@@ -129,7 +130,7 @@ def run_and_store_plots(data_id):
         # シミュレーションと画像登録をまとめて行う
         characteristic_models = [
             JFET_IV_Characteristic,
-            JFET_Gm_Vgs_Characteristic,
+            JFET_Vgs_Id_Characteristic,
             JFET_Gm_Vds_Characteristic,
             JFET_Gm_Id_Characteristic
         ]
