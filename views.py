@@ -288,6 +288,11 @@ def add_new_model():
                 if result:
                     # 登録成功
                     flash('SPICE Model added successfully!', 'success')
+
+                    # 非同期タスクでプロット生成を実行
+                    data_id = result  # add_dataが返すIDを使用
+                    run_and_store_plots.apply_async(args=[data_id])
+
                     return redirect(url_for('home'))  # 登録成功後、トップページにリダイレクト
 
                 else:
@@ -305,7 +310,6 @@ def add_new_model():
             return redirect(url_for('model_views.add_new_model'))  # 失敗後リダイレクト
 
     # GETリクエストの場合、フォームを表示
-
     template_name = get_template_name('spice_model_add.html')
     return render_template(template_name, form=form)
 

@@ -6,13 +6,14 @@ from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要�
 
 class JFET_SimulationBase:
 
-    _simulation_name = 'jfet_dc'  # default
+    _VALID_TYPES = ["NJF", "PJF"]
+    _SIMULATION_NAME = 'jfet_dc'  # default
 
     def __init__(self, device_name, device_type, spice_string):
         self.device_name = device_name
         self.device_type = device_type
         self.spice_string = spice_string
-        self.simulation_name = self._simulation_name
+        self.simulation_name = self._SIMULATION_NAME
 
         script_dir = os.path.dirname(os.path.abspath(__file__))  # スクリプトの絶対パスを取得
         self.template_path = os.path.join(script_dir, 'net', 'jfet_dc.net')  # テンプレートファイルのパス
@@ -70,9 +71,17 @@ class JFET_SimulationBase:
         """データをプロットするメソッド（サブクラスで実装）"""
         raise NotImplementedError("このメソッドはサブクラスで実装してください")
 
+    @property
+    def valid_types(self):
+        return self._VALID_TYPES
+
+    @property
+    def simulation_name(self):
+        return self._SIMULATION_NAME
+
 class JFET_Basic_Performance(JFET_SimulationBase):
 
-    _simulation_name = 'basic_performance'
+    _SIMULATION_NAME = 'basic_performance'
 
     def modify_netlist(self):
         super().modify_netlist()
@@ -145,7 +154,7 @@ class JFET_Basic_Performance(JFET_SimulationBase):
 
 class JFET_IV_Characteristic(JFET_SimulationBase):
 
-    _simulation_name = 'iv'
+    _SIMULATION_NAME = 'iv'
 
     def modify_netlist(self):
         super().modify_netlist()
@@ -195,7 +204,7 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
 
 class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
 
-    _simulation_name = 'vgs_id'
+    _SIMULATION_NAME = 'vgs_id'
 
     def modify_netlist(self):
         super().modify_netlist()
@@ -239,7 +248,7 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
 
 class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
 
-    _simulation_name = 'gm_vgs'
+    _SIMULATION_NAME = 'gm_vgs'
 
     def modify_netlist(self):
         super().modify_netlist()
@@ -285,7 +294,7 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
 
 class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
 
-    _simulation_name = 'gm_id'
+    _SIMULATION_NAME = 'gm_id'
 
     def modify_netlist(self):
         super().modify_netlist()
