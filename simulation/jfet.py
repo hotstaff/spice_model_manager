@@ -75,10 +75,6 @@ class JFET_SimulationBase:
     def valid_types(self):
         return self._VALID_TYPES
 
-    @property
-    def simulation_name(self):
-        return self._SIMULATION_NAME
-
 class JFET_Basic_Performance(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'basic_performance'
