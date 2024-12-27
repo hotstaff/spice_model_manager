@@ -62,7 +62,7 @@ def run_simulation(data_id, characteristic_class):
     device_name, device_type, spice_string = get_device_data(data_id)
     
     # device_typeが特性クラスに対応していない場合、エラーを発生させる
-    if device_type not in characteristic_class.valid_types():
+    if device_type not in characteristic_class.valid_types:
         raise ValueError(f"無効なdevice_typeです。device_type: {device_type}")
     
     # モデルのインスタンスを作成
@@ -134,7 +134,7 @@ def run_and_store_plots(data_id):
             JFET_Gm_Vgs_Characteristic,
             JFET_Gm_Id_Characteristic
         ]
-        
+
         
         for characteristic_class in characteristic_models:
             model = run_simulation(data_id, characteristic_class)
