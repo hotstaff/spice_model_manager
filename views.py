@@ -35,6 +35,8 @@ from client.spice_model_parser import SpiceModelParser
 from forms import AddModelForm, SearchForm
 
 
+from tasks import run_basic_performance_simulation, run_and_store_plots
+
 logging.basicConfig(level=logging.INFO)
 
 
