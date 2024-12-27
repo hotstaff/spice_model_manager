@@ -294,7 +294,8 @@ def add_new_model():
                     # 非同期タスクでプロット生成を実行
                     data_id = result  # add_dataが返すIDを使用
                     run_and_store_plots.apply_async(args=[data_id])
-
+                    run_basic_performance_simulation.apply_async(args=[data_id])
+                    
                     return redirect(url_for('home'))  # 登録成功後、トップページにリダイレクト
 
                 else:
