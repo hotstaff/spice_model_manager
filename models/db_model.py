@@ -129,7 +129,6 @@ def add_data(device_name, device_type, spice_string, author="Anonymous", comment
                 VALUES (:device_name, :device_type, :spice_string, :author, :comment)
                 RETURNING id
             """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "author": author, "comment": comment})
-            conn.commit()  # 明示的にコミット
             # 追加したデバイスのIDを取得
             new_id = result.fetchone()[0]
             # コミットして変更を確定
