@@ -131,7 +131,7 @@ def run_and_store_plots(data_id):
         characteristic_models = [
             JFET_IV_Characteristic,
             JFET_Vgs_Id_Characteristic,
-            JFET_Gm_Vds_Characteristic,
+            JFET_Gm_Vgs_Characteristic,
             JFET_Gm_Id_Characteristic
         ]
         
