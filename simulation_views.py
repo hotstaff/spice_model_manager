@@ -11,7 +11,7 @@ from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, 
 from client.spice_model_parser import SpiceModelParser
 from forms import AddModelForm  # AddModelFormをインポート
 
-from tasks import run_basic_performance_simulation
+from tasks import run_basic_performance_simulation, run_and_store_plots
 
 # Blueprintの定義
 simu_views = Blueprint('simu_views', __name__)
@@ -197,6 +197,7 @@ def start_all_simulations():
     # 非同期タスクをキューに追加
     for data_id in device_ids:
         run_basic_performance_simulation.apply_async(args=[data_id])
+        run_and_store_plots.apply_async(args=[data_id])
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
