@@ -6,7 +6,7 @@ from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要�
 
 class JFET_SimulationBase:
 
-    _VALID_TYPES = ["NJF", "PJF"]
+    VALID_TYPES = ["NJF", "PJF"]
     _SIMULATION_NAME = 'jfet_dc'  # default
 
     def __init__(self, device_name, device_type, spice_string):
@@ -71,9 +71,6 @@ class JFET_SimulationBase:
         """データをプロットするメソッド（サブクラスで実装）"""
         raise NotImplementedError("このメソッドはサブクラスで実装してください")
 
-    @property
-    def valid_types(self):
-        return self._VALID_TYPES
 
 class JFET_Basic_Performance(JFET_SimulationBase):
 

@@ -62,8 +62,8 @@ def run_simulation(data_id, characteristic_class):
     device_name, device_type, spice_string = get_device_data(data_id)
     
     # # device_typeが特性クラスに対応していない場合、エラーを発生させる
-    # if device_type not in characteristic_class.valid_types:
-    #     raise ValueError(f"無効なdevice_typeです。device_type: {device_type}")
+    if device_type not in characteristic_class.VALID_TYPES:
+        raise ValueError(f"無効なdevice_typeです。device_type: {device_type}")
     
     # モデルのインスタンスを作成
     model = characteristic_class(device_name, device_type, spice_string)
