@@ -129,14 +129,42 @@ def add_data(device_name, device_type, spice_string, author="Anonymous", comment
                 VALUES (:device_name, :device_type, :spice_string, :author, :comment)
                 RETURNING id
             """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "author": author, "comment": comment})
-
+            conn.commit()  # 明示的にコミット
             # 追加したデバイスのIDを取得
             new_id = result.fetchone()[0]
+            # コミットして変更を確定
+            conn.commit()
             return new_id  # 追加したレコードのIDを返す
         except IntegrityError:
             # 重複などのエラーが発生した場合はロールバック
             conn.rollback()
             return None
+
+def add_data(device_name, device_type, spice_string, author="Anonymous", comment=""):
+    engine = get_db_connection()
+    
+    with engine.connect() as conn:
+        # デバイス名が既に存在するか確認する
+        result = conn.execute(text("""
+            SELECT COUNT(*) FROM data WHERE device_name = :device_name
+        """), {"device_name": device_name}).fetchone()
+
+        if result[0] > 0:
+            # 既に同じデバイス名が存在する場合はFalseを返す
+            return False
+        
+        try:
+            # 新しいデバイスを追加
+            conn.execute(text("""
+                INSERT INTO data (device_name, device_type, spice_string, author, comment)
+                VALUES (:device_name, :device_type, :spice_string, :author, :comment)
+            """), {"device_name": device_name, "device_type": device_type, "spice_string": spice_string, "author": author, "comment": comment})
+            conn.commit()  # 明示的にコミット
+            return True  # 成功した場合はTrueを返す
+        except IntegrityError:
+            # 重複などのエラーが発生した場合はロールバック
+            conn.rollback()
+            return False
 
 # データを更新する関数
 def update_data(data_id, device_name=None, device_type=None, spice_string=None, author="Anonymous", comment=""):
