@@ -100,6 +100,40 @@
             height: auto;
         }
 
+        .performance-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+        .performance-title {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .performance-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .performance-list li {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .no-data-message {
+            font-size: 14px;
+            color: #777;
+        }
+        .performance-note {
+            font-size: 12px;
+            color: #777;
+            margin-top: 10px;
+        }
+
         /* 印刷スタイル */
         @media print {
             body {
@@ -219,19 +253,21 @@
             <h3>{% block device_type %}Device Type{% endblock %}: {{ model.device_type }}</h3>
 
             <!-- Basic Performance Section -->
-            <div class="model-info">
-                <h2>{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
-                <ul>
-                    {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
+            <div class="performance-section">
+                <h2 class="performance-title">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
+                {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
+                    <ul class="performance-list">
                         <li><strong>Idss:</strong> {{ basic_performance.idss }} mA</li>
                         <li><strong>Gm:</strong> {{ basic_performance.gm }} mS</li>
                         <li><strong>Cgs:</strong> {{ basic_performance.cgs }} pF</li>
                         <li><strong>Cgd:</strong> {{ basic_performance.cgd }} pF</li>
-                    {% else %}
-                        <li>No basic performance data available for this device type.</li>
-                    {% endif %}
-                </ul>
-                <p><em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation.{% endblock %}</em></p>
+                    </ul>
+                {% else %}
+                    <p class="no-data-message">No basic performance data available for this device type.</p>
+                {% endif %}
+                <p class="performance-note">
+                    <em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation (.op).{% endblock %}</em>
+                </p>
             </div>
 
             <!-- SPICE String Section -->
