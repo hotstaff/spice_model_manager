@@ -1,7 +1,6 @@
 import os
 from io import BytesIO
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
-from flask_progress import Progress
 
 # 自作モジュールのインポート
 from models.db_model import get_all_device_ids
