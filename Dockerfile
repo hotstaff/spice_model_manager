@@ -1,7 +1,7 @@
 # 基盤となるPythonイメージを指定
 FROM python:3.9-alpine
 
-RUN apk add --no-cache gcc libc-dev
+RUN apk add --no-cache gcc libc-dev python3-dev musl-dev linux-headers
 
 # 作業ディレクトリを作成
 WORKDIR /app
