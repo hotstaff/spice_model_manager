@@ -234,10 +234,6 @@
                 if (action === '/api/simulate_now') {
                     const formData = new FormData(event.target); // フォームデータを取得
 
-                    // ボタンを無効にして、ラベルを変更
-                    clickedButton.disabled = true;
-                    clickedButton.textContent = '{{ block("run_simulation_button_running") }}';
-
                     try {
                         // 非同期でPOSTリクエストを送信
                         const response = await fetch(action, {
@@ -264,14 +260,9 @@
                         // 必要なら追加のメッセージを表示
                         const resultMessage = document.getElementById('result-message');
                         resultMessage.textContent = 'Simulation completed successfully!';
-
                     } catch (error) {
                         console.error(error);
                         alert('An error occurred while processing the simulation.');
-                    } finally {
-                        // シミュレーション完了後にボタンを再度有効にし、ラベルを元に戻す
-                        clickedButton.disabled = false;
-                        clickedButton.textContent = '{{ block("run_simulation_button") }}';
                     }
                 } else {
                     // シミュレーション実行以外の処理（通常のフォーム送信など）は通常通り送信
