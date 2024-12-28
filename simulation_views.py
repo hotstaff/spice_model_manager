@@ -1,6 +1,7 @@
 import os
 from io import BytesIO
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
+from flask_progress import Progress
 
 # 自作モジュールのインポート
 from models.db_model import get_all_device_ids
@@ -24,6 +25,9 @@ file_extractor = FileExtractor()
 
 # JobModelのインスタンスを作成
 job_model = JobModel(redis_host=redis_host)
+
+# FlaskのProgressインスタンスを作成
+progress = Progress()
 
 @simu_views.errorhandler(413)
 def request_entity_too_large(error):
