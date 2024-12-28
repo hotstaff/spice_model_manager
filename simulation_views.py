@@ -25,9 +25,6 @@ file_extractor = FileExtractor()
 # JobModelのインスタンスを作成
 job_model = JobModel(redis_host=redis_host)
 
-# FlaskのProgressインスタンスを作成
-progress = Progress()
-
 @simu_views.errorhandler(413)
 def request_entity_too_large(error):
     """ファイルサイズ超過エラーのハンドリング"""
