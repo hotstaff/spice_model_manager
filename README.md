@@ -14,21 +14,21 @@ LTspiceデバイスモデルの管理とシミュレーションを行うツー�
 
 ## ディレクトリ構成
 
-app.py: Google Cloud Run用のメインアプリケーション。
-client/: モデル管理ロジックを含む。
-    spice_model_manager.py: モデル管理スクリプト(GUI)。
-    spice_model_parser.py: LTspiceモデルの解析モジュール。
-models/: データベースモデル関連。
-    db_model.py: データベースのモデル定義。
-simulation/: シミュレーションサーバー関連コード。
-    jfet.py: JFETシミュレーションロジック。
-    lt_jfet.py: LTspice用JFETロジック。(テスト用)
-    redis_worker.py: タスク管理用スクリプト。(シミュレーションサーバーのワーカー)
-    net/jfet_dc.net: サンプルネットリストファイル。(JFETテスト用の回路テンプレート)
-templates/: ウェブインターフェース用HTMLテンプレート。
-Dockerfile: メインアプリ用のDockerfile。
-simulation/Dockerfile: シミュレーションサーバー用のDockerfile。
-requirements.txt: 依存ライブラリリスト。
+    app.py: Google Cloud Run用のメインアプリケーション。
+    client/: モデル管理ロジックを含む。
+        spice_model_manager.py: モデル管理スクリプト(GUI)。
+        spice_model_parser.py: LTspiceモデルの解析モジュール。
+    models/: データベースモデル関連。
+        db_model.py: データベースのモデル定義。
+    simulation/: シミュレーションサーバー関連コード。
+        jfet.py: JFETシミュレーションロジック。
+        lt_jfet.py: LTspice用JFETロジック。(テスト用)
+        redis_worker.py: タスク管理用スクリプト。(シミュレーションサーバーのワーカー)
+        net/jfet_dc.net: サンプルネットリストファイル。(JFETテスト用の回路テンプレート)
+    templates/: ウェブインターフェース用HTMLテンプレート。
+    Dockerfile: メインアプリ用のDockerfile。
+    simulation/Dockerfile: シミュレーションサーバー用のDockerfile。
+    requirements.txt: 依存ライブラリリスト。
 
 ## 動作環境
 
