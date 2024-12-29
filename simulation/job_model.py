@@ -48,7 +48,8 @@ class JobModel:
             if messages:
                 for stream, entries in messages:
                     for _, data in entries:
-                        if data[b"job_id"].decode() == job_id:
+                        if data[b"job_id"].decode('utf-8') == job_id:
+                            print("hi", job_id)
                             return True
         return False
 
