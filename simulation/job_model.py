@@ -30,9 +30,31 @@ class JobModel:
         result_key = f"{self.REDIS_RESULT_PREFIX}{job_id}"
         return self.redis.get(result_key)
 
+    def fetch_stream_message(self, stream_name, job_id, timeout=30):
+        """
+        Redis Streamsから特定のジョブIDのメッセージを取得。
+
+        Args:
+            stream_name (str): ストリーム名。
+            job_id (str): ジョブID。
+            timeout (int): タイムアウト秒数。
+
+        Returns:
+            bool: メッセージが見つかった場合True、タイムアウトの場合False。
+        """
+        start_time = datetime.now()
+        while (datetime.now() - start_time).seconds < timeout:
+            messages = self.redis.xread({stream_name: "0-0"}, block=1000, count=1)
+            if messages:
+                for stream, entries in messages:
+                    for _, data in entries:
+                        if data[b"job_id"].decode() == job_id:
+                            return True
+        return False
+
     def get_job_result_with_notification(self, job_id, timeout=30):
         """
-        Pub/Subを使用してジョブの結果を取得。
+        Redis Streamsを使用してジョブの結果を取得。
         タイムアウト期間内に通知がない場合は、直接Redisキーを確認。
 
         Args:
@@ -43,36 +65,18 @@ class JobModel:
             bytes: ジョブ結果のバイナリデータ。
             None: 結果が存在しない場合。
         """
-        pubsub = self.redis.pubsub()
-        pubsub.subscribe("job_notifications")
         result_key = f"{self.REDIS_RESULT_PREFIX}{job_id}"
+        stream_name = "job_notifications_stream"
 
-        try:
-            start_time = datetime.now()
-            for message in pubsub.listen():
-                # タイムアウトチェック
-                if (datetime.now() - start_time).seconds > timeout:
-                    break
+        # Redis Streamsからメッセージを取得
+        if self.fetch_stream_message(self.redis, stream_name, job_id, timeout):
+            # メッセージが見つかった場合、結果を取得
+            result = self.redis.get(result_key)
+            if result:
+                return result
 
-                # 通知を受信した場合
-                if message["type"] == "message" and message["data"].decode() == job_id:
-                    # Redisから結果を取得して返す
-                    result = self.redis.get(result_key)
-                    if result:
-                        return result
-
-        except Exception as e:
-            print(f"Error getting job result for job_id {job_id}: {str(e)}")
-            return None  # エラーが発生した場合、Noneを返す
-
-        finally:
-            # Pub/Subリソースをクリーンアップ
-            pubsub.unsubscribe()
-            pubsub.close()
-
-        # タイムアウト後にRedisキーを直接確認
-        result = self.redis.get(result_key)
-        return result
+        # タイムアウト後も結果がない場合Noneを返す
+        return None
 
     def generate_job_id_from_timestamp(self, base_name):
         """ジョブIDを生成"""
