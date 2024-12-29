@@ -70,17 +70,25 @@ def migrate_db():
 
 # データを取得する関数 (全データ取得)
 def get_all_data():
+    # get_db_connection() でエンジンを取得
+    engine = get_db_connection()
+
     # with ステートメントで接続を管理
-    with get_db_connection() as engine:
+    with engine.connect() as conn:
         query = "SELECT * FROM data"
         query = text(query)  # クエリを text() でラップ
-        df = pd.read_sql(query, engine)
+        df = pd.read_sql(query, conn)
+    
     return df
+
 
 # 特定の条件でデータを検索する関数
 def search_data(device_name=None, device_type=None, spice_string=None):
+    # get_db_connection() でエンジンを取得
+    engine = get_db_connection()
+
     # with ステートメントで接続を管理
-    with get_db_connection() as engine:
+    with engine.connect() as conn:
         # 動的なクエリを構築するためのリスト
         query = "SELECT * FROM data WHERE true"  # WHERE trueは常に真になるため、追加条件がある場合に便利
         params = {}
@@ -97,18 +105,24 @@ def search_data(device_name=None, device_type=None, spice_string=None):
         
         # 構築されたクエリを実行
         query = text(query)  # クエリを text() でラップ
-        df = pd.read_sql(query, engine, params=params)
+        df = pd.read_sql(query, conn, params=params)
+    
     return df
 
 
+
 def get_data_by_id(data_id):
+    # get_db_connection() でエンジンを取得
+    engine = get_db_connection()
+
     # with ステートメントで接続を管理
-    with get_db_connection() as engine:
+    with engine.connect() as conn:
         query = "SELECT * FROM data WHERE id = :data_id"
         query = text(query)  # クエリを text() でラップ
         
         # パラメータを辞書として渡す
-        df = pd.read_sql(query, engine, params={"data_id": data_id})
+        df = pd.read_sql(query, conn, params={"data_id": data_id})
+
     return df
 
 
