@@ -66,7 +66,7 @@ class JobModel:
             None: 結果が存在しない場合。
         """
         result_key = f"{self.REDIS_RESULT_PREFIX}{job_id}"
-        stream_name = "job_notifications_stream"
+        stream_name = "job_notifications"
 
         # Redis Streamsからメッセージを取得
         if self.fetch_stream_message(self.redis, stream_name, job_id, timeout):

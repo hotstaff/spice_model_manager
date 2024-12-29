@@ -101,7 +101,7 @@ def run_job(job_id):
         redis.set(result_key, zip_buffer.getvalue())
 
         # Streamでジョブの完了通知を送信
-        redis.xadd("job_notifications_stream", {"job_id": job_id}, maxlen=25)
+        redis.xadd("job_notifications", {"job_id": job_id}, maxlen=25)
 
         # ジョブステータス更新
         update_job(job_id, status="completed", result_key=result_key)
