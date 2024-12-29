@@ -74,6 +74,9 @@ def run_simulation(data_id, characteristic_class):
     # リモートでシミュレーションを実行
     job_id = job_model.create_job(netfile_path)
     zip_data = job_model.get_job_result_with_notification(job_id)
+
+    if not zip_data:
+        raise JobError(f"シミュレーションが失敗しました。{characteristic_class.__name__}, {device_name}")
     
     # シミュレーション結果を抽出
     extracted_files = file_extractor.extract(zip_data, job_id)
