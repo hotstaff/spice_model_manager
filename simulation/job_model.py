@@ -31,27 +31,21 @@ class JobModel:
         return self.redis.get(result_key)
 
     def fetch_stream_message(self, stream_name, job_id, timeout=30):
-        """
-        Redis Streamsから特定のジョブIDのメッセージを取得。
-
-        Args:
-            stream_name (str): ストリーム名。
-            job_id (str): ジョブID。
-            timeout (int): タイムアウト秒数。
-
-        Returns:
-            bool: メッセージが見つかった場合True、タイムアウトの場合False。
-        """
+        last_id = '0-0'  # 最初のストリームID
+        read_count = 25
         start_time = datetime.now()
+        
         while (datetime.now() - start_time).seconds < timeout:
-            print("hi", job_id)
-            messages = self.redis.xread({stream_name: "0-0"}, block=1000, count=25)
-            print(messages)
+            # XREADでlast_idから次のエントリを取得
+            messages = self.redis.xread({stream_name: last_id}, block=1000, count=read_count)
             if messages:
                 for stream, entries in messages:
-                    for _, data in entries:
+                    for message_id, data in entries:
                         if data[b"job_id"].decode('utf-8') == job_id:
                             return True
+                        # 最新のIDを更新
+                        last_id = message_id
+                        read_cout = 1
         return False
 
     def get_job_result_with_notification(self, job_id, timeout=30):
