@@ -69,7 +69,7 @@ class JobModel:
         stream_name = "job_notifications"
 
         # Redis Streamsからメッセージを取得
-        if self.fetch_stream_message(self.redis, stream_name, job_id, timeout):
+        if self.fetch_stream_message(stream_name, job_id, timeout):
             # メッセージが見つかった場合、結果を取得
             result = self.redis.get(result_key)
             if result:
