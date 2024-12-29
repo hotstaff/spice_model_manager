@@ -44,9 +44,9 @@ class JobModel:
         """
         start_time = datetime.now()
         while (datetime.now() - start_time).seconds < timeout:
+            print("hi", job_id)
             messages = self.redis.xread({stream_name: "0-0"}, block=1000, count=1)
             if messages:
-                print("hi", job_id)
                 for stream, entries in messages:
                     for _, data in entries:
                         if data[b"job_id"].decode('utf-8') == job_id:
