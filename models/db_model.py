@@ -301,9 +301,10 @@ def get_basic_performance_by_data_id(data_id):
         WHERE data_id = :data_id
     """
     query = text(query)  # クエリを text() でラップ
-    
-    # パラメータを辞書として渡す
-    df = pd.read_sql(query, engine, params={"data_id": data_id})
+
+    # with 文でコネクションを管理
+    with engine.connect() as connection:
+        df = pd.read_sql(query, connection, params={"data_id": data_id})
     return df
 
 def get_all_device_ids():
