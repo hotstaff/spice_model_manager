@@ -45,7 +45,7 @@ class JobModel:
         start_time = datetime.now()
         while (datetime.now() - start_time).seconds < timeout:
             print("hi", job_id)
-            messages = self.redis.xread({stream_name: "0-0"}, block=1000, count=1)
+            messages = self.redis.xread({stream_name: ">"}, block=1000, count=1)
             if messages:
                 for stream, entries in messages:
                     for _, data in entries:
