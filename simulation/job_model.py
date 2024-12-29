@@ -49,7 +49,7 @@ class JobModel:
             if messages:
                 for stream, entries in messages:
                     for _, data in entries:
-                        print(f"Received message: {data}")  # 受け取ったメッセージを表示
+                        print(f"Received message:")  # 受け取ったメッセージを表示
                         if data[b"job_id"].decode('utf-8') == job_id:
                             return True
         return False
