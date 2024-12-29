@@ -87,7 +87,7 @@ def run_simulation(data_id, characteristic_class):
     return model
 
 
-@celery.task
+@celery.task(rate_limit='1/s')
 def run_basic_performance_simulation(data_id):
     """
     非同期でシミュレーションを実行し、結果をデータベースに登録します。
@@ -121,7 +121,7 @@ def run_basic_performance_simulation(data_id):
         return {"status": "error", "message": f"Error: {str(e)}"}
 
 
-@celery.task
+@celery.task(rate_limit='1/s')
 def run_and_store_plots(data_id):
     """
     非同期でJFETの特性をシミュレーションし、生成した画像をデータベースに登録します。
