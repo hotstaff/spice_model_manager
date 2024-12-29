@@ -45,7 +45,6 @@ class JobModel:
                             return True
                         # 最新のIDを更新
                         last_id = message_id
-                        read_cout = 1
         return False
 
     def get_job_result_with_notification(self, job_id, timeout=30):
