@@ -1,24 +1,20 @@
 from flask import Flask, render_template
-from bokeh.plotting import figure, output_file, save
+from bokeh.plotting import figure
 from bokeh.embed import components
-import numpy as np
 
 app = Flask(__name__)
 
 @app.route('/')
 def index():
-    # Bokehのプロット作成
-    x = np.linspace(0, 10, 100)
-    y = np.sin(x)
-    
-    plot = figure(title="FlaskとBokehの統合", x_axis_label="X", y_axis_label="Y")
-    plot.line(x, y, line_width=2)
-    
-    # BokehのプロットをHTMLに埋め込むためのコンポーネントを取得
+    # Bokehプロットを作成
+    plot = figure(title="FlaskとBokehの統合", x_axis_label='X', y_axis_label='Y')
+    plot.line([1, 2, 3, 4, 5], [6, 7, 2, 4, 5], legend_label="Line", line_width=2)
+
+    # Bokehのコンポーネントを取得
     script, div = components(plot)
-    
-    # Flaskテンプレートに渡す
-    return render_template("bekeh.html", script=script, div=div)
+
+    # HTMLに埋め込む
+    return render_template('index.html', script=script, div=div)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)
