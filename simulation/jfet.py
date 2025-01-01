@@ -6,6 +6,7 @@ from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要�
 
 from bokeh.plotting import figure
 from bokeh.embed import json_item
+import json
 
 class JFET_SimulationBase:
 
@@ -222,7 +223,7 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         p.legend.location = "top_left"
 
         # プロットデータをJSON形式でエクスポート
-        plot_json = json_item(p)
+        plot_json = json.dumps(json_item(p))
 
         # JSONデータを返す
         return plot_json
