@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPICE Model Simulation with Bokeh</title>
+    <!-- BokehのJavaScriptコードを埋め込む -->
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.1.1.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            const fn = function() {
+                Bokeh.safely(function() {
+                    (function(root) {
+                        function embed_document(root) {
+                            const docs_json = '{{ bokeh_json_data | tojson }}';  // Flaskから送られたBokehのデータ
+                            const render_items = [{"docid":"{{ bokeh_doc_id }}","roots":{"{{ bokeh_root_id }}":"{{ bokeh_div_id }}"},"root_ids":["{{ bokeh_root_id }}"]}];
+                            root.Bokeh.embed.embed_items(docs_json, render_items);
+                        }
+                        if (root.Bokeh !== undefined) {
+                            embed_document(root);
+                        } else {
+                            let attempts = 0;
+                            const timer = setInterval(function(root) {
+                                if (root.Bokeh !== undefined) {
+                                    clearInterval(timer);
+                                    embed_document(root);
+                                } else {
+                                    attempts++;
+                                    if (attempts > 100) {
+                                        clearInterval(timer);
+                                        console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
+                                    }
+                                }
+                            }, 10, root);
+                        }
+                    })(window);
+                });
+            };
+            if (document.readyState != "loading") fn();
+            else document.addEventListener("DOMContentLoaded", fn);
+        })();
+    </script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SPICE Model Simulation with Bokeh</h1>
+            <h2>Submit a SPICE string for simulation</h2>
+        </header>
+
+        <p>Enter the SPICE model string below to run the simulation and generate a Bokeh plot.</p>
+
+        <!-- フラッシュメッセージの表示 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="flash {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- モデルシミュレーションフォーム -->
+        <form action="/api/simulate_now" method="post">
+            <!-- SPICE Model テキストエリア -->
+            <textarea name="spice_string" placeholder="Enter SPICE model string here" required></textarea>
+
+            <!-- 名前とコメントの横並び（非表示） -->
+            <div class="form-row" style="display:none;">
+                <input type="text" name="author" placeholder="Your Name" maxlength="16">
+                <input type="text" name="comment" placeholder="Add a comment" maxlength="100">
+            </div>
+
+            <!-- シミュレーション実行ボタン -->
+            <button type="submit" formaction="/api/simulate_now2">Run Simulation</button>
+        </form>
+
+        <!-- シミュレーション結果表示エリア -->
+        <div class="result-section" id="result-section" style="display: none;">
+            <h3>Simulation Result</h3>
+            <div id="bokeh-plot" style="display: contents;"></div> <!-- Bokehプロットがここに表示されます -->
+            <p id="result-message"></p>
+        </div>
+
+        <!-- トップページに戻るリンク -->
+        <p><a href="{{ url_for('home') }}">Back to Home</a></p>
+    </div>
+</body>
+</html>

@@ -186,6 +186,102 @@ def api_simulate_now():
             return jsonify({"error": "Invalid spice_string format or missing fields."}), 400
 
 
+## test用
+@simu_views.route("/build")
+def home():
+    return render_template("build.html")
+
+@simu_views.route("/api/simulation_now2", methods=["POST"])
+def api_simulate_now2():
+    """
+    /api/simulation_now2エンドポイント
+    - Webから送られたSPICE文字列を受け取ってシミュレーションを実行
+    - シミュレーション結果を取得して、解凍し、JFETクラスに渡す
+    - 結果をJSONとして返す
+    """
+    # 1. AddModelFormのインスタンスを作成し、フォームデータをバリデート
+    form = AddModelForm(request.form)
+
+    # 2. POSTリクエストの場合、フォームのバリデーションを実行
+    if request.method == 'POST':
+        if form.validate():  # バリデーションが通った場合
+
+            spice_string = form.spice_string.data
+            # authorとcommentは使用しないが、バリデーションは行う
+            author = form.author.data
+            comment = form.comment.data
+
+            try:
+                # 3. SpiceStringの解析
+                parser = SpiceModelParser()
+                parsed_params = parser.parse(spice_string)
+
+                device_name = parsed_params['device_name']
+                device_type = parsed_params['device_type']
+            except Exception as e:
+                return jsonify({"error": f"Error parsing spice_string: {str(e)}"}), 400
+
+            # 4. デバイスタイプを確認し、JFETクラスをインスタンス化
+            if device_type in JFET_SimulationBase.VALID_TYPES:
+                model = JFET_IV_Characteristic(device_name, device_type, spice_string)
+            else:
+                return jsonify({"error": f"Unsupported device type: {device_type}"}), 400
+
+            # 5. JFETクラスでネットリストを作成（build関数）
+            try:
+                netfile_path = model.build()
+            except Exception as e:
+                return jsonify({"error": f"Error building netlist: {str(e)}"}), 500
+
+            # 6. シミュレーションサーバーに送信して結果を取得
+            try:
+                job_id = job_model.create_job(netfile_path)
+            except Exception as e:
+                return jsonify({"error": f"Error creating job: {str(e)}"}), 500
+
+            # 7. シミュレーション結果を待機
+            try:
+                zip_data = job_model.get_job_result_with_notification(job_id)
+                if not zip_data:
+                    return jsonify({"error": "No simulation result received."}), 500
+            except Exception as e:
+                return jsonify({"error": f"Error waiting for job result: {str(e)}"}), 500
+
+            # 8. ZIPファイルを解凍する
+            try:
+                extracted_files = file_extractor.extract(zip_data, job_id)
+                if not extracted_files:
+                    return jsonify({"error": "Failed to extract files from simulation result."}), 500
+            except Exception as e:
+                return jsonify({"error": f"Error extracting files: {str(e)}"}), 500
+
+            # 9. .raw と .log ファイルをJFETクラスに渡す
+            raw_file = extracted_files.get(".raw")
+            log_file = extracted_files.get(".log")
+
+            if raw_file and log_file:
+                try:
+                    model.load_results(raw_file, log_file)
+                except Exception as e:
+                    return jsonify({"error": f"Error loading results: {str(e)}"}), 500
+            else:
+                return jsonify({"error": "Missing .raw or .log files."}), 500
+
+            # 10. プロットを生成（JSONとして返す）
+            try:
+                json_data = model.plot(json=True)
+                return jsonify(json_data)
+            except Exception as e:
+                return jsonify({"error": f"Error generating plot data: {str(e)}"}), 500
+
+            # 11. 一時ファイルを消す
+            file_extractor.cleanup(job_id)
+
+        else:
+            return jsonify({"error": "Invalid spice_string format or missing fields."}), 400
+
+
+
 @simu_views.route('/start_all_simulations', methods=['GET'])
 def start_all_simulations():
     # データベースからすべてのデバイスのdata_idを取得
