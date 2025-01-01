@@ -38,7 +38,6 @@
                 // Bokehプロットの埋め込み
                 Bokeh.safely(function() {
                     // JSONデータが正しく埋め込まれるように処理
-                    const rootId = jsonData.roots[0].id;  // 最初のroot_idを取得
                     Bokeh.embed.embed_item(jsonData, "bokeh-plot");
                 });
 
