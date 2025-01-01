@@ -213,10 +213,10 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         # Vgsのリストと色のリスト
         if self.device_type == 'NJF':
             vgs_list = [-0.4, -0.3, -0.2, -0.1, 0]
-            colors = ["blue", "green", "yellow", "orange", "red"]  # 色のリスト
+            colors = ["blue", "green", "cyan", "orange", "red"]  # 色のリスト（黄色をcyanに変更）
         elif self.device_type == 'PJF':
             vgs_list = [0.4, 0.3, 0.2, 0.1, 0]
-            colors = ["red", "orange", "yellow", "green", "blue"]  # 色のリスト
+            colors = ["red", "orange", "cyan", "green", "blue"]  # 色のリスト（黄色をcyanに変更）
 
         # Vgsごとにプロット
         for vgs_value, color in zip(vgs_list, colors):
