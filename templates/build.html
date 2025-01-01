@@ -4,41 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPICE Model Simulation with Bokeh</title>
-    <!-- BokehのJavaScriptコードを埋め込む -->
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.1.1.min.js"></script>
     <script type="text/javascript">
-        (function() {
-            const fn = function() {
-                Bokeh.safely(function() {
-                    (function(root) {
-                        function embed_document(root) {
-                            const docs_json = '{{ bokeh_json_data | tojson }}';  // Flaskから送られたBokehのデータ
-                            const render_items = [{"docid":"{{ bokeh_doc_id }}","roots":{"{{ bokeh_root_id }}":"{{ bokeh_div_id }}"},"root_ids":["{{ bokeh_root_id }}"]}];
-                            root.Bokeh.embed.embed_items(docs_json, render_items);
-                        }
-                        if (root.Bokeh !== undefined) {
-                            embed_document(root);
-                        } else {
-                            let attempts = 0;
-                            const timer = setInterval(function(root) {
-                                if (root.Bokeh !== undefined) {
-                                    clearInterval(timer);
-                                    embed_document(root);
-                                } else {
-                                    attempts++;
-                                    if (attempts > 100) {
-                                        clearInterval(timer);
-                                        console.log("Bokeh: ERROR: Unable to run BokehJS code because BokehJS library is missing");
-                                    }
-                                }
-                            }, 10, root);
-                        }
-                    })(window);
-                });
-            };
-            if (document.readyState != "loading") fn();
-            else document.addEventListener("DOMContentLoaded", fn);
-        })();
+        // 非同期リクエストを送信し、結果をBokehで表示する関数
+        async function runSimulation(event) {
+            event.preventDefault();  // フォームのデフォルト送信を防ぐ
+
+            const formData = new FormData(document.querySelector("form"));
+            const response = await fetch("/api/simulation_now2", {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                alert("Simulation failed: " + response.statusText);
+                return;
+            }
+
+            const jsonData = await response.json();
+            if (jsonData.error) {
+                alert("Error: " + jsonData.error);
+                return;
+            }
+
+            // Bokehプロットを表示するための処理
+            const bokehDiv = document.getElementById("bokeh-plot");
+            bokehDiv.innerHTML = '';  // 既存のプロットをクリア
+
+            Bokeh.safely(function() {
+                const docs_json = JSON.stringify(jsonData);
+                const render_items = [{
+                    "docid": jsonData.doc_id,
+                    "roots": { "root_id": "bokeh-plot" },
+                    "root_ids": ["root_id"]
+                }];
+                Bokeh.embed.embed_items(docs_json, render_items);
+            });
+
+            document.getElementById("result-section").style.display = "block";  // 結果セクションを表示
+        }
+
+        // DOMが読み込まれた後にイベントリスナーを設定
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector("form");
+            form.addEventListener("submit", runSimulation);
+        });
     </script>
 </head>
 <body>
@@ -62,24 +72,19 @@
         {% endwith %}
 
         <!-- モデルシミュレーションフォーム -->
-        <form action="/api/simulate_now" method="post">
-            <!-- SPICE Model テキストエリア -->
+        <form action="/api/simulation_now2" method="post">
             <textarea name="spice_string" placeholder="Enter SPICE model string here" required></textarea>
-
-            <!-- 名前とコメントの横並び（非表示） -->
             <div class="form-row" style="display:none;">
                 <input type="text" name="author" placeholder="Your Name" maxlength="16">
                 <input type="text" name="comment" placeholder="Add a comment" maxlength="100">
             </div>
-
-            <!-- シミュレーション実行ボタン -->
-            <button type="submit" formaction="/api/simulate_now2">Run Simulation</button>
+            <button type="submit">Run Simulation</button>
         </form>
 
         <!-- シミュレーション結果表示エリア -->
         <div class="result-section" id="result-section" style="display: none;">
             <h3>Simulation Result</h3>
-            <div id="bokeh-plot" style="display: contents;"></div> <!-- Bokehプロットがここに表示されます -->
+            <div id="bokeh-plot" style="display: contents;"></div>
             <p id="result-message"></p>
         </div>
 
