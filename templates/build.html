@@ -11,7 +11,7 @@
             event.preventDefault();  // フォームのデフォルト送信を防ぐ
 
             const formData = new FormData(document.querySelector("form"));
-            const response = await fetch("/api/simulation_now2", {
+            const response = await fetch("/api/simulate_now2", {
                 method: "POST",
                 body: formData
             });
