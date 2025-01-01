@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlaskとBokehの統合</title>
+    {{ script|safe }}  <!-- BokehのJavaScriptコードを埋め込む -->
+</head>
+<body>
+    <h1>Bokehプロットの表示</h1>
+    <div>
+        {{ div|safe }}  <!-- BokehのHTML部分を埋め込む -->
+    </div>
+</body>
+</html>
