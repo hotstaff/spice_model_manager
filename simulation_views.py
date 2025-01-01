@@ -222,7 +222,7 @@ def api_simulate_now2():
                 return jsonify({"error": f"Error parsing spice_string: {str(e)}"}), 400
 
             # 4. デバイスタイプを確認し、JFETクラスをインスタンス化
-            if device_type in JFET_SimulationBase.VALID_TYPES:
+            if device_type in JFET_IV_Characteristic.VALID_TYPES:
                 model = JFET_IV_Characteristic(device_name, device_type, spice_string)
             else:
                 return jsonify({"error": f"Unsupported device type: {device_type}"}), 400
