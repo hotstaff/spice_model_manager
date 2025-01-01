@@ -9,4 +9,4 @@ matplotlib
 redis
 PyLTSpice
 celery
-bokeh=3.1.1
+bokeh
