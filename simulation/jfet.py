@@ -207,7 +207,8 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         p = figure(
             title="I-V Characteristic of JFET for Different Vgs",
             x_axis_label='Vds (Volts)',
-            y_axis_label='Id (mA)'
+            y_axis_label='Id (mA)',
+            width=800, height=600
         )
 
         # Vgsのリストと色のリスト
