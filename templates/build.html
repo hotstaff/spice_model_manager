@@ -28,11 +28,16 @@
                     return;
                 }
 
+                // JSONデータの確認
+                console.log(jsonData);
+
                 // Bokehプロットを表示するための処理
                 const bokehDiv = document.getElementById("bokeh-plot");
                 bokehDiv.innerHTML = '';  // 既存のプロットをクリア
 
                 Bokeh.safely(function() {
+                    // JSONデータのtarget_idまたはroot_idsを確認して埋め込む
+                    const rootId = jsonData.roots.root_ids[0];  // 最初のroot_idを取得
                     Bokeh.embed.embed_item(jsonData, "bokeh-plot");
                 });
 
@@ -50,6 +55,7 @@
             form.addEventListener("submit", runSimulation);
         });
     </script>
+
 </head>
 <body>
     <div class="container">
