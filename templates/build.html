@@ -29,7 +29,7 @@
                 }
 
                 // JSONデータの確認
-                console.log(jsonData);
+                console.log(JSON.parse(jsonData));
 
                 // Bokehプロットを表示するための処理
                 const bokehDiv = document.getElementById("bokeh-plot");
@@ -38,7 +38,7 @@
                 // Bokehプロットの埋め込み
                 Bokeh.safely(function() {
                     // JSONデータが正しく埋め込まれるように処理
-                    Bokeh.embed.embed_item(jsonData, "bokeh-plot");
+                    Bokeh.embed.embed_item(JSON.parse(jsonData), "bokeh-plot");
                 });
 
                 // 結果セクションを表示
@@ -89,7 +89,7 @@
         <!-- シミュレーション結果表示エリア -->
         <div class="result-section" id="result-section" style="display: none;">
             <h3>Simulation Result</h3>
-            <div id="bokeh-plot" style="width: 100%; height: 400px;"></div> <!-- サイズ調整 -->
+            <div id="bokeh-plot" class='bk-root'></div> <!-- サイズ調整 -->
             <p id="result-message"></p>
         </div>
 
