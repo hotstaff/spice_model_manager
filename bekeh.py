@@ -18,7 +18,7 @@ def index():
     script, div = components(plot)
     
     # Flaskテンプレートに渡す
-    return render_template("index.html", script=script, div=div)
+    return render_template("bekeh.html", script=script, div=div)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
