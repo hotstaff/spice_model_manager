@@ -188,7 +188,7 @@ def api_simulate_now():
 
 ## test用
 @simu_views.route("/build")
-def home():
+def build():
     return render_template("build.html")
 
 @simu_views.route("/api/simulation_now2", methods=["POST"])
