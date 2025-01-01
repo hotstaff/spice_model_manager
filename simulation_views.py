@@ -189,7 +189,7 @@ def api_simulate_now():
 ## test用
 @simu_views.route("/build")
 def build():
-    return render_template("build.html")
+    return render_template("build.html", bokeh_json_data={})
 
 @simu_views.route("/api/simulation_now2", methods=["POST"])
 def api_simulate_now2():
