@@ -11,37 +11,37 @@
             event.preventDefault();  // フォームのデフォルト送信を防ぐ
 
             const formData = new FormData(document.querySelector("form"));
-            const response = await fetch("/api/simulate_now2", {
-                method: "POST",
-                body: formData
-            });
+            try {
+                const response = await fetch("/api/simulate_now2", {
+                    method: "POST",
+                    body: formData
+                });
 
-            if (!response.ok) {
-                alert("Simulation failed: " + response.statusText);
-                return;
+                if (!response.ok) {
+                    alert("Simulation failed: " + response.statusText);
+                    return;
+                }
+
+                const jsonData = await response.json();
+                if (jsonData.error) {
+                    alert("Error: " + jsonData.error);
+                    return;
+                }
+
+                // Bokehプロットを表示するための処理
+                const bokehDiv = document.getElementById("bokeh-plot");
+                bokehDiv.innerHTML = '';  // 既存のプロットをクリア
+
+                Bokeh.safely(function() {
+                    Bokeh.embed.embed_item(jsonData, "bokeh-plot");
+                });
+
+                // 結果セクションを表示
+                document.getElementById("result-section").style.display = "block";
+            } catch (error) {
+                console.error("Error during simulation:", error);
+                alert("An unexpected error occurred. Please try again.");
             }
-
-            const jsonData = await response.json();
-            if (jsonData.error) {
-                alert("Error: " + jsonData.error);
-                return;
-            }
-
-            // Bokehプロットを表示するための処理
-            const bokehDiv = document.getElementById("bokeh-plot");
-            bokehDiv.innerHTML = '';  // 既存のプロットをクリア
-
-            Bokeh.safely(function() {
-                const docs_json = JSON.stringify(jsonData);
-                const render_items = [{
-                    "docid": jsonData.doc_id,
-                    "roots": { "root_id": "bokeh-plot" },
-                    "root_ids": ["root_id"]
-                }];
-                Bokeh.embed.embed_items(docs_json, render_items);
-            });
-
-            document.getElementById("result-section").style.display = "block";  // 結果セクションを表示
         }
 
         // DOMが読み込まれた後にイベントリスナーを設定
