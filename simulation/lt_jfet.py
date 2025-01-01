@@ -241,14 +241,14 @@ if __name__ == "__main__":
 
 
 
-            # # JFETのI-V特性をプロット
-            # print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
-            # jfet_iv = JFET_IV_Characteristic(device_name, device_type, spice_string)
+            # JFETのI-V特性をプロット
+            print(f"Generating I-V characteristics for {device_name} ({model['device_type']})")
+            jfet_iv = JFET_IV_Characteristic(device_name, device_type, spice_string)
 
-            # raw_file, log_file = simulate(jfet_iv, local=False)
+            raw_file, log_file = simulate(jfet_iv, local=False)
 
-            # jfet_iv.load_results(raw_file, log_file)
-            # image_path_iv = jfet_iv.plot()
+            jfet_iv.load_results(raw_file, log_file)
+            image_path_iv = jfet_iv.plot()
 
 
             # # JFETのVgs-Id特性をプロット
@@ -280,7 +280,7 @@ if __name__ == "__main__":
             # jfet_gm_id.load_results(raw_file, log_file)
             # image_path_gm_id = jfet_gm_id.plot()
 
-            # upload_image(model_id, image_path_iv, 'iv')
+            upload_image(model_id, image_path_iv, 'iv')
             # upload_image(model_id, image_path_vgs_id, 'vgs_id')
             # upload_image(model_id, image_path_gm_vgs, 'gm_vgs')
             # upload_image(model_id, image_path_gm_id, 'gm_id')
