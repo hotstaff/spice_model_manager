@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt  # プロットの作成
 from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要な機能
 
 from bokeh.plotting import figure
-from bokeh.io import output_file, save
-import json
+from bokeh.embed import json_item
 
 class JFET_SimulationBase:
 
@@ -204,7 +203,11 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
 
     def get_json(self, Vds, Vgs, Id_mA):
         """I-V特性をBokehでプロットし、JSONデータとして返す"""
-        p = figure(title="I-V Characteristic of JFET for Different Vgs", x_axis_label='Vds (Volts)', y_axis_label='Id (mA)')
+        p = figure(
+            title="I-V Characteristic of JFET for Different Vgs",
+            x_axis_label='Vds (Volts)',
+            y_axis_label='Id (mA)'
+        )
 
         if self.device_type == 'NJF':
             vgs_list = [-0.4, -0.3, -0.2, -0.1, 0]
@@ -215,13 +218,11 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
             mask = (Vgs >= vgs_value - 0.05) & (Vgs <= vgs_value + 0.05)
             p.line(Vds[mask], Id_mA[mask], legend_label=f'Vgs = {vgs_value}V', line_width=2)
 
-        p.xaxis.axis_label = "Vds (Volts)"
-        p.yaxis.axis_label = "Id (mA)"
         p.legend.title = "Vgs"
         p.legend.location = "top_left"
 
         # プロットデータをJSON形式でエクスポート
-        plot_json = p.to_json()
+        plot_json = json_item(p)
 
         # JSONデータを返す
         return plot_json
