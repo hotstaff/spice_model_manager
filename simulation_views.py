@@ -191,7 +191,7 @@ def api_simulate_now():
 def build():
     return render_template("build.html", bokeh_json_data={})
 
-@simu_views.route("/api/simulation_now2", methods=["POST"])
+@simu_views.route("/api/simulate_now2", methods=["POST"])
 def api_simulate_now2():
     """
     /api/simulation_now2エンドポイント
