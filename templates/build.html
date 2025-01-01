@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPICE Model Editor</title>
+    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.4.3.min.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,8 +15,9 @@
         }
 
         .container {
-            width: 90%; /* 幅を80%に設定（必要に応じて調整） */
-            margin: 0 auto; /* 左右中央に配置 */
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
         }
 
@@ -87,17 +89,18 @@
             background-color: #2980b9;
         }
 
-        /* プロットエリアのスタイル */
-        #bokeh-plot {
-            width: 90%; /* プロットの幅を親コンテナの80%に設定 */
-            height: 600px; /* 高さは600pxに設定 */
-            margin: 0 auto; /* 中央寄せ */
-            display: block; /* ブロック要素として表示 */
+        .result-section {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: none;
         }
 
-        /* 結果セクションのスタイル */
-        .result-section {
-            text-align: center;
+        #bokeh-plot {
+            width: 100%;
+            height: 600px;
+            margin-bottom: 20px;
         }
 
         .flashes {
@@ -137,7 +140,6 @@
             text-decoration: underline;
         }
     </style>
-    <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.4.3.min.js"></script>
     <script type="text/javascript">
         // 非同期リクエストを送信し、結果をBokehで表示する関数
         async function runSimulation(event) {
@@ -168,22 +170,7 @@
                 // Bokehプロットの埋め込み
                 Bokeh.safely(function() {
                     // JSONデータが正しく埋め込まれるように処理
-                    const plot = Bokeh.embed.embed_item(JSON.parse(jsonData), "bokeh-plot");
-
-                    // スライダーのイベントリスナーを設定
-                    document.getElementById("x-range-slider").addEventListener("input", function() {
-                        const newMin = parseFloat(this.value);
-                        const newMax = parseFloat(this.max);
-                        plot.x_range.start = newMin;
-                        plot.x_range.end = newMax;
-                    });
-
-                    document.getElementById("y-range-slider").addEventListener("input", function() {
-                        const newMin = parseFloat(this.value);
-                        const newMax = parseFloat(this.max);
-                        plot.y_range.start = newMin;
-                        plot.y_range.end = newMax;
-                    });
+                    Bokeh.embed.embed_item(JSON.parse(jsonData), "bokeh-plot");
                 });
 
                 // 結果セクションを表示
@@ -204,33 +191,41 @@
 <body>
     <div class="container">
         <header>
-            <h1>SPICE Model Simulation with Bokeh</h1>
+            <h1>SPICE Model Editor</h1>
             <h2>Submit a SPICE string for simulation</h2>
         </header>
 
-        <p>Enter the SPICE model string below to run the simulation and generate a Bokeh plot.</p>
+        <p>Enter the SPICE model string below to run the simulation and generate a plot.</p>
 
-        <!-- フォーム -->
+        <!-- フラッシュメッセージの表示 -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class="flashes">
+                    {% for category, message in messages %}
+                        <li class="flash {{ category }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        <!-- モデルシミュレーションフォーム -->
         <form action="/api/simulate_now2" method="post">
             <textarea name="spice_string" placeholder="Enter SPICE model string here" required></textarea>
+            <div class="form-row" style="display:none;">
+                <input type="text" name="author" placeholder="Your Name" maxlength="16">
+                <input type="text" name="comment" placeholder="Add a comment" maxlength="100">
+            </div>
             <button type="submit">Run Simulation</button>
         </form>
-
-        <!-- 軸範囲調整スライダー -->
-        <div class="slider-section">
-            <label for="x-range-slider">X-Axis Range: <span id="x-range-value">0</span> to <span id="x-range-max">10</span></label>
-            <input type="range" id="x-range-slider" min="0" max="10" value="0" step="0.1">
-            <br>
-            <label for="y-range-slider">Y-Axis Range: <span id="y-range-value">0</span> to <span id="y-range-max">10</span></label>
-            <input type="range" id="y-range-slider" min="0" max="10" value="0" step="0.1">
-        </div>
 
         <!-- シミュレーション結果表示エリア -->
         <div class="result-section" id="result-section" style="display: none;">
             <h3>Simulation Result</h3>
             <div id="bokeh-plot" style="width: 800px; height: 600px;"></div> <!-- サイズ調整 -->
+            <p id="result-message"></p>
         </div>
 
+        <!-- トップページに戻るリンク -->
         <p><a href="{{ url_for('home') }}">Back to Home</a></p>
     </div>
 </body>
