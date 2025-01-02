@@ -17,7 +17,7 @@
     <form id="parameter-form">
         {% for param in parameters %}
         <div class="parameter-container">
-            <label for="{{ param.name }}">{{ param.name }} ({{ param.unit }}):</label>
+            <label for="value-{{ param.name }}">{{ param.name }} ({{ param.unit if param.unit else 'N/A' }}):</label>
             <div id="slider-{{ param.name }}"></div>
             <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" readonly>
         </div>
@@ -32,8 +32,8 @@
         noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
             range: {
-                min: {{ param.min }},
-                max: {{ param.max }}
+                min: {{ param.min if param.min is not none else 0 }},
+                max: {{ param.max if param.max is not none else 10 }}
             },
             step: 0.01
         });
