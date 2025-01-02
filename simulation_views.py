@@ -301,10 +301,34 @@ def start_all_simulations():
 @simu_views.route('/para')
 def parameter_test():
     parameters = [
-        {"name": "VTO", "min": -5, "max": 5, "default": 0, "unit": "V"},
-        {"name": "KP", "min": 0, "max": 1, "default": 0.5, "unit": "A/V²"},
-        {"name": "LAMBDA", "min": 0, "max": 0.1, "default": 0.01, "unit": "1/V"},
+        {"name": "Vto", "description": "しきい値", "unit": "V", "default": -2.0, "min": -5.0, "max": 5.0},
+        {"name": "Beta", "description": "トランスコンダクタンス・パラメータ", "unit": "A/V^2", "default": 1.0E-04, "min": 1.0E-06, "max": 1.0E-02},
+        {"name": "Lambda", "description": "チャンネル長調整パラメータ", "unit": "1/V", "default": 0, "min": 0, "max": 0.1},
+        {"name": "Rd", "description": "ドレインのオーミック抵抗", "unit": "Ω", "default": 0, "min": 0, "max": 1000},
+        {"name": "Rs", "description": "ソースのオーミック抵抗", "unit": "Ω", "default": 0, "min": 0, "max": 1000},
+        {"name": "Cgs", "description": "ゼロバイアスでのG-S接合容量", "unit": "F", "default": 0, "min": 0, "max": 1E-11},
+        {"name": "Cgd", "description": "ゼロバイアスでのG-D接合容量", "unit": "F", "default": 0, "min": 0, "max": 1E-12},
+        {"name": "Pb", "description": "ゲートの接合部電位", "unit": "V", "default": 1.0, "min": 0.5, "max": 2.0},
+        {"name": "m", "description": "ゲート接合部の濃度勾配係数", "unit": None, "default": 0.5, "min": 0, "max": 1.0},
+        {"name": "Is", "description": "ゲート接合部の飽和電流", "unit": "A", "default": 1.00E-14, "min": 1.00E-16, "max": 1.00E-12},
+        {"name": "B", "description": "ドーピングのテール・パラメータ", "unit": None, "default": 1, "min": 0, "max": 2},
+        {"name": "KF", "description": "フリッカ・ノイズ係数", "unit": None, "default": 0, "min": 0, "max": 1},
+        {"name": "Nlev", "description": "ノイズ式セレクタ", "unit": None, "default": 0, "min": 0, "max": 3},
+        {"name": "Gdsnoi", "description": "niev=3の場合のショット・ノイズ係数", "unit": None, "default": 1.0, "min": 0, "max": 5.0},
+        {"name": "AF", "description": "フリッカ・ノイズ指数", "unit": None, "default": 1.0, "min": 0, "max": 2.0},
+        {"name": "Fc", "description": "順バイアスでの空之層容量の係数", "unit": None, "default": 0.5, "min": 0, "max": 1.0},
+        {"name": "Tnom", "description": "パラメータ測定温度", "unit": "℃", "default": 27, "min": -50, "max": 150},
+        {"name": "BetaTce", "description": "トランスコンダクタンス・パラメータの指数温度係数", "unit": "%/℃", "default": 0, "min": -1.0, "max": 1.0},
+        {"name": "VtoTc", "description": "しきい値電圧の温度係数", "unit": "V/℃", "default": 0, "min": -0.1, "max": 0.1},
+        {"name": "N", "description": "ゲート接合部の放射係数", "unit": None, "default": 1.0, "min": 0.5, "max": 2.0},
+        {"name": "Isr", "description": "ゲート接合部の再結合電流パラメータ", "unit": "A", "default": 0, "min": 0, "max": 1.0E-12},
+        {"name": "Nr", "description": "Isrの放射係数", "unit": None, "default": 2, "min": 1.0, "max": 3.0},
+        {"name": "alpha", "description": "イオン化係数", "unit": "1/V", "default": 0, "min": 0, "max": 1.0},
+        {"name": "Vk", "description": "イオン化屈曲点電圧", "unit": "V", "default": 0, "min": 0, "max": 5.0},
+        {"name": "Xti", "description": "飽和電流の温度係数", "unit": None, "default": 3, "min": 0, "max": 5.0},
+        {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "ACME", "min": None, "max": None},
     ]
+
     return render_template('para.html', parameters=parameters)
 
 
