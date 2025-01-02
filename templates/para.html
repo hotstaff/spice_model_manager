@@ -59,7 +59,7 @@
         noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
             range: {
-                min: {{ param.min}},
+                min: {{ param.min }},
                 max: {{ param.max }}
             },
             step: {{ 0.01 if param.scale < 1 else 1 }}
