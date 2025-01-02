@@ -7,8 +7,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
         .parameter-container {
             margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+        .parameter-container label {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .slider-wrapper {
+            flex: 3;
+            margin-right: 10px;
+        }
+        .parameter-container input {
+            width: 80px;
+            text-align: center;
         }
     </style>
 </head>
@@ -18,7 +36,9 @@
         {% for param in parameters %}
         <div class="parameter-container">
             <label for="value-{{ param.name }}">{{ param.name }} ({{ param.unit if param.unit else 'N/A' }}):</label>
-            <div id="slider-{{ param.name }}"></div>
+            <div class="slider-wrapper">
+                <div id="slider-{{ param.name }}"></div>
+            </div>
             <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" readonly>
         </div>
         {% endfor %}
@@ -29,19 +49,20 @@
         {% for param in parameters %}
         // スライダーを初期化
         const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
+        const scale{{ loop.index }} = {{ param.scale }}; // スケールを考慮
         noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
             range: {
-                min: {{ param.min if param.min is not none else 0 }},
-                max: {{ param.max if param.max is not none else 10 }}
+                min: {{ param.min }},
+                max: {{ param.max }}
             },
-            step: 0.01
+            step: {{ 0.01 if param.scale < 1 else 1 }}
         });
 
         // テキストボックスと連動
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
         slider{{ loop.index }}.noUiSlider.on('update', (values) => {
-            input{{ loop.index }}.value = values[0];
+            input{{ loop.index }}.value = (values[0] / scale{{ loop.index }}).toFixed(2);
         });
         {% endfor %}
     </script>
