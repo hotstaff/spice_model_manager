@@ -298,6 +298,16 @@ def start_all_simulations():
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
 
+@simu_views.route('/para')
+def parameter_test():
+    parameters = [
+        {"name": "VTO", "min": -5, "max": 5, "default": 0, "unit": "V"},
+        {"name": "KP", "min": 0, "max": 1, "default": 0.5, "unit": "A/V²"},
+        {"name": "LAMBDA", "min": 0, "max": 0.1, "default": 0.01, "unit": "1/V"},
+    ]
+    return render_template('para.html', parameters=parameters)
+
+
 @simu_views.route("/api/clear_jobs", methods=["POST"])
 def clear_redis_jobs():
     """Redisのジョブをすべて削除"""
