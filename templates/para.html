@@ -40,7 +40,7 @@
     <form id="parameter-form">
         {% for param in parameters %}
         <div class="parameter-container">
-            <label for="value-{{ param.name }}">{{ param.name }}:</label>
+            <label for="value-{{ param.name }}">{{ param.name }}( {{ param.description }}):</label>
             <div class="slider-wrapper">
                 <div id="slider-{{ param.name }}"></div>
             </div>
@@ -68,7 +68,7 @@
         // テキストボックスと連動
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
         slider{{ loop.index }}.noUiSlider.on('update', (values) => {
-            input{{ loop.index }}.value = (values[0]).toFixed(2);
+            input{{ loop.index }}.value = values[0];
         });
         {% endfor %}
     </script>
