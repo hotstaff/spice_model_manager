@@ -326,7 +326,7 @@ def parameter_test():
         {"name": "Nlev", "description": "ノイズ式セレクタ", "unit": None, "default": 0, "min": 0, "max": 3, "scale": 1},
         {"name": "Gdsnoi", "description": "niev=3の場合のショット・ノイズ係数", "unit": None, "default": 1.0, "min": 0, "max": 5.0, "scale": 1},
         {"name": "B", "description": "ドーピングのテール・パラメータ", "unit": None, "default": 1, "min": 0, "max": 2, "scale": 1},
-        {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "ACME Semi Ltd.", "min": None, "max": None, "scale": 1},
+        {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "Toshiba", "min": None, "max": None, "scale": 1},
     ]
 
     return render_template('para.html', parameters=parameters)
