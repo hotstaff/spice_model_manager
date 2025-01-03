@@ -20,6 +20,26 @@
             height: 20px;
             border: 2px solid #fff;
         }
+
+        /* Adjust the layout to prevent overlap */
+        .parameter-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .parameter-container input[type="text"] {
+            flex: 1;
+        }
+
+        .parameter-container .slider-container {
+            width: 100%;
+        }
+
+        .parameter-container .slider-container .noUi-slider {
+            margin-top: 8px;
+        }
     </style>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
@@ -34,9 +54,9 @@
 
             <div id="parameter-fields">
                 {% for param in parameters %}
-                <div class="flex items-center space-x-4" id="param-{{ param.name }}">
+                <div class="parameter-container" id="param-{{ param.name }}">
                     <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }} ({{ param.description }}):</label>
-                    <div class="w-2/3">
+                    <div class="slider-container w-2/3">
                         <!-- Textbox for parameters without min/max -->
                         <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" class="w-full text-center border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
                         <!-- Slider for parameters with min/max -->
@@ -72,7 +92,7 @@
                 min: {{ param.min }},
                 max: {{ param.max }}
             },
-            step: 0.01
+            step: 0.1
         });
 
         // Link slider with input
