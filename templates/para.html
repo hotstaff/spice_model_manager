@@ -163,9 +163,17 @@
             let modelString = `.MODEL ${deviceName} ${deviceType}`;
 
             {% for param in parameters %}
-            const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
-            const scaledValue{{ loop.index }} = (paramValue{{ loop.index }} * {{ param.scale }}).toFixed(3); // Apply scale only here
-            modelString += ` {{ param.name }}=${scaledValue{{ loop.index }}}`;
+                const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
+                let paramValueToUse = paramValue{{ loop.index }};
+                
+                // If param.name is "mfg", use the value as is (string), otherwise apply scale
+                {% if param.name == "mfg" %}
+                    paramValueToUse = paramValue{{ loop.index }}; // Use the value directly
+                {% else %}
+                    paramValueToUse = (paramValue{{ loop.index }} * {{ param.scale }}).toFixed(3); // Apply scale
+                {% endif %}
+                
+                modelString += ` {{ param.name }}=${paramValueToUse}`;
             {% endfor %}
 
             document.getElementById('model-string').value = modelString;
