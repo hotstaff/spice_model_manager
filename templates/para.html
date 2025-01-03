@@ -37,13 +37,10 @@
                 <div class="flex items-center space-x-4" id="param-{{ param.name }}">
                     <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }} ({{ param.description }}):</label>
                     <div class="w-2/3">
-                        {% if param.min is none and param.max is none %}
-                            <!-- Textbox for parameters without min/max -->
-                            <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" class="w-full text-center border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        {% else %}
-                            <!-- Slider for parameters with min/max -->
-                            <div id="slider-{{ param.name }}" class="mb-2"></div>
-                        {% endif %}
+                        <!-- Textbox for parameters without min/max -->
+                        <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" class="w-full text-center border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- Slider for parameters with min/max -->
+                        <div id="slider-{{ param.name }}" class="mb-2"></div>
                     </div>
                     <span class="text-sm text-gray-500">{{ param.unit if param.unit else '' }}</span>
                 </div>
