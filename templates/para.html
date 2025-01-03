@@ -74,7 +74,7 @@
         </div>
 
         <!-- Parameters in Tabs -->
-        <div id="tab-1" class="space-y-4">
+        <div id="Basic" class="space-y-4">
             {% for param in parameters[:5] %}
             <div class="parameter-container">
                 <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
@@ -85,7 +85,7 @@
             </div>
             {% endfor %}
         </div>
-        <div id="tab-2" class="space-y-4 hidden">
+        <div id="Misc" class="space-y-4 hidden">
             {% for param in parameters[5:] %}
             <div class="parameter-container">
                 <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
