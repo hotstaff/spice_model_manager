@@ -85,7 +85,6 @@
         // Initialize slider only if min/max is not None
         {% if param.min is not none and param.max is not none %}
         const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
-        const scale{{ loop.index }} = {{ param.scale }}; // Consider scale if needed
         noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
             range: {
@@ -110,7 +109,8 @@
 
             {% for param in parameters %}
             const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
-            modelString += ` {{ param.name }}=${paramValue{{ loop.index }}}`;
+            const scaledValue{{ loop.index }} = paramValue{{ loop.index }} * {{ param.scale }}; // Apply scale only here
+            modelString += ` {{ param.name }}=${scaledValue{{ loop.index }}}`;
             {% endfor %}
 
             document.getElementById('model-string').value = modelString;
