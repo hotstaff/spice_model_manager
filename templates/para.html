@@ -4,58 +4,51 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SPICE Parameter Editor</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.7.0/nouislider.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+        /* Custom styles for the sliders */
+        .noUi-horizontal {
+            height: 8px;
+            background: #ddd;
         }
-        .parameter-container {
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        .parameter-container label {
-            flex: 1;
-            margin-right: 10px;
-        }
-        .slider-wrapper {
-            flex: 3;
-            margin-right: 10px;
-        }
-        .parameter-container input {
-            width: 80px;
-            text-align: center;
-            margin-right: 5px;
-        }
-        .parameter-unit {
-            font-size: 0.9em;
-            color: #555;
+        .noUi-handle {
+            background: #4CAF50;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #fff;
         }
     </style>
 </head>
-<body>
-    <h1>SPICE Parameter Editor</h1>
-    <form id="parameter-form">
-        {% for param in parameters %}
-        <div class="parameter-container">
-            <label for="value-{{ param.name }}">{{ param.name }}({{ param.description }}):</label>
-            <div class="slider-wrapper">
-                <div id="slider-{{ param.name }}"></div>
+<body class="bg-gray-100 font-sans leading-normal tracking-normal">
+    <div class="container mx-auto px-4 py-6">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">SPICE Parameter Editor</h1>
+        <form id="parameter-form" class="space-y-6">
+            {% for param in parameters %}
+            <div class="flex items-center space-x-4">
+                <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }} ({{ param.description }}):</label>
+                <div class="w-2/3">
+                    <div id="slider-{{ param.name }}" class="mb-2"></div>
+                </div>
+                <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" readonly class="w-20 text-center border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="text-sm text-gray-500">{{ param.unit if param.unit else '' }}</span>
             </div>
-            <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" readonly>
-            <span class="parameter-unit">{{ param.unit if param.unit else '' }}</span>
-        </div>
-        {% endfor %}
-        <button type="submit">Submit</button>
-    </form>
+            {% endfor %}
+            <div class="flex justify-center">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
 
     <script>
         {% for param in parameters %}
-        // スライダーを初期化
+        // Initialize slider
         const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
-        const scale{{ loop.index }} = {{ param.scale }}; // スケールを考慮
+        const scale{{ loop.index }} = {{ param.scale }}; // Consider scale if needed
         noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
             range: {
@@ -65,7 +58,7 @@
             step: 0.01
         });
 
-        // テキストボックスと連動
+        // Link slider with input
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
         slider{{ loop.index }}.noUiSlider.on('update', (values) => {
             input{{ loop.index }}.value = values[0];
