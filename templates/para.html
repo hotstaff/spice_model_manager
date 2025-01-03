@@ -44,42 +44,73 @@
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
     <div class="container mx-auto px-4 py-6">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6">SPICE Parameter Editor</h1>
-        <form id="parameter-form" class="space-y-6">
-            <!-- Device Name Input -->
-            <div class="flex items-center space-x-4">
-                <label for="device-name" class="w-1/4 text-lg font-semibold text-gray-700">Device Name:</label>
-                <input type="text" id="device-name" name="device-name" class="w-2/3 border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter device name">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">SPICE Parameter Editor</h1>
+    <form id="parameter-form">
+        <!-- Device Name and Type -->
+        <div class="grid grid-cols-2 gap-4 mb-6">
+            <div>
+                <label for="device-name" class="block text-lg font-semibold text-gray-700">Device Name:</label>
+                <input type="text" id="device-name" name="device-name" class="w-full border rounded-lg py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter device name">
             </div>
-
-            <div id="parameter-fields">
-                {% for param in parameters %}
-                <div class="parameter-container" id="param-{{ param.name }}">
-                    <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }} ({{ param.description }}):</label>
-                    <div class="slider-container w-2/3">
-                        <!-- Textbox for parameters without min/max -->
-                        <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" class="w-full text-center border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <!-- Slider for parameters with min/max -->
-                        <div id="slider-{{ param.name }}" class="mb-2"></div>
-                    </div>
-                    <button type="button" id="reset-{{ param.name }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-1 px-2 rounded focus:outline-none">Reset</button>
-                    <span class="text-sm text-gray-500">{{ param.unit if param.unit else '' }}</span>
-                </div>
-                {% endfor %}
+            <div>
+                <label for="device-type" class="block text-lg font-semibold text-gray-700">Device Type:</label>
+                <select id="device-type" name="device-type" class="w-full border rounded-lg py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="NJF">NJF</option>
+                    <option value="PJF">PJF</option>
+                </select>
             </div>
-
-            <div class="flex justify-center">
-                <button type="button" id="generate-model" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    Generate .MODEL String
-                </button>
-            </div>
-        </form>
-
-        <div class="mt-6">
-            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Generated .MODEL String</h3>
-            <textarea id="model-string" class="w-full h-32 border rounded-lg p-4 text-gray-700 bg-white" readonly></textarea>
         </div>
+
+        <!-- Tabs for Parameters -->
+        <div class="mb-6">
+            <ul class="flex border-b">
+                <li class="mr-2">
+                    <a href="#tab-1" class="inline-block py-2 px-4 text-blue-500 hover:text-blue-700 font-semibold">Tab 1</a>
+                </li>
+                <li class="mr-2">
+                    <a href="#tab-2" class="inline-block py-2 px-4 text-gray-500 hover:text-blue-700">Tab 2</a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Parameters in Tabs -->
+        <div id="tab-1" class="space-y-4">
+            {% for param in parameters[:5] %}
+            <div class="parameter-container">
+                <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
+                <div class="slider-container flex-1">
+                    <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
+                    <div id="slider-{{ param.name }}" class="mt-2"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div id="tab-2" class="space-y-4 hidden">
+            {% for param in parameters[5:] %}
+            <div class="parameter-container">
+                <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
+                <div class="slider-container flex-1">
+                    <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
+                    <div id="slider-{{ param.name }}" class="mt-2"></div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex justify-center">
+            <button type="button" id="generate-model" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                Generate .MODEL String
+            </button>
+        </div>
+    </form>
+
+    <!-- Generated Model String -->
+    <div class="mt-6">
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Generated .MODEL String</h3>
+        <textarea id="model-string" class="w-full h-32 border rounded-lg p-4 text-gray-700 bg-white" readonly></textarea>
     </div>
+</div>
 
     <script>
         {% for param in parameters %}
@@ -100,27 +131,14 @@
         slider{{ loop.index }}.noUiSlider.on('update', (values) => {
             input{{ loop.index }}.value = values[0];
         });
-
-        // Reset button functionality
-        const resetButton{{ loop.index }} = document.getElementById('reset-{{ param.name }}');
-        resetButton{{ loop.index }}.addEventListener('click', () => {
-            input{{ loop.index }}.value = {{ param.default }};
-            slider{{ loop.index }}.noUiSlider.set({{ param.default }});
-        });
-        {% else %}
-        // Reset button functionality for parameters without sliders
-        const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
-        const resetButton{{ loop.index }} = document.getElementById('reset-{{ param.name }}');
-        resetButton{{ loop.index }}.addEventListener('click', () => {
-            input{{ loop.index }}.value = {{ param.default }};
-        });
         {% endif %}
         {% endfor %}
 
         // Function to generate the .MODEL string
         document.getElementById('generate-model').addEventListener('click', function() {
             const deviceName = document.getElementById('device-name').value;
-            let modelString = `.MODEL ${deviceName}`;
+            const deviceType = document.getElementById('device-type').value;
+            let modelString = `.MODEL ${deviceName} (${deviceType})`;
 
             {% for param in parameters %}
             const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
