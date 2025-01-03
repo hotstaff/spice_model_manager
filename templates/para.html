@@ -62,6 +62,7 @@
                         <!-- Slider for parameters with min/max -->
                         <div id="slider-{{ param.name }}" class="mb-2"></div>
                     </div>
+                    <button type="button" id="reset-{{ param.name }}" class="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-1 px-2 rounded focus:outline-none">Reset</button>
                     <span class="text-sm text-gray-500">{{ param.unit if param.unit else '' }}</span>
                 </div>
                 {% endfor %}
@@ -98,6 +99,20 @@
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
         slider{{ loop.index }}.noUiSlider.on('update', (values) => {
             input{{ loop.index }}.value = values[0];
+        });
+
+        // Reset button functionality
+        const resetButton{{ loop.index }} = document.getElementById('reset-{{ param.name }}');
+        resetButton{{ loop.index }}.addEventListener('click', () => {
+            input{{ loop.index }}.value = {{ param.default }};
+            slider{{ loop.index }}.noUiSlider.set({{ param.default }});
+        });
+        {% else %}
+        // Reset button functionality for parameters without sliders
+        const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
+        const resetButton{{ loop.index }} = document.getElementById('reset-{{ param.name }}');
+        resetButton{{ loop.index }}.addEventListener('click', () => {
+            input{{ loop.index }}.value = {{ param.default }};
         });
         {% endif %}
         {% endfor %}
