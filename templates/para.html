@@ -26,23 +26,30 @@
     <div class="container mx-auto px-4 py-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">SPICE Parameter Editor</h1>
         <form id="parameter-form" class="space-y-6">
+            <!-- Device Name Input -->
             <div class="flex items-center space-x-4">
-                <label for="device-type" class="w-1/4 text-lg font-semibold text-gray-700">Device Type:</label>
-                <select id="device-type" name="device-type" class="w-2/3 border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="NJF">NJF</option>
-                    <option value="PJF">PJF</option>
-                </select>
+                <label for="device-name" class="w-1/4 text-lg font-semibold text-gray-700">Device Name:</label>
+                <input type="text" id="device-name" name="device-name" class="w-2/3 border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter device name">
             </div>
-            {% for param in parameters %}
-            <div class="flex items-center space-x-4">
-                <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }} ({{ param.description }}):</label>
-                <div class="w-2/3">
-                    <div id="slider-{{ param.name }}" class="mb-2"></div>
+
+            <div id="parameter-fields">
+                {% for param in parameters %}
+                <div class="flex items-center space-x-4" id="param-{{ param.name }}">
+                    <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }} ({{ param.description }}):</label>
+                    <div class="w-2/3">
+                        {% if param.min is none and param.max is none %}
+                            <!-- Textbox for parameters without min/max -->
+                            <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" class="w-full text-center border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        {% else %}
+                            <!-- Slider for parameters with min/max -->
+                            <div id="slider-{{ param.name }}" class="mb-2"></div>
+                        {% endif %}
+                    </div>
+                    <span class="text-sm text-gray-500">{{ param.unit if param.unit else '' }}</span>
                 </div>
-                <input type="text" id="value-{{ param.name }}" name="{{ param.name }}" value="{{ param.default }}" readonly class="w-20 text-center border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
-                <span class="text-sm text-gray-500">{{ param.unit if param.unit else '' }}</span>
+                {% endfor %}
             </div>
-            {% endfor %}
+
             <div class="flex justify-center">
                 <button type="button" id="generate-model" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
                     Generate .MODEL String
@@ -58,7 +65,8 @@
 
     <script>
         {% for param in parameters %}
-        // Initialize slider
+        // Initialize slider only if min/max is not None
+        {% if param.min is not none and param.max is not none %}
         const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
         const scale{{ loop.index }} = {{ param.scale }}; // Consider scale if needed
         noUiSlider.create(slider{{ loop.index }}, {
@@ -75,12 +83,14 @@
         slider{{ loop.index }}.noUiSlider.on('update', (values) => {
             input{{ loop.index }}.value = values[0];
         });
+        {% endif %}
         {% endfor %}
 
         // Function to generate the .MODEL string
         document.getElementById('generate-model').addEventListener('click', function() {
+            const deviceName = document.getElementById('device-name').value;
             const deviceType = document.getElementById('device-type').value;
-            let modelString = `.MODEL 2SK117 ${deviceType}`;
+            let modelString = `.MODEL ${deviceName} ${deviceType}`;
 
             {% for param in parameters %}
             const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
