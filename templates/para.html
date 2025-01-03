@@ -161,23 +161,25 @@
             const deviceName = document.getElementById('device-name').value;
             const deviceType = document.getElementById('device-type').value;
             let modelString = `.MODEL ${deviceName} ${deviceType}`;
+            let value_buff = 0;
 
             {% for param in parameters %}
                 const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
-                let paramValueToUse = paramValue{{ loop.index }};
                 
-                // If param.name is "mfg", use the value as is (string), otherwise apply scale
-                {% if param.name == "mfg" %}
-                    paramValueToUse = paramValue{{ loop.index }}; // Use the value directly
-                {% else %}
-                    paramValueToUse = (paramValue{{ loop.index }} * {{ param.scale }}).toFixed(3); // Apply scale
-                {% endif %}
+                // Check if the value is a string or a number, and decide what to do
+                value_buff = paramValue{{ loop.index }};
                 
-                modelString += ` {{ param.name }}=${paramValueToUse}`;
+                if (!isNaN(value_buff)) {  // Check if it's a number
+                    value_buff = (parseFloat(value_buff) * {{ param.scale }}).toFixed(3); // Apply scale if it's a number
+                }
+
+                modelString += ` {{ param.name }}=${value_buff}`;
             {% endfor %}
 
             document.getElementById('model-string').value = modelString;
         });
+
+
     </script>
 </body>
 </html>
