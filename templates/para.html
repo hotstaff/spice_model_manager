@@ -89,8 +89,7 @@
         // Function to generate the .MODEL string
         document.getElementById('generate-model').addEventListener('click', function() {
             const deviceName = document.getElementById('device-name').value;
-            const deviceType = document.getElementById('device-type').value;
-            let modelString = `.MODEL ${deviceName} ${deviceType}`;
+            let modelString = `.MODEL ${deviceName}`;
 
             {% for param in parameters %}
             const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
