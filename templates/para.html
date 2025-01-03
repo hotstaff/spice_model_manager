@@ -113,6 +113,29 @@
 </div>
 
     <script>
+        // タブのクリックイベントを設定
+        document.querySelectorAll('a[href^="#tab-"]').forEach(tab => {
+            tab.addEventListener('click', function(event) {
+                event.preventDefault(); // デフォルトのリンク動作を無効化
+
+                // すべてのタブを非アクティブにし、関連するコンテンツを非表示にする
+                document.querySelectorAll('a[href^="#tab-"]').forEach(tabLink => {
+                    tabLink.classList.remove('text-blue-700');
+                    tabLink.classList.add('text-gray-500');
+                });
+                document.querySelectorAll('.space-y-4').forEach(tabContent => {
+                    tabContent.classList.add('hidden');
+                });
+
+                // クリックされたタブをアクティブにし、関連するコンテンツを表示する
+                this.classList.remove('text-gray-500');
+                this.classList.add('text-blue-700');
+                const targetTab = document.querySelector(this.getAttribute('href'));
+                targetTab.classList.remove('hidden');
+            });
+        });
+
+
         {% for param in parameters %}
         // Initialize slider only if min/max is not None
         {% if param.min is not none and param.max is not none %}
