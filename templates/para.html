@@ -109,7 +109,7 @@
 
             {% for param in parameters %}
             const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
-            const scaledValue{{ loop.index }} = paramValue{{ loop.index }} * {{ param.scale }}; // Apply scale only here
+            const scaledValue{{ loop.index }} = (paramValue{{ loop.index }} * {{ param.scale }}).toExponential(); // Apply scale and convert to scientific notation
             modelString += ` {{ param.name }}=${scaledValue{{ loop.index }}}`;
             {% endfor %}
 
