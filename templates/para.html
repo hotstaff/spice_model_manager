@@ -26,6 +26,13 @@
     <div class="container mx-auto px-4 py-6">
         <h1 class="text-3xl font-bold text-gray-800 mb-6">SPICE Parameter Editor</h1>
         <form id="parameter-form" class="space-y-6">
+            <div class="flex items-center space-x-4">
+                <label for="device-type" class="w-1/4 text-lg font-semibold text-gray-700">Device Type:</label>
+                <select id="device-type" name="device-type" class="w-2/3 border rounded-lg py-2 px-4 text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="NJF">NJF</option>
+                    <option value="PJF">PJF</option>
+                </select>
+            </div>
             {% for param in parameters %}
             <div class="flex items-center space-x-4">
                 <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }} ({{ param.description }}):</label>
@@ -37,11 +44,16 @@
             </div>
             {% endfor %}
             <div class="flex justify-center">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    Submit
+                <button type="button" id="generate-model" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    Generate .MODEL String
                 </button>
             </div>
         </form>
+
+        <div class="mt-6">
+            <h3 class="text-2xl font-semibold text-gray-800 mb-4">Generated .MODEL String</h3>
+            <textarea id="model-string" class="w-full h-32 border rounded-lg p-4 text-gray-700 bg-white" readonly></textarea>
+        </div>
     </div>
 
     <script>
@@ -64,6 +76,19 @@
             input{{ loop.index }}.value = values[0];
         });
         {% endfor %}
+
+        // Function to generate the .MODEL string
+        document.getElementById('generate-model').addEventListener('click', function() {
+            const deviceType = document.getElementById('device-type').value;
+            let modelString = `.MODEL 2SK117 ${deviceType}`;
+
+            {% for param in parameters %}
+            const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
+            modelString += ` {{ param.name }}=${paramValue{{ loop.index }}}`;
+            {% endfor %}
+
+            document.getElementById('model-string').value = modelString;
+        });
     </script>
 </body>
 </html>
