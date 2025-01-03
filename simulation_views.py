@@ -329,6 +329,7 @@ def parameter_test():
         {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "ACME", "min": None, "max": None, "scale": 1},
     ]
 
+
     return render_template('para.html', parameters=parameters)
 
 
