@@ -217,7 +217,7 @@ def build():
         {"name": "N", "description": "ゲート接合部の放射係数", "unit": None, "default": 1.0, "min": 0.5, "max": 2.0, "prefix": ""},
         {"name": "Isr", "description": "ゲート接合部の再結合電流パラメータ", "unit": "pA", "default": 0, "min": 0, "max": 1000, "prefix": "p"},
         {"name": "Nr", "description": "Isrの放射係数", "unit": None, "default": 2, "min": 1.0, "max": 3.0, "prefix": ""},
-        {"name": "alpha", "description": "イオン化係数", "unit": "1/V", "default": 0, "min": 0, "max": 100, "prefix": "m"},
+        {"name": "alpha", "description": "イオン化係数", "unit": "1/V", "default": 0, "min": 0, "max": 100, "prefix": "u"},
         {"name": "Vk", "description": "イオン化屈曲点電圧", "unit": "V", "default": 0, "min": 0, "max": 200.0, "prefix": ""},
         {"name": "Xti", "description": "飽和電流の温度係数", "unit": None, "default": 3, "min": 0, "max": 5.0, "prefix": ""},
         {"name": "Fc", "description": "順バイアスでの空之層容量の係数", "unit": None, "default": 0.5, "min": 0, "max": 1.0, "prefix": ""},
