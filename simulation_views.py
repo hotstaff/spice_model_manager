@@ -326,40 +326,6 @@ def start_all_simulations():
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
 
-@simu_views.route('/para')
-def parameter_test():
-    parameters = [
-        {"name": "Vto", "description": "しきい値", "unit": "V", "default": -2.0, "min": -5.0, "max": 5.0, "prefix": ""},
-        {"name": "Beta", "description": "トランスコンダクタンス・パラメータ", "unit": "μA/V^2", "default": 100, "min": 1, "max": 10000, "prefix": "u"},
-        {"name": "Lambda", "description": "チャンネル長調整パラメータ", "unit": "1/V", "default": 0, "min": 0, "max": 100, "prefix": "m"},
-        {"name": "Rd", "description": "ドレインのオーミック抵抗", "unit": "Ω", "default": 0, "min": 0, "max": 1000, "prefix": ""},
-        {"name": "Rs", "description": "ソースのオーミック抵抗", "unit": "Ω", "default": 0, "min": 0, "max": 1000, "prefix": ""},
-        {"name": "Cgs", "description": "ゼロバイアスでのG-S接合容量", "unit": "pF", "default": 0, "min": 0, "max": 100, "prefix": "p"},
-        {"name": "Cgd", "description": "ゼロバイアスでのG-D接合容量", "unit": "pF", "default": 0, "min": 0, "max": 100, "prefix": "p"},
-        {"name": "Pb", "description": "ゲートの接合部電位", "unit": "V", "default": 1.0, "min": 0.5, "max": 2.0, "prefix": ""},
-        {"name": "m", "description": "ゲート接合部の濃度勾配係数", "unit": None, "default": 0.5, "min": 0, "max": 1.0, "prefix": ""},
-        {"name": "Is", "description": "ゲート接合部の飽和電流", "unit": "pA", "default": 0.01, "min": 0.001, "max": 10, "prefix": "p"},
-        {"name": "Tnom", "description": "パラメータ測定温度", "unit": "℃", "default": 27, "min": -50, "max": 150, "prefix": ""},
-        {"name": "VtoTc", "description": "しきい値電圧の温度係数", "unit": "mV/℃", "default": 0, "min": -100, "max": 100, "prefix": "m"},
-        {"name": "BetaTce", "description": "トランスコンダクタンス・パラメータの指数温度係数", "unit": "%/℃", "default": 0, "min": -100, "max": 100, "prefix": ""},
-        {"name": "N", "description": "ゲート接合部の放射係数", "unit": None, "default": 1.0, "min": 0.5, "max": 2.0, "prefix": ""},
-        {"name": "Isr", "description": "ゲート接合部の再結合電流パラメータ", "unit": "pA", "default": 0, "min": 0, "max": 1000, "prefix": "p"},
-        {"name": "Nr", "description": "Isrの放射係数", "unit": None, "default": 2, "min": 1.0, "max": 3.0, "prefix": ""},
-        {"name": "alpha", "description": "イオン化係数", "unit": "1/V", "default": 0, "min": 0, "max": 100, "prefix": "m"},
-        {"name": "Vk", "description": "イオン化屈曲点電圧", "unit": "V", "default": 0, "min": 0, "max": 5.0, "prefix": ""},
-        {"name": "Xti", "description": "飽和電流の温度係数", "unit": None, "default": 3, "min": 0, "max": 5.0, "prefix": ""},
-        {"name": "Fc", "description": "順バイアスでの空之層容量の係数", "unit": None, "default": 0.5, "min": 0, "max": 1.0, "prefix": ""},
-        {"name": "AF", "description": "フリッカ・ノイズ指数", "unit": None, "default": 1.0, "min": 0, "max": 2.0, "prefix": ""},
-        {"name": "KF", "description": "フリッカ・ノイズ係数", "unit": None, "default": 0, "min": 0, "max": 1, "prefix": ""},
-        {"name": "Nlev", "description": "ノイズ式セレクタ", "unit": None, "default": 0, "min": 0, "max": 3, "prefix": ""},
-        {"name": "Gdsnoi", "description": "niev=3の場合のショット・ノイズ係数", "unit": None, "default": 1.0, "min": 0, "max": 5.0, "prefix": ""},
-        {"name": "B", "description": "ドーピングのテール・パラメータ", "unit": None, "default": 1, "min": 0, "max": 2, "prefix": ""},
-        {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "", "min": None, "max": None, "prefix": ""},
-    ]
-
-    return render_template('para.html', parameters=parameters)
-
-
 @simu_views.route("/api/clear_jobs", methods=["POST"])
 def clear_redis_jobs():
     """Redisのジョブをすべて削除"""
