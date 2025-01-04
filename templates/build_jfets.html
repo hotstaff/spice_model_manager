@@ -147,7 +147,7 @@
                     <!-- Tab Content -->
                     {% for i in range(0, parameters|length, 7) %}
                     <div id="tab-{{ loop.index }}" class="space-y-4 {% if loop.index != 1 %}hidden{% endif %}">
-                        {% for param in parameters[i:i+5] %}
+                        {% for param in parameters[i:i+7] %}
                             <div class="parameter-container">
                                 <label for="value-{{ param.name }}" class="w-1/3 text-lg font-semibold text-gray-700">
                                     {% if param.unit %}
