@@ -255,8 +255,40 @@
             {% endfor %}
         }
 
+        function loadSpiceString() {
+            // spice-stringの値を取得
+            const spiceString = document.getElementById('spice-string').value;
+
+            // fetchでPOSTリクエストを送信
+            fetch('/api/parse', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ spice_string: spiceString })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.parsed_params) {
+                    // パース成功時
+                    alert("Parsed Parameters: " + JSON.stringify(data.parsed_params, null, 2));
+                } else if (data.error) {
+                    // エラーがあれば
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(error => {
+                // フェッチエラー
+                alert("Fetch Error: " + error);
+            });
+        }
+
         document.getElementById('default-button').addEventListener('click', function() {
                 resetSliders();
+            });
+
+        document.getElementById('load-button').addEventListener('click', function() {
+                loadSpiceString() 
             });
 
         document.getElementById('device-name').addEventListener('change', function() {
