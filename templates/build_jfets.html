@@ -288,12 +288,13 @@
                             sliderElements.forEach(sliderElement => {
                                 const sliderId = sliderElement.id.toLowerCase(); // idを小文字に変換
                                 if (sliderId.includes(paramName)) { // idにparamNameが含まれていれば一致
-                                    console.log(sliderElement.dataset.prefix, paramName, parsedParams[param]);
+                                    
                                     if (sliderElement.dataset.prefix === "p") {
                                         sliderElement.noUiSlider.set(parsedParams[param] * 1E+12 );
                                     } else if (sliderElement.dataset.prefix === "u") {
                                         sliderElement.noUiSlider.set(parsedParams[param] * 1E+6 );
                                     } else if (sliderElement.dataset.prefix === "m") {
+                                        console.log(sliderElement.dataset.prefix, paramName, parsedParams[param]);
                                         sliderElement.noUiSlider.set(parsedParams[param] * 1E+3 );
                                     } else {
                                         sliderElement.noUiSlider.set(parsedParams[param]);
