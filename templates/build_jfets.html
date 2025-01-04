@@ -149,7 +149,40 @@
                         {% endfor %}
                     </div>
                     <div id="tab-2" class="space-y-4 hidden">
-                        {% for param in parameters[5:] %}
+                        {% for param in parameters[5:10] %}
+                        <div class="parameter-container">
+                            <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
+                            <div class="slider-container flex-1">
+                                <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
+                                <div id="slider-{{ param.name }}" class="mt-2"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div id="tab-3" class="space-y-4 hidden">
+                        {% for param in parameters[10:15] %}
+                        <div class="parameter-container">
+                            <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
+                            <div class="slider-container flex-1">
+                                <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
+                                <div id="slider-{{ param.name }}" class="mt-2"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div id="tab-4" class="space-y-4 hidden">
+                        {% for param in parameters[15:20] %}
+                        <div class="parameter-container">
+                            <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
+                            <div class="slider-container flex-1">
+                                <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
+                                <div id="slider-{{ param.name }}" class="mt-2"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <div id="tab-5" class="space-y-4 hidden">
+                        {% for param in parameters[20:26] %}
                         <div class="parameter-container">
                             <label for="value-{{ param.name }}" class="w-1/4 text-lg font-semibold text-gray-700">{{ param.name }}:</label>
                             <div class="slider-container flex-1">
