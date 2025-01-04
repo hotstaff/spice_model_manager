@@ -161,6 +161,9 @@
                             <div class="slider-container flex-1">
                                 <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
                                 <div id="slider-{{ param.name }}" class="mt-2"></div>
+                                {% if param.unit %}
+                                <span class="text-sm text-gray-500">{{ param.unit }}</span>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -172,6 +175,9 @@
                             <div class="slider-container flex-1">
                                 <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
                                 <div id="slider-{{ param.name }}" class="mt-2"></div>
+                                {% if param.unit %}
+                                <span class="text-sm text-gray-500">{{ param.unit }}</span>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -183,6 +189,9 @@
                             <div class="slider-container flex-1">
                                 <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
                                 <div id="slider-{{ param.name }}" class="mt-2"></div>
+                                {% if param.unit %}
+                                <span class="text-sm text-gray-500">{{ param.unit }}</span>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -194,6 +203,9 @@
                             <div class="slider-container flex-1">
                                 <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
                                 <div id="slider-{{ param.name }}" class="mt-2"></div>
+                                {% if param.unit %}
+                                <span class="text-sm text-gray-500">{{ param.unit }}</span>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -205,6 +217,9 @@
                             <div class="slider-container flex-1">
                                 <input type="text" id="value-{{ param.name }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
                                 <div id="slider-{{ param.name }}" class="mt-2"></div>
+                                {% if param.unit %}
+                                <span class="text-sm text-gray-500">{{ param.unit }}</span>
+                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
