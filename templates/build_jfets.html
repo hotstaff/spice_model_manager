@@ -107,7 +107,7 @@
 
         <form id="parameter-form">
             <!-- Device Name and Type -->
-            <div class="grid grid-cols-2 gap-4 mb-6">
+            <div class="grid grid-cols-2 gap-4 mb-6 my-5">
                 <div>
                     <label for="device-name" class="block text-lg font-semibold text-gray-700">Device Name:</label>
                     <input type="text" id="device-name" name="device-name" class="w-full border rounded-lg py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter device name" value="JFET_TEST_MODEL">
@@ -155,9 +155,8 @@
                 </div>
                 {% endfor %}
             </div>
-
-
         </form>
+
 
         <!-- フラッシュメッセージの表示 -->
         {% with messages = get_flashed_messages(with_categories=true) %}
