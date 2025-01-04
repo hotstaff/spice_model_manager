@@ -215,7 +215,7 @@ def build():
         {"name": "Nlev", "description": "ノイズ式セレクタ", "unit": None, "default": 0, "min": 0, "max": 3, "prefix": ""},
         {"name": "Gdsnoi", "description": "niev=3の場合のショット・ノイズ係数", "unit": None, "default": 1.0, "min": 0, "max": 5.0, "prefix": ""},
         {"name": "B", "description": "ドーピングのテール・パラメータ", "unit": None, "default": 1, "min": 0, "max": 2, "prefix": ""},
-        {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "Toshiba", "min": None, "max": None, "prefix": ""},
+        {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "", "min": None, "max": None, "prefix": ""},
     ]
     return render_template("build_jfets.html", bokeh_json_data={}, parameters=parameters )
 

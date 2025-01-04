@@ -271,7 +271,7 @@
                 const paramPrefix{{ loop.index }} = "{{ param.prefix }}";  // Get the prefix (e.g., 'p', 'u', etc.)
 
                 // Check if the value is a string or a number, and decide what to do
-                if (paramValue{{ loop.index }} !== "{{ param.default }}" ) {
+                if (paramValue{{ loop.index }} !== Number({{ param.default }}) ) {
                     modelString += ` {{ param.name }}=${paramValue{{ loop.index }}}${paramPrefix{{ loop.index }}}`;  // Append the value with the prefix
                 }
 
