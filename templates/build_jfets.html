@@ -316,7 +316,7 @@
 
         function resetSliders() {
             {% for param in parameters %}
-            {% if param.min is not none and param.max is not none %}
+            {% if param.default is not string %}
                 slider{{ loop.index }}.noUiSlider.reset();
             {% endif %}
             {% endfor %}
@@ -336,7 +336,7 @@
 
         {% for param in parameters %}
         // Initialize slider only if min/max is not None
-        {% if param.min is not none and param.max is not none %}
+        {% if param.default is not string %}
         const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
         noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
