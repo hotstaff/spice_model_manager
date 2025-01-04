@@ -219,20 +219,6 @@
             });
         });
 
-
-        {% for param in parameters %}
-        // Initialize slider only if min/max is not None
-        {% if param.min is not none and param.max is not none %}
-        const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
-        noUiSlider.create(slider{{ loop.index }}, {
-            start: {{ param.default }},
-            range: {
-                min: {{ param.min }},
-                max: {{ param.max }}
-            },
-            step: 0.1
-        });
-
         // spice model string
         function generateModel() {
             const deviceName = document.getElementById('device-name').value;
@@ -249,6 +235,20 @@
             {% endfor %}
             document.getElementById('spice-string').value = modelString;
         }
+
+
+        {% for param in parameters %}
+        // Initialize slider only if min/max is not None
+        {% if param.min is not none and param.max is not none %}
+        const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
+        noUiSlider.create(slider{{ loop.index }}, {
+            start: {{ param.default }},
+            range: {
+                min: {{ param.min }},
+                max: {{ param.max }}
+            },
+            step: 0.1
+        });
 
         // Link slider with input
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
