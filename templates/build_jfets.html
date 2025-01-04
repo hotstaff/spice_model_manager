@@ -270,7 +270,7 @@
                 const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
                 const paramPrefix{{ loop.index }} = "{{ param.prefix }}";  // Get the prefix (e.g., 'p', 'u', etc.)
 
-                if (Number(paramValue{{ loop.index }}) == Number({{ param.default }})) {
+                if (Number(paramValue{{ loop.index }}) !== Number({{ param.default }})) {
                     modelString += ` {{ param.name }}=${paramValue{{ loop.index }}}${paramPrefix{{ loop.index }}}`;
                 }
 
