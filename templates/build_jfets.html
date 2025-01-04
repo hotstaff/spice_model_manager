@@ -233,16 +233,8 @@
             step: 0.1
         });
 
-        // Link slider with input
-        const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
-        slider{{ loop.index }}.noUiSlider.on('update', (values) => {
-            input{{ loop.index }}.value = values[0];
-        });
-        {% endif %}
-        {% endfor %}
-
-        // Function to generate the .MODEL string
-        document.getElementById('generate-model').addEventListener('click', function() {
+        // spice model string
+        function generateModel() {
             const deviceName = document.getElementById('device-name').value;
             const deviceType = document.getElementById('device-type').value;
             let modelString = `.MODEL ${deviceName} ${deviceType}`;
@@ -256,6 +248,22 @@
 
             {% endfor %}
             document.getElementById('spice-string').value = modelString;
+        }
+
+        // Link slider with input
+        const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
+        slider{{ loop.index }}.noUiSlider.on('update', (values) => {
+            input{{ loop.index }}.value = values[0];
+        });
+
+            generateModel();
+        {% endif %}
+        {% endfor %}
+
+        // Function to generate the .MODEL string
+        document.getElementById('generate-model').addEventListener('click', function() {
+            generateModel();
+            
         });
     </script>
 </body>
