@@ -270,7 +270,9 @@
                 const paramValue{{ loop.index }} = document.getElementById('value-{{ param.name }}').value;
                 const paramPrefix{{ loop.index }} = "{{ param.prefix }}";  // Get the prefix (e.g., 'p', 'u', etc.)
 
-                modelString += ` {{ param.name }}=${paramValue{{ loop.index }}}${paramPrefix{{ loop.index }}}`;  // Append the value with the prefix
+                if (Number(paramValue{{ loop.index }}) == Number({{ param.default }})) {
+                    modelString += ` {{ param.name }}=${paramValue{{ loop.index }}}${paramPrefix{{ loop.index }}}`;
+                }
 
             {% endfor %}
             document.getElementById('spice-string').value = modelString;
