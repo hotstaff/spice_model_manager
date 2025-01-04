@@ -278,6 +278,14 @@
             document.getElementById('spice-string').value = modelString;
         }
 
+        function resetSlider() {
+            {% for param in parameters %}
+            {% if param.min is not none and param.max is not none %}
+                slider{{ loop.index }}.noUiSlider.reset();
+            {% endif %}
+            {% endfor %}
+        }
+
         document.getElementById('device-name').addEventListener('change', function() {
             generateModel();
         });
