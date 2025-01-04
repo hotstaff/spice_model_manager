@@ -269,6 +269,13 @@
             document.getElementById('spice-string').value = modelString;
         }
 
+        document.getElementById('device-name').addEventListener('input', function() {
+            generateModel();
+        });
+
+        document.getElementById('device-type').addEventListener('input', function() {
+            generateModel();
+        });
 
         {% for param in parameters %}
         // Initialize slider only if min/max is not None
