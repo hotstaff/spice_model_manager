@@ -1,8 +1,13 @@
 import os
+from dotenv import load_dotenv
+
 from flask import Flask, redirect, url_for
 from models.db_model import init_db, migrate_db
 from views import model_views  # views.pyからmodel_viewsをインポート
 from simulation_views import simu_views
+
+# dotenv
+load_dotenv()
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB
