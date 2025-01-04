@@ -52,7 +52,7 @@
         async function runSimulation(event) {
             event.preventDefault();  // フォームのデフォルト送信を防ぐ
 
-            const formData = new FormData(document.querySelector("form"));
+            const formData = new FormData(document.getElementById("build-form"));
             try {
                 const response = await fetch("/api/simulate_now2", {
                     method: "POST",
