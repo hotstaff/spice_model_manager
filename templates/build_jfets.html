@@ -158,7 +158,9 @@
                                 </label>
                                 <div class="slider-container flex-1">
                                     <input type="text" id="value-{{ param.name }}" title=" {{ param.description }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
+                                    {% if param.default is not string %}
                                     <div id="slider-{{ param.name }}" class="mt-2"></div>
+                                    {% endif %}
                                 </div>
                             </div>
                         {% endfor %}
