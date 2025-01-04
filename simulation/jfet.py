@@ -224,6 +224,10 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
             mask = (Vgs >= vgs_value - 0.05) & (Vgs <= vgs_value + 0.05)
             p.line(Vds[mask], Id_mA[mask], legend_label=f'Vgs = {vgs_value}V', line_width=2, color=color)
 
+        if self.device_type == 'PJF':
+            p.x_range.flipped = True
+            p.y_range.flipped = True
+
         p.legend.title = "Vgs"
         p.legend.location = "top_left"
 
