@@ -279,13 +279,16 @@
                             const paramName = param.toLowerCase(); // 大文字小文字区別しないため小文字に変換
                             
                             // 正規表現で一致するidを探す
-                            const inputElements = document.querySelectorAll('[id^="value-"]'); // idが"value-"で始まる全ての要素を取得
+                            const sliderElements = document.querySelectorAll('[id^="slider-"]'); // idが"value-"で始まる全ての要素を取得
                             
-                            inputElements.forEach(inputElement => {
-                                alert(inputElement);
-                                const inputId = inputElement.id.toLowerCase(); // idを小文字に変換
-                                if (inputId.includes(paramName)) { // idにparamNameが含まれていれば一致
-                                    inputElement.value = parsedParams[param]; // 値を設定
+                            sliderElements.forEach(sliderElement => {
+                                const sliderId = sliderElement.id.toLowerCase(); // idを小文字に変換
+                                if (sliderId.includes(paramName)) { // idにparamNameが含まれていれば一致
+
+                                    const sliderInstance = sliderElement ? sliderElement.dataset.sliderInstance : null;
+                                    if (sliderInstance) {
+                                        sliderInstance.set(parsedParams[param]);  // 値を設定
+                                    }
                                 }
                             });
                         }
@@ -323,6 +326,7 @@
             generateModel();
         });
 
+
         {% for param in parameters %}
         // Initialize slider only if min/max is not None
         {% if param.default is not string %}
@@ -335,6 +339,8 @@
             },
             step: 0.01
         });
+
+        document.getElementById('slider-{{ param.name }}').dataset.sliderInstance = slider{{ loop.index }};
 
         // Link slider with input
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
