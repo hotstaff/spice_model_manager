@@ -330,7 +330,7 @@
         // Initialize slider only if min/max is not None
         {% if param.default is not string %}
         const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
-        noUiSlider.create(slider{{ loop.index }}, {
+        const sliderInstance = noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
             range: {
                 min: {{ param.min }},
@@ -339,7 +339,7 @@
             step: 0.01
         });
 
-        slider{{ loop.index }}.dataset.sliderInstance = slider{{ loop.index }};
+        slider{{ loop.index }}.dataset.sliderInstance = sliderInstance;
 
         // Link slider with input
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
