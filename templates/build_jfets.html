@@ -275,8 +275,6 @@
                     // パース成功時
                     const parsedParams = data.parsed_params;
 
-                    console.table(parsedParams);
-
                     // device-nameとdevice-type以外のパラメータを大文字小文字区別せずにロード
                     for (let param in parsedParams) {
                         if (param.toLowerCase() !== 'device_name' && param.toLowerCase() !== 'device_type') {
