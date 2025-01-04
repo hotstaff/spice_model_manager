@@ -159,7 +159,7 @@
                                 <div class="slider-container flex-1">
                                     <input type="text" id="value-{{ param.name }}" title=" {{ param.description }}" class="w-full text-center border rounded-lg py-2 px-4" value="{{ param.default }}">
                                     {% if param.default is not string %}
-                                    <div id="slider-{{ param.name }}" class="mt-2"></div>
+                                    <div id="slider-{{ param.name }}" class="mt-2" dataset="param.prefix"></div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -286,7 +286,7 @@
                             sliderElements.forEach(sliderElement => {
                                 const sliderId = sliderElement.id.toLowerCase(); // idを小文字に変換
                                 if (sliderId.includes(paramName)) { // idにparamNameが含まれていれば一致
-                                    sliderElement.noUiSlider.set(parsedParams[param]);  // 値を設定
+                                    sliderElement.noUiSlider.set(parsedParams[param] );  // 値を設定
                                 }
                             });
                         }

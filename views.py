@@ -330,7 +330,7 @@ def parse_spice_model():
 
         # SPICE文字列の解析
         parser = SpiceModelParser()
-        parsed_params = parser.parse(spice_string)
+        parsed_params = parser.parse(spice_string, convert_units=True)
 
         # 成功時に解析結果を返す
         return jsonify({"parsed_params": parsed_params}), 200
