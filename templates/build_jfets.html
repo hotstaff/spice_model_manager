@@ -284,10 +284,7 @@
                             sliderElements.forEach(sliderElement => {
                                 const sliderId = sliderElement.id.toLowerCase(); // idを小文字に変換
                                 if (sliderId.includes(paramName)) { // idにparamNameが含まれていれば一致
-                                    const sliderInstance = sliderElement ? sliderElement.dataset.sliderInstance : null;
-                                    if (sliderInstance) {
-                                        sliderInstance.noUiSlider.set(parsedParams[param]);  // 値を設定
-                                    }
+                                    sliderElement.noUiSlider.set(parsedParams[param]);  // 値を設定
                                 }
                             });
                         }
@@ -325,13 +322,14 @@
             generateModel();
         });
 
+        let sliderInstance;
 
         {% for param in parameters %}
         // Initialize slider only if min/max is not None
         {% if param.default is not string %}
         const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
-
-        slider{{ loop.index }}.dataset.sliderInstance = noUiSlider.create(slider{{ loop.index }}, {
+        
+        noUiSlider.create(slider{{ loop.index }}, {
             start: {{ param.default }},
             range: {
                 min: {{ param.min }},
