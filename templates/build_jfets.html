@@ -314,7 +314,6 @@
             });
 
         document.getElementById('load-button').addEventListener('click', function() {
-                alert("Successfully!");
                 loadSpiceString() 
             });
 
@@ -340,7 +339,7 @@
             step: 0.01
         });
 
-        document.getElementById('slider-{{ param.name }}').dataset.sliderInstance = slider{{ loop.index }};
+        slider{{ loop.index }}.dataset.sliderInstance = slider{{ loop.index }};
 
         // Link slider with input
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
