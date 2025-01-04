@@ -254,9 +254,9 @@
         const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
         slider{{ loop.index }}.noUiSlider.on('update', (values) => {
             input{{ loop.index }}.value = values[0];
+            generateModel();
         });
 
-            generateModel();
         {% endif %}
         {% endfor %}
 
