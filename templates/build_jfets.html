@@ -292,8 +292,8 @@
                     }
 
                     // device-nameとdevice-typeは特別に処理
-                    document.getElementById('value-device-name').value = parsedParams.device_name || '';
-                    document.getElementById('value-device-type').value = parsedParams.device_type || '';
+                    document.getElementById('device-name').value = parsedParams.device_name || '';
+                    document.getElementById('device-type').value = parsedParams.device_type || '';
 
                     alert("Parameters Loaded Successfully!");
                 } else if (data.error) {
