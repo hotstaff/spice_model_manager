@@ -271,7 +271,30 @@
             .then(data => {
                 if (data.parsed_params) {
                     // パース成功時
-                    alert("Parsed Parameters: " + JSON.stringify(data.parsed_params, null, 2));
+                    const parsedParams = data.parsed_params;
+
+                    // device-nameとdevice-type以外のパラメータを大文字小文字区別せずにロード
+                    for (let param in parsedParams) {
+                        if (param.toLowerCase() !== 'device_name' && param.toLowerCase() !== 'device_type') {
+                            const paramName = param.toLowerCase(); // 大文字小文字区別しないため小文字に変換
+                            
+                            // 正規表現で一致するidを探す
+                            const inputElements = document.querySelectorAll('[id^="value-"]'); // idが"value-"で始まる全ての要素を取得
+                            
+                            inputElements.forEach(inputElement => {
+                                const inputId = inputElement.id.toLowerCase(); // idを小文字に変換
+                                if (inputId.includes(paramName)) { // idにparamNameが含まれていれば一致
+                                    inputElement.value = parsedParams[param]; // 値を設定
+                                }
+                            });
+                        }
+                    }
+
+                    // device-nameとdevice-typeは特別に処理
+                    document.getElementById('value-device-name').value = parsedParams.device_name || '';
+                    document.getElementById('value-device-type').value = parsedParams.device_type || '';
+
+                    alert("Parameters Loaded Successfully!");
                 } else if (data.error) {
                     // エラーがあれば
                     alert("Error: " + data.error);
