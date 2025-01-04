@@ -25,6 +25,17 @@ file_extractor = FileExtractor()
 # JobModelのインスタンスを作成
 job_model = JobModel(redis_host=redis_host)
 
+
+def get_template_name(base_template):
+    """ブラウザの言語設定に基づいてテンプレートを選択"""
+    lang = request.accept_languages.best_match(['en', 'ja']) or 'en'
+    
+    if lang == 'ja':
+        return base_template.replace('.html', '_ja.html')
+    
+    return base_template
+
+
 @simu_views.errorhandler(413)
 def request_entity_too_large(error):
     """ファイルサイズ超過エラーのハンドリング"""
@@ -217,7 +228,9 @@ def build():
         {"name": "B", "description": "ドーピングのテール・パラメータ", "unit": None, "default": 1, "min": 0, "max": 2, "prefix": ""},
         {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "", "min": None, "max": None, "prefix": ""},
     ]
-    return render_template("build_jfets.html", bokeh_json_data={}, parameters=parameters )
+    template_name = get_template_name('build_jfets.html')
+
+    return render_template(template_name, bokeh_json_data={}, parameters=parameters )
 
 @simu_views.route("/api/simulate_now2", methods=["POST"])
 def api_simulate_now2():

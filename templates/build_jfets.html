@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{% block lang_code %}en{% endblock %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SPICE Model Editor</title>
+    <title>{% block head_title %}SPICE Model Editor{% endblock %}</title>
     <!-- bokeh -->
     <script type="text/javascript" src="https://cdn.bokeh.org/bokeh/release/bokeh-3.4.3.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -109,8 +109,8 @@
 <body class="bg-gray-100 text-gray-800 font-sans">
     <div class="container mx-auto p-6">
         <header class="text-center mb-8">
-            <h1 class="text-4xl font-bold text-gray-800">SPICE Model Editor</h1>
-            <h2 class="text-xl text-gray-600">Create and customize your own SPICE models for simulation</h2>
+            <h1 class="text-4xl font-bold text-gray-800">{% block title %}SPICE Model Editor{% endblock %}</h1>
+            <h2 class="text-xl text-gray-600">{% block subtitle %}Create and customize your own SPICE models for simulation{% endblock %}</h2>
         </header>
 
         <!-- Flexbox Layout -->
@@ -122,11 +122,11 @@
                     <!-- Device Name and Type -->
                     <div class="grid grid-cols-2 gap-4 mb-6">
                         <div>
-                            <label for="device-name" class="block text-lg font-semibold text-gray-700">Device Name:</label>
+                            <label for="device-name" class="block text-lg font-semibold text-gray-700">{% block device_name %}Device Name{% endblock %}:</label>
                             <input type="text" id="device-name" name="device-name" class="w-full border rounded-lg py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Enter device name" value="2SK555">
                         </div>
                         <div>
-                            <label for="device-type" class="block text-lg font-semibold text-gray-700">Device Type:</label>
+                            <label for="device-type" class="block text-lg font-semibold text-gray-700">{% block device_type %}Device Type{% endblock %}:</label>
                             <select id="device-type" name="device-type" class="w-full border rounded-lg py-2 px-4 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="NJF">NJF</option>
                                 <option value="PJF">PJF</option>
@@ -177,16 +177,21 @@
                     
                     <!-- Button Container with Flexbox -->
                     <div class="flex justify-between mt-4">
-                        <button id="run-button" type="submit" class="bg-blue-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-blue-600 transition duration-300 w-1/2 mr-2">Run Simulation</button>
-                        <button id="default-button" type="button" class="bg-green-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-green-600 transition duration-300 w-1/2 ml-2">Default</button>
+                        <button id="run-button" type="submit" class="bg-blue-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-blue-600 transition duration-300 w-1/2 mr-2">
+                            {% block run_button_text %}Run Simulation{% endblock %}
+                        </button>
+                        <button id="default-button" type="button" class="bg-green-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-green-600 transition duration-300 w-1/2 ml-2">
+                            {% block default_button_text %}Default{% endblock %}
+                        </button>
                     </div>
+
                 </form>
             </div>
 
             <!-- Right Column: Result Section -->
             <div class="w-full lg:w-2/3">
                 <div class="bg-white p-6 rounded-lg shadow-md" id="result-section" style="display: none;">
-                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">Simulation Result</h3>
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-4">{% block simulation_result_heading %}Simulation Result{% endblock %}</h3>
                     <div id="bokeh-plot" class="w-full h-full mb-4" style="max-width: 100%; max-height: 600px;"></div>
                     <p id="result-message" class="text-lg text-gray-600"></p>
                 </div>
@@ -194,7 +199,7 @@
         </div>
 
         <!-- Back to Home -->
-        <p><a href="{{ url_for('home') }}" class="text-blue-500 text-lg hover:underline">Back to Home</a></p>
+        <p><a href="{{ url_for('home') }}" class="text-blue-500 text-lg hover:underline">{% block back_link %}Back to Home{% endblock %}</a></p>
     </div>
 
     <!-- Tab Click event -->
