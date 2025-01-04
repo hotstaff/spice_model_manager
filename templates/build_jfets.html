@@ -222,7 +222,7 @@
                     <!-- Button Container with Flexbox -->
                     <div class="flex justify-between mt-4">
                         <button id="run-button" type="submit" class="bg-blue-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-blue-600 transition duration-300 w-1/2 mr-2">Run Simulation</button>
-                        <button id="reset-button" type="button" class="bg-green-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-green-600 transition duration-300 w-1/2 ml-2">Reset</button>
+                        <button id="default-button" type="button" class="bg-green-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-green-600 transition duration-300 w-1/2 ml-2">Default</button>
                     </div>
                 </form>
             </div>
@@ -291,7 +291,7 @@
             {% endfor %}
         }
 
-        document.getElementById('reset-button').addEventListener('click', function() {
+        document.getElementById('default-button').addEventListener('click', function() {
                 resetSliders();
             });
 
