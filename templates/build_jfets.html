@@ -137,15 +137,15 @@
                     <!-- Tabs -->
                     <!-- Tabs -->
                     <ul class="flex border-b mb-6">
-                        {% for i in range(0, parameters|length, 5) %}
+                        {% for i in range(0, parameters|length, 7) %}
                         <li class="mr-2">
-                            <a href="#tab-{{ loop.index }}" class="inline-block py-2 px-4 {% if loop.index == 1 %}text-blue-500{% else %}text-gray-500{% endif %} hover:text-blue-700 font-semibold">P {{ loop.index }}</a>
+                            <a href="#tab-{{ loop.index }}" class="inline-block py-2 px-4 {% if loop.index == 1 %}text-blue-500{% else %}text-gray-500{% endif %} hover:text-blue-700 font-semibold">Tab {{ loop.index }}</a>
                         </li>
                         {% endfor %}
                     </ul>
 
                     <!-- Tab Content -->
-                    {% for i in range(0, parameters|length, 5) %}
+                    {% for i in range(0, parameters|length, 7) %}
                     <div id="tab-{{ loop.index }}" class="space-y-4 {% if loop.index != 1 %}hidden{% endif %}">
                         {% for param in parameters[i:i+5] %}
                             <div class="parameter-container">
