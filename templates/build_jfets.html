@@ -218,8 +218,12 @@
                         <input type="text" name="author" placeholder="Your Name" maxlength="16" class="w-1/2 p-3 text-lg border border-gray-300 rounded mr-4">
                         <input type="text" name="comment" placeholder="Add a comment" maxlength="100" class="w-1/2 p-3 text-lg border border-gray-300 rounded">
                     </div>
-                    <button id="run-button" type="submit" class="bg-blue-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-blue-600 transition duration-300">Run Simulation</button>
-                    <button id="reset" type="submit" class="bg-green-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-green-600 transition duration-300">Reset</button>
+                    
+                    <!-- Button Container with Flexbox -->
+                    <div class="flex justify-between mt-4">
+                        <button id="run-button" type="submit" class="bg-blue-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-blue-600 transition duration-300 w-1/2 mr-2">Run Simulation</button>
+                        <button id="reset-button" class="bg-green-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-green-600 transition duration-300 w-1/2 ml-2">Reset</button>
+                    </div>
                 </form>
             </div>
 
