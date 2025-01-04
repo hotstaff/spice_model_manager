@@ -282,6 +282,7 @@
                             const inputElements = document.querySelectorAll('[id^="value-"]'); // idが"value-"で始まる全ての要素を取得
                             
                             inputElements.forEach(inputElement => {
+                                alert(inputElement);
                                 const inputId = inputElement.id.toLowerCase(); // idを小文字に変換
                                 if (inputId.includes(paramName)) { // idにparamNameが含まれていれば一致
                                     inputElement.value = parsedParams[param]; // 値を設定
