@@ -294,7 +294,7 @@
                                     } else if (sliderElement.dataset.prefix === "u") {
                                         sliderElement.noUiSlider.set(parsedParams[param] * 1E+6 );
                                     } else if (sliderElement.dataset.prefix === "m") {
-                                        console.log(sliderElement.dataset.prefix, paramName, parsedParams[param]);
+                                        console.log(sliderElement.dataset.prefix, paramName, parsedParams[param], parsedParams[param] * 1E+3);
                                         sliderElement.noUiSlider.set(parsedParams[param] * 1E+3 );
                                     } else {
                                         sliderElement.noUiSlider.set(parsedParams[param]);
