@@ -316,6 +316,30 @@ def add_new_model():
     template_name = get_template_name('spice_model_add.html')
     return render_template(template_name, form=form)
 
+@model_views.route('/api/parse', methods=['POST'])
+def parse_spice_model():
+    """
+    Parse a SPICE model string and return the parsed parameters.
+    """
+    try:
+        # リクエストからSPICE文字列を取得
+        spice_string = request.json.get('spice_string', None)
+        
+        if not spice_string:
+            return jsonify({"error": "Missing 'spice_string' in request"}), 400
+
+        # SPICE文字列の解析
+        parser = SpiceModelParser()
+        parsed_params = parser.parse(spice_string)
+
+        # 成功時に解析結果を返す
+        return jsonify({"parsed_params": parsed_params}), 200
+
+    except Exception as e:
+        # エラー時にエラーメッセージを返す
+        return jsonify({"error": str(e)}), 500
+
+
 # エラーハンドリング
 @model_views.errorhandler(404)
 def not_found(error):
