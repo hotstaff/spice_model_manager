@@ -287,7 +287,7 @@
                             
                             sliderElements.forEach(sliderElement => {
                                 const sliderId = sliderElement.id.toLowerCase(); // idを小文字に変換
-                                if (sliderId.includes(paramName)) { // idにparamNameが含まれていれば一致
+                                if (sliderId === 'slider-' + paramName) { // idにparamNameが含まれていれば一致
                                     
                                     if (sliderElement.dataset.prefix === "p") {
                                         sliderElement.noUiSlider.set(parsedParams[param] * 1E+12 );
