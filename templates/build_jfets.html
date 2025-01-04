@@ -286,7 +286,15 @@
                             sliderElements.forEach(sliderElement => {
                                 const sliderId = sliderElement.id.toLowerCase(); // idを小文字に変換
                                 if (sliderId.includes(paramName)) { // idにparamNameが含まれていれば一致
-                                    sliderElement.noUiSlider.set(parsedParams[param] );  // 値を設定
+                                    if (sliderElement.dataset == "p") {
+                                        sliderElement.noUiSlider.set(parsedParams[param] * 1E+12 );
+                                    } else if (sliderElement.dataset == "u") {
+                                        sliderElement.noUiSlider.set(parsedParams[param] * 1E+6 );
+                                      // 値を設定
+                                    } else if (sliderElement.dataset == "m") {
+                                        sliderElement.noUiSlider.set(parsedParams[param] * 1E+3 );
+                                      // 値を設定
+                                    }
                                 }
                             });
                         }
