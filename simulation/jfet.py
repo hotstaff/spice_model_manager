@@ -225,7 +225,7 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
             p.line(Vds[mask], Id_mA[mask], legend_label=f'Vgs = {vgs_value}V', line_width=2, color=color)
 
         p.legend.title = "Vgs"
-        p.legend.location = "down_right"
+        p.legend.location = "bottom_right"
 
         # プロットデータをJSON形式でエクスポート
         plot_json = json.dumps(json_item(p))
