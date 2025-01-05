@@ -148,10 +148,25 @@
 
 
     <script>
-        // ジョブの状態を取得する関数
+        let isFetching = false; // リクエスト中かどうかを管理するフラグ
+
         async function fetchJobs() {
+            if (isFetching) return; // 前回のリクエストが完了していない場合はスキップ
+
+            isFetching = true; // フラグを立てる
+
             try {
-                const response = await fetch('/api/simulations');
+                // タイムアウトを設定したfetch関数
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // タイムアウト5秒
+
+                const response = await fetch('/api/simulations', { signal: controller.signal });
+                clearTimeout(timeoutId); // タイムアウトをクリア
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
                 const jobs = await response.json();
 
                 const tableBody = document.getElementById('jobs-table-body');
@@ -176,13 +191,19 @@
                     tableBody.appendChild(row);
                 }
             } catch (error) {
-                console.error('Error fetching jobs:', error);
+                if (error.name === 'AbortError') {
+                    console.warn('Fetch request timed out');
+                } else {
+                    console.error('Error fetching jobs:', error);
+                }
+            } finally {
+                isFetching = false; // リクエスト完了後にフラグを下げる
             }
         }
 
         // フォーム送信時の処理
         async function handleFormSubmit(event) {
-            event.preventDefault();  // ページのリロードを防止
+            event.preventDefault(); // ページのリロードを防止
 
             const formData = new FormData(event.target);
             const response = await fetch('/api/simulate', {
@@ -221,14 +242,12 @@
                     errorMessage.remove();
                 }, 3000);
             }
-
         }
 
         window.onload = () => {
-            fetchJobs();  // ページロード時にジョブを取得
-            setInterval(fetchJobs, 2000);  // 2秒ごとにジョブを更新
+            fetchJobs(); // ページロード時にジョブを取得
+            setInterval(fetchJobs, 2000); // 2秒ごとにジョブを更新
         };
-    </script>
     </script>
 </head>
 <body>
