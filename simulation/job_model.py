@@ -119,22 +119,29 @@ class JobModel:
         return job_id
 
     def get_all_jobs(self):
-        """すべてのジョブをRedisから取得（MGET使用）"""
+        """すべてのジョブをRedisから取得（SCAN使用）"""
         all_jobs = {}
-        job_keys = self.redis.keys(f"{self.REDIS_JOB_PREFIX}*:meta")
+        cursor = '0'  # SCANの初期カーソル
+        pattern = f"{self.REDIS_JOB_PREFIX}*:meta"
         
-        if not job_keys:
-            return all_jobs
-        
-        # Redisから一度にデータを取得
-        job_values = self.redis.mget(job_keys)
-        
-        for key, value in zip(job_keys, job_values):
-            if value:
-                job_key_str = key.decode('utf-8')
-                job_id = job_key_str.replace(self.REDIS_JOB_PREFIX, "").replace(":meta", "")
-                job_data = json.loads(value.decode('utf-8'))
-                all_jobs[job_id] = job_data
+        while cursor != 0:
+            cursor, job_keys = self.redis.scan(cursor=cursor, match=pattern, count=100)
+            
+            if not job_keys:
+                continue
+            
+            # Redisから一度にデータを取得
+            job_values = self.redis.mget(job_keys)
+            
+            for key, value in zip(job_keys, job_values):
+                if value:
+                    job_key_str = key.decode('utf-8')
+                    job_id = job_key_str.replace(self.REDIS_JOB_PREFIX, "").replace(":meta", "")
+                    job_data = json.loads(value.decode('utf-8'))
+                    all_jobs[job_id] = job_data
+
+        # sort
+        all_jobs = dict(sorted(all_jobs.items()))
         
         return all_jobs
 
