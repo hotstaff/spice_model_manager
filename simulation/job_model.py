@@ -108,11 +108,12 @@ class JobModel:
         all_jobs_str = [key.decode('utf-8') for key in all_jobs]
         all_jobs_str.sort()
 
-        if len(all_jobs_str) > self.MAX_JOBS:
-            oldest_job_key = all_jobs_str[0]
+        # 必要な数だけ削除
+        while len(all_jobs_str) > self.MAX_JOBS:
+            oldest_job_key = all_jobs_str.pop(0)  # 最も古いジョブを取得してリストから削除
             pipeline = self.redis.pipeline()
-            pipeline.delete(oldest_job_key.replace(":meta", ":file"))
-            pipeline.delete(oldest_job_key)
+            pipeline.delete(oldest_job_key.replace(":meta", ":file"))  # ファイルキーを削除
+            pipeline.delete(oldest_job_key)  # メタデータキーを削除
             pipeline.execute()
 
         return job_id
