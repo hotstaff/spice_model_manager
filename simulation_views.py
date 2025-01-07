@@ -360,12 +360,16 @@ def upload_file():
                 file_bytes = BytesIO(file.read())
                 df = pd.read_csv(file_bytes)
 
-                # データフレームをHTMLテーブルに変換
-                table_html = df.to_html(classes='table table-striped')
+                # テーブルデータを分離してHTMLに渡す
+                table_html = {
+                    "columns": df.columns.tolist(),  # ヘッダー
+                    "values": df.values.tolist(),   # 行データ
+                }
             except Exception as e:
                 return f"Error processing file: {e}"
 
     return render_template("csv.html", table_html=table_html)
+
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
