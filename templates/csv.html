@@ -39,22 +39,10 @@
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8">
             <h2 class="text-xl font-semibold mb-4 text-gray-800">Uploaded CSV Data</h2>
             <div class="overflow-x-auto">
+                <!-- Table with Tailwind CSS styling -->
                 <table class="min-w-full table-auto border-collapse border border-gray-300">
-                    <thead>
-                        <tr class="bg-blue-100">
-                            {% for column in table_html.columns %}
-                            <th class="border px-4 py-2 text-left text-sm font-medium text-gray-700">{{ column }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
                     <tbody>
-                        {% for row in table_html.values %}
-                        <tr class="bg-white">
-                            {% for cell in row %}
-                            <td class="border px-4 py-2 text-sm text-gray-700">{{ cell }}</td>
-                            {% endfor %}
-                        </tr>
-                        {% endfor %}
+                        {{ table_html|safe }}
                     </tbody>
                 </table>
             </div>
