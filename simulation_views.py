@@ -1,6 +1,7 @@
 import os
 from io import BytesIO
 from flask import Flask, Blueprint, request, send_file, jsonify, render_template
+import pandas as pd
 
 # 自作モジュールのインポート
 from models.db_model import get_all_device_ids
@@ -337,6 +338,34 @@ def start_all_simulations():
         run_and_store_plots.apply_async(args=[data_id])
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
+
+
+@simu_views.route("/csv", methods=["GET", "POST"])
+def upload_file():
+    table_html = None  # デフォルトでは表示しない
+
+    if request.method == "POST":
+        # ファイルがアップロードされた場合
+        if "file" not in request.files:
+            return "No file part"
+
+        file = request.files["file"]
+
+        if file.filename == "":
+            return "No selected file"
+
+        if file:
+            try:
+                # ファイルをBytesIOに保存してPandasで読み込む
+                file_bytes = BytesIO(file.read())
+                df = pd.read_csv(file_bytes)
+
+                # データフレームをHTMLテーブルに変換
+                table_html = df.to_html(classes='table table-striped')
+            except Exception as e:
+                return f"Error processing file: {e}"
+
+    return render_template("csv.html", table_html=table_html)
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
