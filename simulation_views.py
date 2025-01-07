@@ -361,7 +361,7 @@ def upload_file():
                 df = pd.read_csv(file_bytes)
 
                 # データフレームをHTMLテーブルに変換
-                table_html = df.to_html(classes='table table-auto border-separate')
+                table_html = df.to_html(classes='table table-auto border-separate border border-slate-400')
             except Exception as e:
                 return f"Error processing file: {e}"
 
