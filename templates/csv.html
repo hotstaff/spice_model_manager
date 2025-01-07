@@ -11,7 +11,7 @@
         <h1 class="text-2xl font-bold text-center mb-6">CSV File Upload</h1>
         
         <!-- File Upload Form -->
-        <form action="/csv" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <form action="/csv" method="POST" enctype="multipart/form-data" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-6">
             <div class="mb-4">
                 <label class="block text-gray-700 text-sm font-bold mb-2" for="file">
                     Upload CSV File
@@ -39,7 +39,30 @@
         <div class="bg-white shadow-md rounded px-8 pt-6 pb-8">
             <h2 class="text-xl font-bold mb-4">Uploaded CSV Data</h2>
             <div class="overflow-x-auto">
-                {{ table_html|safe }}
+                <table class="table-auto border-collapse border border-gray-300 w-full text-sm">
+                    <!-- Table Header -->
+                    <thead>
+                        <tr class="bg-gray-200">
+                            {% for column in table_html.columns %}
+                            <th class="border border-gray-300 px-4 py-2 text-left font-medium text-gray-700">
+                                {{ column }}
+                            </th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <!-- Table Body -->
+                    <tbody>
+                        {% for row in table_html.values %}
+                        <tr class="hover:bg-gray-100">
+                            {% for cell in row %}
+                            <td class="border border-gray-300 px-4 py-2 text-gray-600">
+                                {{ cell }}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
         {% endif %}
