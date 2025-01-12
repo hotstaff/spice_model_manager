@@ -12,6 +12,9 @@
         // 測定条件の選択肢（簡単に追加できるように変数で管理）
         const availableConditions = ['Temp', 'Humidity', 'Pressure'];
 
+        // 測定タイプの選択肢（エンドポイントから動的に取得することを想定）
+        let availableMeasurementTypes = ['IV']; // 初期値としてIVのみ
+
         // 測定条件をJSON形式で表示する関数
         function updateMeasurementConditions() {
             document.getElementById('measurement_conditions').value = JSON.stringify(measurementConditions, null, 2);
@@ -36,6 +39,19 @@
                 alert('Both key and value are required.');
             }
         }
+
+        // ページ読み込み時に測定タイプを動的に追加
+        window.onload = function() {
+            const measurementTypeSelect = document.getElementById('measurement_type');
+
+            // availableMeasurementTypes 配列から選択肢を追加
+            availableMeasurementTypes.forEach(function(type) {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                measurementTypeSelect.appendChild(option);
+            });
+        }
     </script>
 </head>
 <body class="bg-gray-100 p-8">
@@ -58,7 +74,7 @@
             <div class="mb-4">
                 <label for="measurement_type" class="block text-sm font-medium text-gray-700">Measurement Type</label>
                 <select name="measurement_type" id="measurement_type" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
-                    <option value="IV">IV</option>
+                    <!-- 測定タイプの選択肢はJavaScriptで動的に追加されます -->
                 </select>
             </div>
             
@@ -100,10 +116,10 @@
                 <button type="button" onclick="addMeasurementCondition()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Condition</button>
             </div>
 
-            <!-- Status -->
-            <div class="mb-4">
+            <!-- Status (非表示) -->
+            <div style="display: none;">
                 <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
-                <input type="text" name="status" id="status" value="raw" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+                <input type="text" name="status" id="status" value="raw" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
             </div>
             
             <!-- CSV File Upload -->
