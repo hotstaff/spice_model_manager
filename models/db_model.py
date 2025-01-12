@@ -368,9 +368,9 @@ def add_experiment_data(data_id, measurement_type="General", data=None, operator
             """), {
                 "data_id": data_id,
                 "measurement_type": measurement_type,
-                "data": json.dumps(data),
+                "data": data,
                 "operator_name": operator_name,
-                "measurement_conditions": json.dumps(measurement_conditions),
+                "measurement_conditions": measurement_conditions,
                 "status": status
             })
             
