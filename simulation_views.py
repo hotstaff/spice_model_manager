@@ -373,12 +373,12 @@ def upload_csv():
     if request.method == 'GET':
         # GETリクエストの場合、デバイスリストを取得
         devices = search_data()  # 必要に応じて検索条件を追加
-        device_options = devices[['device_name', 'device_type']].drop_duplicates().to_dict(orient='records')
+        device_options = devices[['id', 'device_name', 'device_type']].drop_duplicates().to_dict(orient='records')
         return render_template('upload_csv.html', device_options=device_options)
     
     if request.method == 'POST':
         # フォームデータを受け取る
-        selected_device_id = request.form.get('device_id')
+        selected_device_id = request.form.get('device_id')  # device_idを受け取る
         measurement_type = request.form.get('measurement_type', 'General')
         operator_name = request.form.get('operator_name', 'Unknown')
         measurement_conditions = request.form.get('measurement_conditions', '{}')  # JSON文字列として受け取る
@@ -420,7 +420,6 @@ def upload_csv():
                 return jsonify({"error": "Failed to add experiment data to the database"}), 500
 
         return jsonify({"message": "CSV file successfully uploaded and data added to the database"}), 200
-
 
 
 
