@@ -13,11 +13,11 @@
         <form action="/upload_csv" method="POST" enctype="multipart/form-data">
             <!-- Device Selection -->
             <div class="mb-4">
-                <label for="device_id" class="block text-sm font-medium text-gray-700">Select Device</label>
-                <select name="device_id" id="device_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+                <label for="data_id" class="block text-sm font-medium text-gray-700">Select Device</label>
+                <select name="data_id" id="data_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
                     <option value="" disabled selected>Select a device</option>
                     {% for device in device_options %}
-                        <option value="{{ device['device_name'] }}">{{ device['device_name'] }} ({{ device['device_type'] }})</option>
+                        <option value="{{ device['id'] }}">{{ device['device_name'] }} ({{ device['device_type'] }})</option>
                     {% endfor %}
                 </select>
             </div>
