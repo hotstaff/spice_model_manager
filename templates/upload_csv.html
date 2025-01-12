@@ -118,13 +118,16 @@
                 <input type="text" id="condition_value" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
             </div>
 
-            <div class="flex justify-center mb-4">
-                <button type="button" onclick="addMeasurementCondition()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Condition</button>
-            </div>
+            <div class="flex justify-center mb-4 space-x-4">
+                <!-- Add Condition Button -->
+                <button type="button" onclick="addMeasurementCondition()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
+                    Add Condition
+                </button>
 
-            <!-- Reset Button -->
-            <div class="flex justify-center mb-4">
-                <button type="button" onclick="resetMeasurementConditions()" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Reset Conditions</button>
+                <!-- Reset Conditions Button -->
+                <button type="button" onclick="resetMeasurementConditions()" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+                    Reset Conditions
+                </button>
             </div>
 
             <!-- Status (非表示) -->
