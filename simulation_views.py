@@ -5,7 +5,7 @@ from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 import pandas as pd
 
 # 自作モジュールのインポート
-from models.db_model import get_all_device_ids, add_experiment_data
+from models.db_model import get_all_device_ids, add_experiment_data, search_data
 
 from simulation.job_model import JobModel
 from simulation.file_extractor import FileExtractor
@@ -371,11 +371,14 @@ def upload_file():
 @simu_views.route('/upload_csv', methods=['GET', 'POST'])
 def upload_csv():
     if request.method == 'GET':
-        # GETリクエストの場合、テンプレートを表示
-        return render_template('upload_csv.html')
+        # GETリクエストの場合、デバイスリストを取得
+        devices = search_data()  # 必要に応じて検索条件を追加
+        device_options = devices[['device_name', 'device_type']].drop_duplicates().to_dict(orient='records')
+        return render_template('upload_csv.html', device_options=device_options)
     
     if request.method == 'POST':
         # フォームデータを受け取る
+        selected_device_id = request.form.get('device_id')
         measurement_type = request.form.get('measurement_type', 'General')
         operator_name = request.form.get('operator_name', 'Unknown')
         measurement_conditions = request.form.get('measurement_conditions', '{}')  # JSON文字列として受け取る
@@ -411,7 +414,7 @@ def upload_csv():
             data_id = row['data_id']  # 例: 'data_id' カラムがCSVに含まれている場合
 
             # 実験データをデータベースに追加
-            new_id = add_experiment_data(data_id, measurement_type, data_json, operator_name, measurement_conditions, status)
+            new_id = add_experiment_data(data_id, selected_device_id, measurement_type, data_json, operator_name, measurement_conditions, status)
 
             if new_id is None:
                 return jsonify({"error": "Failed to add experiment data to the database"}), 500
