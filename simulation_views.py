@@ -386,7 +386,7 @@ def upload_csv():
         
         # 測定条件がJSON文字列として送られるので、パースして辞書に変換
         try:
-            measurement_conditions = json.loads(measurement_conditions)
+            measurement_conditions = json.dumps(json.loads(measurement_conditions))
         except json.JSONDecodeError:
             return jsonify({"error": "Invalid JSON in measurement_conditions"}), 400
         
