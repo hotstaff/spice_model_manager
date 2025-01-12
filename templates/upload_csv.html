@@ -1,15 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{% block lang_code %}en{% endblock %}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload CSV</title>
+    <title>{% block head_title %}Upload CSV{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        // 測定条件を管理するためのオブジェクト
         let measurementConditions = {};
 
-        // 測定条件の選択肢（簡単に追加できるように変数で管理）
         const availableConditions = [
             "Measurement Equipment",
             "Power Supply",
@@ -23,44 +21,36 @@
             "Connection Method",
             "Noise Mitigation",
             "Measurement Time",
-            "Test Signal Type",  // テスト信号の種類
-            "Test Signal Frequency",  // テスト信号の周波数
-            "Signal Amplitude",  // 信号の振幅
-            "Voltage Levels",  // 電圧レベル
-            "Current Levels",  // 電流レベル
-            "Temperature Control",  // 温度制御
-            "Humidity Control",  // 湿度制御
-            "Test Duration",  // テストの期間
-            "Environmental Conditions",  // 環境条件
-            "Signal Conditioning",  // 信号調整
-            "Filter Settings",  // フィルタ設定
-            "Calibration Settings",  // 校正設定
-            "Test Setup",  // テスト設定
-            "Device Configuration",  // デバイス設定
-            "Safety Protocols"  // 安全プロトコル
+            "Test Signal Type",
+            "Test Signal Frequency",
+            "Signal Amplitude",
+            "Voltage Levels",
+            "Current Levels",
+            "Temperature Control",
+            "Humidity Control",
+            "Test Duration",
+            "Environmental Conditions",
+            "Signal Conditioning",
+            "Filter Settings",
+            "Calibration Settings",
+            "Test Setup",
+            "Device Configuration",
+            "Safety Protocols"
         ];
 
-        // 測定タイプの選択肢（エンドポイントから動的に取得することを想定）
-        let availableMeasurementTypes = ['IV']; // 初期値としてIVのみ
+        let availableMeasurementTypes = ['IV'];
 
-        // 測定条件をJSON形式で表示する関数
         function updateMeasurementConditions() {
             document.getElementById('measurement_conditions').value = JSON.stringify(measurementConditions, null, 2);
         }
 
-        // 測定条件を追加する関数
         function addMeasurementCondition() {
             const conditionKey = document.getElementById('condition_key').value;
             const conditionValue = document.getElementById('condition_value').value;
 
             if (conditionKey && conditionValue) {
-                // 新しい条件を追加
                 measurementConditions[conditionKey] = conditionValue;
-
-                // 測定条件を更新
                 updateMeasurementConditions();
-
-                // 入力フィールドをクリア
                 document.getElementById('condition_key').value = '';
                 document.getElementById('condition_value').value = '';
             } else {
@@ -68,17 +58,14 @@
             }
         }
 
-        // 測定条件をリセットする関数
         function resetMeasurementConditions() {
-            measurementConditions = {};  // 測定条件をリセット
-            updateMeasurementConditions();  // テキストエリアを更新
+            measurementConditions = {};
+            updateMeasurementConditions();
         }
 
-        // ページ読み込み時に測定タイプを動的に追加
         window.onload = function() {
             const measurementTypeSelect = document.getElementById('measurement_type');
 
-            // availableMeasurementTypes 配列から選択肢を追加
             availableMeasurementTypes.forEach(function(type) {
                 const option = document.createElement('option');
                 option.value = type;
@@ -90,46 +77,40 @@
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold mb-6 text-center">Upload CSV File and Experiment Data</h1>
+        <h1 class="text-2xl font-bold mb-6 text-center">{% block title %}Upload CSV File and Experiment Data{% endblock %}</h1>
         
         <form action="/upload_csv" method="POST" enctype="multipart/form-data">
-            <!-- Device Selection -->
             <div class="mb-4">
-                <label for="data_id" class="block text-sm font-medium text-gray-700">Select Device</label>
+                <label for="data_id" class="block text-sm font-medium text-gray-700">{% block device_label %}Select Device{% endblock %}</label>
                 <select name="data_id" id="data_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
-                    <option value="" disabled selected>Select a device</option>
+                    <option value="" disabled selected>{% block device_placeholder %}Select a device{% endblock %}</option>
                     {% for device in device_options %}
                         <option value="{{ device['id'] }}">{{ device['device_name'] }} ({{ device['device_type'] }})</option>
                     {% endfor %}
                 </select>
             </div>
             
-            <!-- Measurement Type -->
             <div class="mb-4">
-                <label for="measurement_type" class="block text-sm font-medium text-gray-700">Measurement Type</label>
+                <label for="measurement_type" class="block text-sm font-medium text-gray-700">{% block measurement_type_label %}Measurement Type{% endblock %}</label>
                 <select name="measurement_type" id="measurement_type" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
-                    <!-- 測定タイプの選択肢はJavaScriptで動的に追加されます -->
+                    <!-- Measurement types are added dynamically by JavaScript -->
                 </select>
             </div>
             
-            <!-- Operator Name -->
             <div class="mb-4">
-                <label for="operator_name" class="block text-sm font-medium text-gray-700">Operator Name</label>
+                <label for="operator_name" class="block text-sm font-medium text-gray-700">{% block operator_name_label %}Operator Name{% endblock %}</label>
                 <input type="text" name="operator_name" id="operator_name" value="Unknown" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
             </div>
             
-            <!-- Measurement Conditions (JSON) -->
             <div class="mb-4">
-                <label for="measurement_conditions" class="block text-sm font-medium text-gray-700">Measurement Conditions (Option)</label>
+                <label for="measurement_conditions" class="block text-sm font-medium text-gray-700">{% block measurement_conditions_label %}Measurement Conditions (Option){% endblock %}</label>
                 <textarea name="measurement_conditions" id="measurement_conditions" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" rows="4" readonly>{}</textarea>
             </div>
             
-            <!-- Condition Key and Value -->
             <div class="mb-4">
-                <label for="condition_key" class="block text-sm font-medium text-gray-700">Condition Key</label>
+                <label for="condition_key" class="block text-sm font-medium text-gray-700">{% block condition_key_label %}Condition Key{% endblock %}</label>
                 <select id="condition_key" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-                    <option value="" disabled selected>Select a condition</option>
-                    <!-- availableConditions に基づいて選択肢を動的に表示 -->
+                    <option value="" disabled selected>{% block condition_key_placeholder %}Select a condition{% endblock %}</option>
                     <script>
                         availableConditions.forEach(function(condition) {
                             const option = document.createElement('option');
@@ -142,37 +123,32 @@
             </div>
 
             <div class="mb-4">
-                <label for="condition_value" class="block text-sm font-medium text-gray-700">Condition Value</label>
+                <label for="condition_value" class="block text-sm font-medium text-gray-700">{% block condition_value_label %}Condition Value{% endblock %}</label>
                 <input type="text" id="condition_value" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
             </div>
 
             <div class="flex justify-center mb-4 space-x-4">
-                <!-- Add Condition Button -->
                 <button type="button" onclick="addMeasurementCondition()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                    Add Condition
+                    {% block add_condition_button %}Add Condition{% endblock %}
                 </button>
 
-                <!-- Reset Conditions Button -->
                 <button type="button" onclick="resetMeasurementConditions()" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                    Reset Conditions
+                    {% block reset_condition_button %}Reset Conditions{% endblock %}
                 </button>
             </div>
 
-            <!-- Status (非表示) -->
             <div style="display: none;">
-                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <label for="status" class="block text-sm font-medium text-gray-700">{% block status_label %}Status{% endblock %}</label>
                 <input type="text" name="status" id="status" value="raw" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
             </div>
             
-            <!-- CSV File Upload -->
             <div class="mb-4">
-                <label for="file" class="block text-sm font-medium text-gray-700">CSV File</label>
+                <label for="file" class="block text-sm font-medium text-gray-700">{% block file_label %}CSV File{% endblock %}</label>
                 <input type="file" name="file" id="file" accept=".csv" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
             </div>
             
-            <!-- Submit Button -->
             <div class="flex justify-center">
-                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Upload</button>
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">{% block submit_button %}Upload{% endblock %}</button>
             </div>
         </form>
     </div>

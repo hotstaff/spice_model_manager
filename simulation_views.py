@@ -375,7 +375,8 @@ def upload_csv():
         # GETリクエストの場合、デバイスリストを取得
         devices = search_data()  # 必要に応じて検索条件を追加
         device_options = devices[['id', 'device_name', 'device_type']].drop_duplicates().to_dict(orient='records')
-        return render_template('upload_csv.html', device_options=device_options)
+        template_name = get_template_name('upload_csv.html')
+        return render_template(template_name, device_options=device_options)
     
     if request.method == 'POST':
         # フォームデータを受け取る
