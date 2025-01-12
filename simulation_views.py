@@ -369,7 +369,7 @@ def upload_file():
     return render_template("csv.html", table_html=table_html)
 
 
-simu_views.route('/upload_csv', methods=['GET', 'POST'])
+@simu_views.route('/upload_csv', methods=['GET', 'POST'])
 def upload_csv():
     if request.method == 'GET':
         # GETリクエストの場合、デバイスリストを取得
