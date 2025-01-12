@@ -54,7 +54,7 @@ def init_db():
             updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """))
-        
+
         conn.execute(text("""
         CREATE TABLE IF NOT EXISTS experiment_data (
             id SERIAL PRIMARY KEY,  -- 測定データの一意のID
@@ -325,3 +325,86 @@ def get_all_device_ids():
         result = conn.execute(text(query))
         device_ids = [row[0] for row in result.fetchall()]  # idをリストとして取得
     return device_ids
+
+
+# 測定データをexperiment_dataテーブルに追加する関数
+def add_experiment_data(data_id, measurement_type="General", data=None, operator_name="Unknown", measurement_conditions=None, status="raw"):
+    """
+    測定データをexperiment_dataテーブルに追加する関数。
+
+    Parameters:
+        data_id (int): dataテーブルのID
+        measurement_type (str): 測定種別（デフォルトは "General"）
+        data (dict): 測定データ（JSON形式）
+        operator_name (str): 測定者の名前（デフォルトは "Unknown"）
+        measurement_conditions (dict): 測定条件（JSON形式、デフォルトは空の辞書）
+        status (str): 測定データの状態（デフォルトは "raw"）
+
+    Returns:
+        int: 新しく追加されたデータのID。エラーが発生した場合はNoneを返す。
+    """
+    engine = get_db_connection()
+
+    with engine.connect() as conn:
+        # data_id に対応するデバイス情報を取得
+        result = conn.execute(text("""
+            SELECT device_name, device_type FROM data WHERE id = :data_id
+        """), {"data_id": data_id}).fetchone()
+
+        if result is None:
+            # 指定された data_id が存在しない場合はNoneを返す
+            return None
+        
+        device_name, device_type = result
+
+        # 測定条件がNoneの場合は空の辞書にする
+        if measurement_conditions is None:
+            measurement_conditions = {}
+
+        # 新しい測定データをexperiment_dataテーブルに追加
+        try:
+            result = conn.execute(text("""
+                INSERT INTO experiment_data (data_id, measurement_type, data, operator_name, measurement_conditions, status)
+                VALUES (:data_id, :measurement_type, :data, :operator_name, :measurement_conditions, :status)
+                RETURNING id
+            """), {
+                "data_id": data_id,
+                "measurement_type": measurement_type,
+                "data": data,
+                "operator_name": operator_name,
+                "measurement_conditions": measurement_conditions,
+                "status": status
+            })
+            
+            # 追加した測定データのIDを取得
+            new_id = result.fetchone()[0]
+            # コミットして変更を確定
+            conn.commit()
+            return new_id  # 追加した測定データのIDを返す
+        except IntegrityError:
+            # 重複などのエラーが発生した場合はロールバック
+            conn.rollback()
+            return None
+
+def get_experiment_data_by_data_id(data_id):
+    """
+    experiment_dataテーブルから指定されたdata_idに関連する実験データを取得し、Pandas DataFrameに変換する関数。
+
+    Parameters:
+        data_id (int): data_idに基づく実験データの取得
+
+    Returns:
+        pd.DataFrame: 実験データをPandas DataFrameに変換したもの
+    """
+    engine = get_db_connection()
+    query = """
+        SELECT id, measurement_type, data, operator_name, measurement_conditions, status, created_at
+        FROM experiment_data
+        WHERE data_id = :data_id
+    """
+    query = text(query)  # クエリを text() でラップ
+
+    # クエリ結果をPandas DataFrameに変換
+    df = pd.read_sql(query, engine, params={"data_id": data_id})
+
+    return df

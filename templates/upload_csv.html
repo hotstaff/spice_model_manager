@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload CSV</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold mb-6 text-center">Upload CSV File and Experiment Data</h1>
+        
+        <form action="/upload_csv" method="POST" enctype="multipart/form-data">
+            <!-- Measurement Type -->
+            <div class="mb-4">
+                <label for="measurement_type" class="block text-sm font-medium text-gray-700">Measurement Type</label>
+                <input type="text" name="measurement_type" id="measurement_type" value="General" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+            </div>
+            
+            <!-- Operator Name -->
+            <div class="mb-4">
+                <label for="operator_name" class="block text-sm font-medium text-gray-700">Operator Name</label>
+                <input type="text" name="operator_name" id="operator_name" value="Unknown" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+            </div>
+            
+            <!-- Measurement Conditions -->
+            <div class="mb-4">
+                <label for="measurement_conditions" class="block text-sm font-medium text-gray-700">Measurement Conditions (JSON)</label>
+                <textarea name="measurement_conditions" id="measurement_conditions" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" rows="4">{}</textarea>
+            </div>
+            
+            <!-- Status -->
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <input type="text" name="status" id="status" value="raw" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+            </div>
+            
+            <!-- CSV File Upload -->
+            <div class="mb-4">
+                <label for="file" class="block text-sm font-medium text-gray-700">CSV File</label>
+                <input type="file" name="file" id="file" accept=".csv" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+            </div>
+            
+            <!-- Submit Button -->
+            <div class="flex justify-center">
+                <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">Upload</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

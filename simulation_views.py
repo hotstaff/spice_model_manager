@@ -4,7 +4,7 @@ from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 import pandas as pd
 
 # 自作モジュールのインポート
-from models.db_model import get_all_device_ids
+from models.db_model import get_all_device_ids, add_experiment_data
 
 from simulation.job_model import JobModel
 from simulation.file_extractor import FileExtractor
@@ -366,6 +366,58 @@ def upload_file():
                 return f"Error processing file: {e}"
 
     return render_template("csv.html", table_html=table_html)
+
+@simu_views.route('/upload_csv', methods=['GET', 'POST'])
+def upload_csv():
+    if request.method == 'GET':
+        # GETリクエストの場合、テンプレートを表示
+        return render_template('upload_csv.html')
+    
+    if request.method == 'POST':
+        # フォームデータを受け取る
+        measurement_type = request.form.get('measurement_type', 'General')
+        operator_name = request.form.get('operator_name', 'Unknown')
+        measurement_conditions = request.form.get('measurement_conditions', '{}')  # JSON文字列として受け取る
+        status = request.form.get('status', 'raw')
+        
+        # 測定条件がJSON文字列として送られるので、パースして辞書に変換
+        try:
+            measurement_conditions = json.loads(measurement_conditions)
+        except json.JSONDecodeError:
+            return jsonify({"error": "Invalid JSON in measurement_conditions"}), 400
+        
+        # CSVファイルが送信されているかチェック
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part"}), 400
+        
+        file = request.files['file']
+        
+        # ファイルが空でないかチェック
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+
+        # CSVファイルをPandas DataFrameとして読み込む
+        try:
+            df = pd.read_csv(file)
+        except Exception as e:
+            return jsonify({"error": f"Failed to read CSV: {str(e)}"}), 400
+
+        # CSVの内容をそのままJSONに変換
+        data_json = df.to_dict(orient='records')  # 各行を辞書形式に変換してリストにする
+
+        # 実験データをデータベースに追加
+        for _, row in df.iterrows():
+            data_id = row['data_id']  # 例: 'data_id' カラムがCSVに含まれている場合
+
+            # 実験データをデータベースに追加
+            new_id = add_experiment_data(data_id, measurement_type, data_json, operator_name, measurement_conditions, status)
+
+            if new_id is None:
+                return jsonify({"error": "Failed to add experiment data to the database"}), 500
+
+        return jsonify({"message": "CSV file successfully uploaded and data added to the database"}), 200
+
+
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
