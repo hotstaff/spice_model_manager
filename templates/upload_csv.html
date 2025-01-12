@@ -40,6 +40,12 @@
             }
         }
 
+        // 測定条件をリセットする関数
+        function resetMeasurementConditions() {
+            measurementConditions = {};  // 測定条件をリセット
+            updateMeasurementConditions();  // テキストエリアを更新
+        }
+
         // ページ読み込み時に測定タイプを動的に追加
         window.onload = function() {
             const measurementTypeSelect = document.getElementById('measurement_type');
@@ -114,6 +120,11 @@
 
             <div class="flex justify-center mb-4">
                 <button type="button" onclick="addMeasurementCondition()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Condition</button>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="flex justify-center mb-4">
+                <button type="button" onclick="resetMeasurementConditions()" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">Reset Conditions</button>
             </div>
 
             <!-- Status (非表示) -->
