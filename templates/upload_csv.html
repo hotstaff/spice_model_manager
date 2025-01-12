@@ -5,6 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload CSV</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // 測定条件を管理するためのオブジェクト
+        let measurementConditions = {};
+
+        // 測定条件をJSON形式で表示する関数
+        function updateMeasurementConditions() {
+            document.getElementById('measurement_conditions').value = JSON.stringify(measurementConditions, null, 2);
+        }
+
+        // 測定条件を追加する関数
+        function addMeasurementCondition() {
+            const conditionKey = document.getElementById('condition_key').value;
+            const conditionValue = document.getElementById('condition_value').value;
+
+            if (conditionKey && conditionValue) {
+                // 新しい条件を追加
+                measurementConditions[conditionKey] = conditionValue;
+
+                // 測定条件を更新
+                updateMeasurementConditions();
+
+                // 入力フィールドをクリア
+                document.getElementById('condition_key').value = '';
+                document.getElementById('condition_value').value = '';
+            } else {
+                alert('Both key and value are required.');
+            }
+        }
+    </script>
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
@@ -40,6 +69,27 @@
                 <textarea name="measurement_conditions" id="measurement_conditions" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" rows="4">{}</textarea>
             </div>
             
+            <!-- Condition Key and Value -->
+            <div class="mb-4">
+                <label for="condition_key" class="block text-sm font-medium text-gray-700">Condition Key</label>
+                <select id="condition_key" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+                    <option value="" disabled selected>Select a condition</option>
+                    <option value="Temp">Temp</option>
+                    <option value="Humidity">Humidity</option>
+                    <option value="Pressure">Pressure</option>
+                    <!-- 必要に応じて条件を追加 -->
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="condition_value" class="block text-sm font-medium text-gray-700">Condition Value</label>
+                <input type="text" id="condition_value" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
+            </div>
+
+            <div class="flex justify-center mb-4">
+                <button type="button" onclick="addMeasurementCondition()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">Add Condition</button>
+            </div>
+
             <!-- Status -->
             <div class="mb-4">
                 <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
