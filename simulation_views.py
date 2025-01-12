@@ -408,7 +408,7 @@ def upload_csv():
             return jsonify({"error": f"Failed to read CSV: {str(e)}"}), 400
 
         # CSVの内容をそのままJSONに変換
-        data_json = df.to_json(orient='records')   # 各行を辞書形式に変換してリストにする
+        data_json = df.to_json(orient='list')   # 各行を辞書形式に変換してリストにする
 
         # 実験データをデータベースに追加
         new_id = add_experiment_data(selected_data_id, measurement_type, data_json, operator_name, measurement_conditions, status)
