@@ -10,7 +10,24 @@
         let measurementConditions = {};
 
         // 測定条件の選択肢（簡単に追加できるように変数で管理）
-        const availableConditions = ['Temp', 'Humidity', 'Pressure'];
+        const availableConditions = [
+                                "Measurement Equipment",
+                                "Power Supply",
+                                "Measurement Mode",
+                                "Measurement Range",
+                                "Measurement Step",
+                                "Data Collection Interval",
+                                "Temperature Setting",
+                                "Measurement Accuracy",
+                                "Instrument Settings",
+                                "Connection Method",
+                                "Measurement Purpose",
+                                "Measurement Environment",
+                                "Noise Mitigation",
+                                "Data Recording Format",
+                                "Measurement Time",
+                                "Test Conditions"
+                            ];
 
         // 測定タイプの選択肢（エンドポイントから動的に取得することを想定）
         let availableMeasurementTypes = ['IV']; // 初期値としてIVのみ
