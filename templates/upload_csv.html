@@ -9,6 +9,9 @@
         // 測定条件を管理するためのオブジェクト
         let measurementConditions = {};
 
+        // 測定条件の選択肢（簡単に追加できるように変数で管理）
+        const availableConditions = ['Temp', 'Humidity', 'Pressure'];
+
         // 測定条件をJSON形式で表示する関数
         function updateMeasurementConditions() {
             document.getElementById('measurement_conditions').value = JSON.stringify(measurementConditions, null, 2);
@@ -54,7 +57,9 @@
             <!-- Measurement Type -->
             <div class="mb-4">
                 <label for="measurement_type" class="block text-sm font-medium text-gray-700">Measurement Type</label>
-                <input type="text" name="measurement_type" id="measurement_type" value="General" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+                <select name="measurement_type" id="measurement_type" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+                    <option value="IV">IV</option>
+                </select>
             </div>
             
             <!-- Operator Name -->
@@ -63,10 +68,10 @@
                 <input type="text" name="operator_name" id="operator_name" value="Unknown" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
             </div>
             
-            <!-- Measurement Conditions -->
+            <!-- Measurement Conditions (JSON) -->
             <div class="mb-4">
                 <label for="measurement_conditions" class="block text-sm font-medium text-gray-700">Measurement Conditions (JSON)</label>
-                <textarea name="measurement_conditions" id="measurement_conditions" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" rows="4">{}</textarea>
+                <textarea name="measurement_conditions" id="measurement_conditions" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" rows="4" readonly>{}</textarea>
             </div>
             
             <!-- Condition Key and Value -->
@@ -74,10 +79,15 @@
                 <label for="condition_key" class="block text-sm font-medium text-gray-700">Condition Key</label>
                 <select id="condition_key" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
                     <option value="" disabled selected>Select a condition</option>
-                    <option value="Temp">Temp</option>
-                    <option value="Humidity">Humidity</option>
-                    <option value="Pressure">Pressure</option>
-                    <!-- 必要に応じて条件を追加 -->
+                    <!-- availableConditions に基づいて選択肢を動的に表示 -->
+                    <script>
+                        availableConditions.forEach(function(condition) {
+                            const option = document.createElement('option');
+                            option.value = condition;
+                            option.textContent = condition;
+                            document.getElementById('condition_key').appendChild(option);
+                        });
+                    </script>
                 </select>
             </div>
 
