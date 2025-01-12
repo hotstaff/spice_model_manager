@@ -1,5 +1,4 @@
 import os
-import json
 from sqlalchemy import create_engine, text
 from sqlalchemy.exc import IntegrityError
 import pandas as pd
@@ -329,32 +328,61 @@ def get_all_device_ids():
 
 
 # 測定データをexperiment_dataテーブルに追加する関数
-def add_experiment_data(data_id, measurement_type, data_json, operator_name, measurement_conditions_json, status):
-    # 実験データをデータベースに挿入する処理
-    engine = get_db_connection()
-    
-    # data_json と measurement_conditions_json を JSON 文字列に変換
-    data_json_str = json.dumps(data_json)  # 'data' を JSON 文字列に変換
-    measurement_conditions_json_str = json.dumps(measurement_conditions_json)  # 'measurement_conditions' を JSON 文字列に変換
-    
-    query = """
-        INSERT INTO experiment_data (data_id, measurement_type, data, operator_name, measurement_conditions, status)
-        VALUES (%(data_id)s, %(measurement_type)s, %(data)s, %(operator_name)s, %(measurement_conditions)s, %(status)s)
-        RETURNING id
+def add_experiment_data(data_id, measurement_type="General", data=None, operator_name="Unknown", measurement_conditions=None, status="raw"):
     """
-    params = {
-        'data_id': data_id,
-        'measurement_type': measurement_type,
-        'data': data_json_str,  # ここで JSON 文字列を渡す
-        'operator_name': operator_name,
-        'measurement_conditions': measurement_conditions_json_str,  # ここで JSON 文字列を渡す
-        'status': status
-    }
-    
-    # クエリ実行
-    result = engine.execute(query, params)
-    new_id = result.fetchone()[0]
-    return new_id
+    測定データをexperiment_dataテーブルに追加する関数。
+
+    Parameters:
+        data_id (int): dataテーブルのID
+        measurement_type (str): 測定種別（デフォルトは "General"）
+        data (dict): 測定データ（JSON形式）
+        operator_name (str): 測定者の名前（デフォルトは "Unknown"）
+        measurement_conditions (dict): 測定条件（JSON形式、デフォルトは空の辞書）
+        status (str): 測定データの状態（デフォルトは "raw"）
+
+    Returns:
+        int: 新しく追加されたデータのID。エラーが発生した場合はNoneを返す。
+    """
+    engine = get_db_connection()
+
+    with engine.connect() as conn:
+        # data_id に対応するデバイス情報を取得
+        result = conn.execute(text("""
+            SELECT device_name, device_type FROM data WHERE id = :data_id
+        """), {"data_id": data_id}).fetchone()
+
+        if result is None:
+            # 指定された data_id が存在しない場合はNoneを返す
+            return None
+
+        # 測定条件がNoneの場合は空の辞書にする
+        if measurement_conditions is None:
+            measurement_conditions = {}
+
+        # 新しい測定データをexperiment_dataテーブルに追加
+        try:
+            result = conn.execute(text("""
+                INSERT INTO experiment_data (data_id, measurement_type, data, operator_name, measurement_conditions, status)
+                VALUES (:data_id, :measurement_type, :data, :operator_name, :measurement_conditions, :status)
+                RETURNING id
+            """), {
+                "data_id": data_id,
+                "measurement_type": measurement_type,
+                "data": json.dumps(data),
+                "operator_name": operator_name,
+                "measurement_conditions": json.dumps(measurement_conditions),
+                "status": status
+            })
+            
+            # 追加した測定データのIDを取得
+            new_id = result.fetchone()[0]
+            # コミットして変更を確定
+            conn.commit()
+            return new_id  # 追加した測定データのIDを返す
+        except IntegrityError:
+            # 重複などのエラーが発生した場合はロールバック
+            conn.rollback()
+            return None
 
 def get_experiment_data_by_data_id(data_id):
     """
