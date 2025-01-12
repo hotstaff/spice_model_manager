@@ -368,7 +368,8 @@ def upload_file():
 
     return render_template("csv.html", table_html=table_html)
 
-@simu_views.route('/upload_csv', methods=['GET', 'POST'])
+
+simu_views.route('/upload_csv', methods=['GET', 'POST'])
 def upload_csv():
     if request.method == 'GET':
         # GETリクエストの場合、デバイスリストを取得
@@ -386,7 +387,7 @@ def upload_csv():
         
         # 測定条件がJSON文字列として送られるので、パースして辞書に変換
         try:
-            measurement_conditions = json.dumps(json.loads(measurement_conditions))
+            measurement_conditions = json.dumps(json.loads(measurement_conditions))  # JSONとしてパースして再度JSON文字列に変換
         except json.JSONDecodeError:
             return jsonify({"error": "Invalid JSON in measurement_conditions"}), 400
         
@@ -410,13 +411,10 @@ def upload_csv():
         data_json = df.to_dict(orient='records')  # 各行を辞書形式に変換してリストにする
 
         # 実験データをデータベースに追加
-        for _, row in df.iterrows():
+        new_id = add_experiment_data(selected_data_id, measurement_type, data_json, operator_name, measurement_conditions, status)
 
-            # 実験データをデータベースに追加
-            new_id = add_experiment_data(selected_data_id, measurement_type, data_json, operator_name, measurement_conditions, status)
-
-            if new_id is None:
-                return jsonify({"error": "Failed to add experiment data to the database"}), 500
+        if new_id is None:
+            return jsonify({"error": "Failed to add experiment data to the database"}), 500
 
         return jsonify({"message": "CSV file successfully uploaded and data added to the database"}), 200
 
