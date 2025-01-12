@@ -11,19 +11,34 @@
 
         // 測定条件の選択肢（簡単に追加できるように変数で管理）
         const availableConditions = [
-                                "Measurement Equipment",
-                                "Power Supply",
-                                "Measurement Mode",
-                                "Measurement Range",
-                                "Measurement Step",
-                                "Data Collection Interval",
-                                "Temperature Setting",
-                                "Measurement Accuracy",
-                                "Instrument Settings",
-                                "Connection Method",
-                                "Noise Mitigation",
-                                "Measurement Time",
-                            ];
+            "Measurement Equipment",
+            "Power Supply",
+            "Measurement Mode",
+            "Measurement Range",
+            "Measurement Step",
+            "Data Collection Interval",
+            "Temperature Setting",
+            "Measurement Accuracy",
+            "Instrument Settings",
+            "Connection Method",
+            "Noise Mitigation",
+            "Measurement Time",
+            "Test Signal Type",  // テスト信号の種類
+            "Test Signal Frequency",  // テスト信号の周波数
+            "Signal Amplitude",  // 信号の振幅
+            "Voltage Levels",  // 電圧レベル
+            "Current Levels",  // 電流レベル
+            "Temperature Control",  // 温度制御
+            "Humidity Control",  // 湿度制御
+            "Test Duration",  // テストの期間
+            "Environmental Conditions",  // 環境条件
+            "Signal Conditioning",  // 信号調整
+            "Filter Settings",  // フィルタ設定
+            "Calibration Settings",  // 校正設定
+            "Test Setup",  // テスト設定
+            "Device Configuration",  // デバイス設定
+            "Safety Protocols"  // 安全プロトコル
+        ];
 
         // 測定タイプの選択肢（エンドポイントから動的に取得することを想定）
         let availableMeasurementTypes = ['IV']; // 初期値としてIVのみ
