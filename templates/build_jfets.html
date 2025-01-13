@@ -60,7 +60,7 @@
             runButton.classList.add('bg-gray-400', 'cursor-not-allowed');
 
             try {
-                const response = await fetch("/api/simulate_now2", {
+                const response = await fetch("/api/simulate_now/json", {
                     method: "POST",
                     body: formData
                 });
@@ -170,7 +170,7 @@
                 </form>
 
                 <!-- Build Form -->
-                <form id="build-form" action="/api/simulate_now2" method="post" class="bg-white p-6 rounded-lg shadow-md">
+                <form id="build-form" action="/api/simulate_now/json" method="post" class="bg-white p-6 rounded-lg shadow-md">
                     <textarea id="spice-string" name="spice_string" placeholder="Enter SPICE model string here" required class="w-full h-30 p-3 text-lg border border-gray-300 rounded mb-4"></textarea>
                     <div class="form-row" style="display:none;">
                         <input type="text" name="author" placeholder="Your Name" maxlength="16" class="w-1/2 p-3 text-lg border border-gray-300 rounded mr-4">

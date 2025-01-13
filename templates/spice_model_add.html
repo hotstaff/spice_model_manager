@@ -231,7 +231,7 @@
                 const action = clickedButton.getAttribute('formaction');
 
                 // シミュレーション実行ボタンかどうかを判定
-                if (action === '/api/simulate_now') {
+                if (action === '/api/simulate_now/image') {
                     const formData = new FormData(event.target); // フォームデータを取得
 
                     try {
@@ -304,7 +304,7 @@
             </div>
 
             <!-- シミュレーション実行ボタン -->
-            <button type="submit" formaction="/api/simulate_now">{% block run_simulation_button %}Run Simulation{% endblock %}</button>
+            <button type="submit" formaction="/api/simulate_now/image">{% block run_simulation_button %}Run Simulation{% endblock %}</button>
             <!-- 送信ボタン -->
             <button type="submit" formaction="/models/add" style="margin-left: 20px;">{% block submit_button %}Add Model{% endblock %}</button>
             
