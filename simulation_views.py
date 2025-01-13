@@ -222,35 +222,6 @@ def start_all_simulations():
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
-
-@simu_views.route("/csv", methods=["GET", "POST"])
-def upload_file():
-    table_html = None  # デフォルトでは表示しない
-
-    if request.method == "POST":
-        # ファイルがアップロードされた場合
-        if "file" not in request.files:
-            return "No file part"
-
-        file = request.files["file"]
-
-        if file.filename == "":
-            return "No selected file"
-
-        if file:
-            try:
-                # ファイルをBytesIOに保存してPandasで読み込む
-                file_bytes = BytesIO(file.read())
-                df = pd.read_csv(file_bytes)
-
-                # データフレームをHTMLテーブルに変換
-                table_html = df.to_html(classes='table table-auto border-separate border border-slate-400')
-            except Exception as e:
-                return f"Error processing file: {e}"
-
-    return render_template("csv.html", table_html=table_html)
-
-
 @simu_views.route('/upload_csv', methods=['GET', 'POST'])
 def upload_csv():
     if request.method == 'GET':
