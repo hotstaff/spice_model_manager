@@ -73,13 +73,25 @@
                 measurementTypeSelect.appendChild(option);
             });
         }
+
+        function prepareFormData(event) {
+            const newDeviceCheckbox = document.getElementById('new_device');
+            const deviceNameInput = document.getElementById('device_name');
+            if (newDeviceCheckbox.checked && deviceNameInput.value) {
+                const deviceNameInputField = document.createElement('input');
+                deviceNameInputField.type = 'hidden';
+                deviceNameInputField.name = 'device_name';
+                deviceNameInputField.value = deviceNameInput.value;
+                event.target.appendChild(deviceNameInputField);
+            }
+        }
     </script>
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 class="text-2xl font-bold mb-6 text-center">{% block title %}Upload CSV File and Experiment Data{% endblock %}</h1>
         
-        <form action="/upload_csv" method="POST" enctype="multipart/form-data">
+        <form action="/upload_csv" method="POST" enctype="multipart/form-data" onsubmit="prepareFormData(event)">
             <div class="mb-4">
                 <label for="data_id" class="block text-sm font-medium text-gray-700">{% block device_label %}Select Device{% endblock %}</label>
                 <select name="data_id" id="data_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
@@ -95,6 +107,11 @@
                     <input type="checkbox" id="new_device" name="new_device" class="mr-2">
                     {% block new_device_label %}Register New Device{% endblock %}
                 </label>
+            </div>
+            
+            <div class="mb-4" id="device_name_div" style="display: none;">
+                <label for="device_name" class="block text-sm font-medium text-gray-700">{% block device_name_label %}Device Name{% endblock %}</label>
+                <input type="text" name="device_name" id="device_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="{% block device_name_placeholder %}Enter new device name{% endblock %}">
             </div>
             
             <div class="mb-4">
@@ -159,5 +176,16 @@
             </div>
         </form>
     </div>
+
+    <script>
+        document.getElementById('new_device').addEventListener('change', function() {
+            const deviceNameDiv = document.getElementById('device_name_div');
+            if (this.checked) {
+                deviceNameDiv.style.display = 'block';
+            } else {
+                deviceNameDiv.style.display = 'none';
+            }
+        });
+    </script>
 </body>
 </html>
