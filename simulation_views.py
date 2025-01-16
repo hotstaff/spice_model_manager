@@ -236,7 +236,8 @@ def upload_csv():
         selected_data_id = request.form.get('data_id')  # device_idを受け取る
         if request.form.get('new_device'):  # 新しいデバイスが選ばれた場合
             selected_data_id = None  # 新しいデバイスの場合はNoneを設定
-        
+
+        new_device_name = request.form.get('device_name')
         measurement_type = request.form.get('measurement_type', 'General')
         operator_name = request.form.get('operator_name', 'Unknown')
         measurement_conditions = request.form.get('measurement_conditions', '{}')  # JSON文字列として受け取る
@@ -268,7 +269,7 @@ def upload_csv():
         data_json = df.to_json(orient='columns')   # 各行を辞書形式に変換してリストにする
 
         # 実験データをデータベースに追加
-        new_id = add_experiment_data(selected_data_id, measurement_type, data_json, operator_name, measurement_conditions, status)
+        new_id = add_experiment_data(selected_data_id, new_device_name, measurement_type, data_json, operator_name, measurement_conditions, status)
 
         if new_id is None:
             return jsonify({"error": "Failed to add experiment data to the database"}), 500
