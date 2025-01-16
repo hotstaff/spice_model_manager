@@ -65,12 +65,24 @@
 
         window.onload = function() {
             const measurementTypeSelect = document.getElementById('measurement_type');
+            const newDeviceCheckbox = document.getElementById('new_device');
+            const dataIdSelect = document.getElementById('data_id');
 
+            // Measurement types are added dynamically by JavaScript
             availableMeasurementTypes.forEach(function(type) {
                 const option = document.createElement('option');
                 option.value = type;
                 option.textContent = type;
                 measurementTypeSelect.appendChild(option);
+            });
+
+            // Update the 'data_id' select based on the 'new_device' checkbox state
+            newDeviceCheckbox.addEventListener('change', function() {
+                if (newDeviceCheckbox.checked) {
+                    dataIdSelect.removeAttribute('required');
+                } else {
+                    dataIdSelect.setAttribute('required', 'true');
+                }
             });
         }
 
