@@ -381,17 +381,7 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
                 SELECT id FROM data WHERE device_name = :device_name
             """), {"device_name": device_name}).fetchone()
 
-            if result is None:
-                # device_name に該当する data_id が見つからなかった場合、新規登録
-                try:
-                    result = conn.execute(text("""
-                        INSERT INTO data (device_name) VALUES (:device_name) RETURNING id
-                    """), {"device_name": device_name})
-                    data_id = result.fetchone()[0]
-                except IntegrityError:
-                    # 重複エラーが発生した場合
-                    return None
-            else:
+            if result:
                 data_id = result[0]
 
         # 測定条件がNoneの場合は空の辞書にする
