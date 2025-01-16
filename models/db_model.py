@@ -58,13 +58,14 @@ def init_db():
 
         conn.execute(text("""
         CREATE TABLE IF NOT EXISTS experiment_data (
-            id SERIAL PRIMARY KEY,  -- 測定データの一意のID
-            data_id INTEGER REFERENCES data(id) ON DELETE CASCADE,  -- dataテーブルのIDを参照
-            measurement_type TEXT DEFAULT 'General',  -- 測定種別（例: "IV Curve", "Frequency Response"）。デフォルトは 'General'
-            data JSONB NOT NULL,  -- 測定データを格納するJSONBカラム（必須）
-            operator_name TEXT DEFAULT 'Unknown',  -- 測定者の名前や識別子。デフォルトは 'Unknown'
-            measurement_conditions JSONB DEFAULT '{}',  -- 測定条件をJSON形式で格納。デフォルトは空の辞書
-            status TEXT DEFAULT 'raw',  -- 測定データの状態。デフォルトは 'raw'
+            id SERIAL PRIMARY KEY,                          -- 測定データの一意のID
+            data_id INTEGER REFERENCES data(id) ON DELETE CASCADE, -- dataテーブルのIDを参照 (NULL許容)
+            device_name TEXT,                               -- 測定対象の名前
+            measurement_type TEXT DEFAULT 'General',        -- 測定種別（例: "IV Curve", "Frequency Response"）
+            data JSONB NOT NULL,                            -- 測定データを格納するJSONBカラム（必須）
+            operator_name TEXT DEFAULT 'Unknown',           -- 測定者の名前や識別子
+            measurement_conditions JSONB DEFAULT '{}',      -- 測定条件をJSON形式で格納
+            status TEXT DEFAULT 'raw',                      -- 測定データの状態
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- 測定データの登録日時
         )
         """))
