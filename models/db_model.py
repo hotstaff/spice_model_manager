@@ -342,12 +342,13 @@ def get_all_device_ids():
 
 
 # 測定データをexperiment_dataテーブルに追加する関数
-def add_experiment_data(data_id, measurement_type="General", data=None, operator_name="Unknown", measurement_conditions=None, status="raw"):
+def add_experiment_data(data_id=None, device_name=None, measurement_type="General", data=None, operator_name="Unknown", measurement_conditions=None, status="raw"):
     """
     測定データをexperiment_dataテーブルに追加する関数。
 
     Parameters:
-        data_id (int): dataテーブルのID
+        data_id (int, optional): dataテーブルのID（指定しない場合はNULL）
+        device_name (str, optional): デバイス名（data_idが指定されていない場合は必須）
         measurement_type (str): 測定種別（デフォルトは "General"）
         data (dict): 測定データ（JSON形式）
         operator_name (str): 測定者の名前（デフォルトは "Unknown"）
@@ -357,17 +358,41 @@ def add_experiment_data(data_id, measurement_type="General", data=None, operator
     Returns:
         int: 新しく追加されたデータのID。エラーが発生した場合はNoneを返す。
     """
+    if data_id is None and device_name is None:
+        # data_id と device_name のどちらも指定されていない場合、エラー
+        return None
+
     engine = get_db_connection()
 
     with engine.connect() as conn:
-        # data_id に対応するデバイス情報を取得
-        result = conn.execute(text("""
-            SELECT device_name, device_type FROM data WHERE id = :data_id
-        """), {"data_id": data_id}).fetchone()
+        # data_id が指定されている場合、その存在をチェック
+        if data_id is not None:
+            result = conn.execute(text("""
+                SELECT id FROM data WHERE id = :data_id
+            """), {"data_id": data_id}).fetchone()
 
-        if result is None:
-            # 指定された data_id が存在しない場合はNoneを返す
-            return None
+            if result is None:
+                # 指定された data_id が存在しない場合はエラー
+                return None
+
+        # data_id が指定されていない場合、device_name から data_id を取得
+        if data_id is None and device_name is not None:
+            result = conn.execute(text("""
+                SELECT id FROM data WHERE device_name = :device_name
+            """), {"device_name": device_name}).fetchone()
+
+            if result is None:
+                # device_name に該当する data_id が見つからなかった場合、新規登録
+                try:
+                    result = conn.execute(text("""
+                        INSERT INTO data (device_name) VALUES (:device_name) RETURNING id
+                    """), {"device_name": device_name})
+                    data_id = result.fetchone()[0]
+                except IntegrityError:
+                    # 重複エラーが発生した場合
+                    return None
+            else:
+                data_id = result[0]
 
         # 測定条件がNoneの場合は空の辞書にする
         if measurement_conditions is None:
@@ -376,11 +401,12 @@ def add_experiment_data(data_id, measurement_type="General", data=None, operator
         # 新しい測定データをexperiment_dataテーブルに追加
         try:
             result = conn.execute(text("""
-                INSERT INTO experiment_data (data_id, measurement_type, data, operator_name, measurement_conditions, status)
-                VALUES (:data_id, :measurement_type, :data, :operator_name, :measurement_conditions, :status)
+                INSERT INTO experiment_data (data_id, device_name, measurement_type, data, operator_name, measurement_conditions, status)
+                VALUES (:data_id, :device_name, :measurement_type, :data, :operator_name, :measurement_conditions, :status)
                 RETURNING id
             """), {
-                "data_id": data_id,
+                "data_id": data_id,  # data_id が None の場合は NULL として挿入される
+                "device_name": device_name,
                 "measurement_type": measurement_type,
                 "data": data,
                 "operator_name": operator_name,
@@ -398,6 +424,7 @@ def add_experiment_data(data_id, measurement_type="General", data=None, operator
             conn.rollback()
             return None
 
+
 def get_experiment_data_by_data_id(data_id):
     """
     experiment_dataテーブルから指定されたdata_idに関連する実験データを取得し、Pandas DataFrameに変換する関数。
@@ -410,7 +437,7 @@ def get_experiment_data_by_data_id(data_id):
     """
     engine = get_db_connection()
     query = """
-        SELECT id, measurement_type, data, operator_name, measurement_conditions, status, created_at
+        SELECT id, device_name, measurement_type, data, operator_name, measurement_conditions, status, created_at
         FROM experiment_data
         WHERE data_id = :data_id
     """
@@ -420,3 +447,60 @@ def get_experiment_data_by_data_id(data_id):
     df = pd.read_sql(query, engine, params={"data_id": data_id})
 
     return df
+
+def get_experiment_data_with_null_data_id():
+    """
+    experiment_dataテーブルからdata_idがNULLの実験データを取得し、Pandas DataFrameに変換する関数。
+
+    Returns:
+        pd.DataFrame: data_idがNULLの実験データをPandas DataFrameに変換したもの
+    """
+    engine = get_db_connection()
+    query = """
+        SELECT id, device_name, measurement_type, data, operator_name, measurement_conditions, status, created_at
+        FROM experiment_data
+        WHERE data_id IS NULL
+    """
+    query = text(query)  # クエリを text() でラップ
+
+    # クエリ結果をPandas DataFrameに変換
+    df = pd.read_sql(query, engine)
+
+    return df
+
+def update_data_id_for_experiment_data(experiment_data_id, new_data_id):
+    """
+    指定されたexperiment_dataのidに基づいて、data_idを更新する関数。
+
+    Parameters:
+        experiment_data_id (int): 更新するexperiment_dataの固有のID
+        new_data_id (int or None): 新しいdata_id。Noneの場合はdata_idをNULLに設定
+
+    Returns:
+        bool: 更新が成功した場合はTrue、失敗した場合はFalse
+    """
+    engine = get_db_connection()
+
+    with engine.connect() as conn:
+        try:
+            # experiment_dataのidを指定してdata_idを更新
+            result = conn.execute(text("""
+                UPDATE experiment_data
+                SET data_id = :new_data_id
+                WHERE id = :experiment_data_id
+            """), {
+                "experiment_data_id": experiment_data_id,
+                "new_data_id": new_data_id
+            })
+
+            # 更新された行数をチェック
+            if result.rowcount > 0:
+                conn.commit()  # 更新が成功した場合、コミット
+                return True
+            else:
+                return False  # 該当するIDが存在しない場合は更新なし
+        except Exception as e:
+            # エラーが発生した場合はロールバック
+            conn.rollback()
+            print(f"Error: {e}")
+            return False

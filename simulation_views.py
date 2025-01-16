@@ -234,6 +234,9 @@ def upload_csv():
     if request.method == 'POST':
         # フォームデータを受け取る
         selected_data_id = request.form.get('data_id')  # device_idを受け取る
+        if request.form.get('new_device'):  # 新しいデバイスが選ばれた場合
+            selected_data_id = None  # 新しいデバイスの場合はNoneを設定
+        
         measurement_type = request.form.get('measurement_type', 'General')
         operator_name = request.form.get('operator_name', 'Unknown')
         measurement_conditions = request.form.get('measurement_conditions', '{}')  # JSON文字列として受け取る
@@ -271,6 +274,7 @@ def upload_csv():
             return jsonify({"error": "Failed to add experiment data to the database"}), 500
 
         return jsonify({"message": "CSV file successfully uploaded and data added to the database"}), 200
+
 
 
 

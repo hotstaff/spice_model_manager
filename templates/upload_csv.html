@@ -91,6 +91,13 @@
             </div>
             
             <div class="mb-4">
+                <label for="new_device" class="inline-flex items-center text-sm font-medium text-gray-700">
+                    <input type="checkbox" id="new_device" name="new_device" class="mr-2">
+                    {% block new_device_label %}Register New Device{% endblock %}
+                </label>
+            </div>
+            
+            <div class="mb-4">
                 <label for="measurement_type" class="block text-sm font-medium text-gray-700">{% block measurement_type_label %}Measurement Type{% endblock %}</label>
                 <select name="measurement_type" id="measurement_type" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
                     <!-- Measurement types are added dynamically by JavaScript -->
