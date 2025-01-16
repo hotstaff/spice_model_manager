@@ -368,21 +368,15 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
         # data_id が指定されている場合、その存在をチェック
         if data_id is not None:
             result = conn.execute(text("""
-                SELECT id FROM data WHERE id = :data_id
+                SELECT id, device_name FROM data WHERE id = :data_id
             """), {"data_id": data_id}).fetchone()
 
             if result is None:
                 # 指定された data_id が存在しない場合はエラー
                 return None
 
-        # data_id が指定されていない場合、device_name から data_id を取得
-        if data_id is None and device_name is not None:
-            result = conn.execute(text("""
-                SELECT id FROM data WHERE device_name = :device_name
-            """), {"device_name": device_name}).fetchone()
-
-            if result:
-                data_id = result[0]
+            # data_id が指定されている場合、device_name を data テーブルから取得したものに上書き
+            device_name = result[1]
 
         # 測定条件がNoneの場合は空の辞書にする
         if measurement_conditions is None:
@@ -413,6 +407,7 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
             # 重複などのエラーが発生した場合はロールバック
             conn.rollback()
             return None
+
 
 
 def get_experiment_data_by_data_id(data_id):
