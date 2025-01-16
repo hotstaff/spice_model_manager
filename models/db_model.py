@@ -70,7 +70,7 @@ def init_db():
 
         conn.commit()  # 明示的にコミット
 
-ef migrate_db():
+def migrate_db():
     engine = get_db_connection()
     with engine.connect() as conn:
         # 'data_name' カラムに NOT NULL 制約を追加
