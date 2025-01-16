@@ -70,13 +70,25 @@ def init_db():
 
         conn.commit()  # 明示的にコミット
 
-def migrate_db():
+ef migrate_db():
     engine = get_db_connection()
     with engine.connect() as conn:
-        # 'data' テーブルに simulation_done カラムを追加（デフォルト値を False に設定）
+        # 'data_name' カラムに NOT NULL 制約を追加
         conn.execute(text("""
         ALTER TABLE data
-        ADD COLUMN IF NOT EXISTS simulation_done BOOLEAN DEFAULT FALSE
+        ALTER COLUMN device_name SET NOT NULL
+        """))
+
+        # 'device_type' カラムに NOT NULL 制約を追加
+        conn.execute(text("""
+        ALTER TABLE data
+        ALTER COLUMN device_type SET NOT NULL
+        """))
+
+        # 'device_name' と 'device_type' のユニーク制約を追加
+        conn.execute(text("""
+        ALTER TABLE data
+        ADD CONSTRAINT unique_device UNIQUE (device_name, device_type)
         """))
 
         conn.commit()  # 明示的にコミット
