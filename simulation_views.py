@@ -222,6 +222,8 @@ def start_all_simulations():
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
+from flask import redirect, url_for
+
 @simu_views.route('/upload_csv', methods=['GET', 'POST'])
 def upload_csv():
     if request.method == 'GET':
@@ -274,7 +276,8 @@ def upload_csv():
         if new_id is None:
             return jsonify({"error": "Failed to add experiment data to the database"}), 500
 
-        return jsonify({"message": "CSV file successfully uploaded and data added to the database"}), 200
+        # 成功した場合、元のページにリダイレクト
+        return redirect(url_for('simu_views.upload_csv'))  # 元のページのURLを指定
 
 
 
