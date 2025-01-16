@@ -378,6 +378,15 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
             # data_id が指定されている場合、device_name を data テーブルから取得したものに上書き
             device_name = result[1]
 
+        # data_id が指定されていない場合、device_name から data_id を取得
+        if data_id is None and device_name is not None:
+            result = conn.execute(text("""
+                SELECT id FROM data WHERE device_name = :device_name
+            """), {"device_name": device_name}).fetchone()
+
+            if result:
+                data_id = result[0]
+
         # 測定条件がNoneの場合は空の辞書にする
         if measurement_conditions is None:
             measurement_conditions = {}
