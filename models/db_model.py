@@ -22,14 +22,15 @@ def init_db():
         # text() を使ってクエリをラップ
         conn.execute(text("""
         CREATE TABLE IF NOT EXISTS data (
-            id SERIAL PRIMARY KEY,
-            device_name TEXT,
-            device_type TEXT,
-            spice_string TEXT,
-            author TEXT,
-            comment TEXT,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            simulation_done BOOLEAN DEFAULT FALSE
+            id SERIAL PRIMARY KEY,                          -- 一意のID
+            device_name TEXT NOT NULL,                      -- デバイス名（必須）
+            device_type TEXT NOT NULL,                      -- デバイスタイプ（必須）
+            spice_string TEXT,                              -- SPICEモデルの文字列
+            author TEXT DEFAULT 'Unknown',                 -- 作成者（デフォルト値あり）
+            comment TEXT CHECK (LENGTH(comment) <= 500),   -- コメント（最大500文字）
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- 作成日時（デフォルト値あり）
+            simulation_done BOOLEAN DEFAULT FALSE,         -- シミュレーションの完了フラグ
+            CONSTRAINT unique_device UNIQUE (device_name, device_type) -- ユニーク制約
         )
         """))
 
