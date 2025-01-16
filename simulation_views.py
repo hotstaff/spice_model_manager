@@ -268,6 +268,7 @@ def upload_csv():
         # CSVの内容をそのままJSONに変換
         data_json = df.to_json(orient='columns')   # 各行を辞書形式に変換してリストにする
 
+        print(selected_data_id, new_device_name, measurement_type, data_json, operator_name, measurement_conditions, status)
         # 実験データをデータベースに追加
         new_id = add_experiment_data(selected_data_id, new_device_name, measurement_type, data_json, operator_name, measurement_conditions, status)
 
