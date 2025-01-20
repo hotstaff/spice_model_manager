@@ -98,7 +98,7 @@ class JFET_SimulationBase:
     def add_measurement_data(self, p, x, y, color="black", legend_label="Measured Data", plot_type="bokeh"):
         """測定データをプロットに追加 (Bokeh または Matplotlib で対応)"""
         if plot_type == "bokeh":
-            p.circle(x, y, size=8, color=color, legend_label=legend_label)
+            p.scatter(x, y, size=8, color=color, legend_label=legend_label)
         elif plot_type == "matplotlib":
             if isinstance(p, plt.Axes):  # Matplotlib のプロットオブジェクトを確認
                 p.scatter(x, y, s=8**2, c=color, label=legend_label)  # s は面積で指定
