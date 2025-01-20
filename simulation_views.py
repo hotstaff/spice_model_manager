@@ -164,7 +164,7 @@ def api_simulate_now(output_format):
                 "x": [0.1, 0.2, 0.3, 0.4, 0.5],  # 測定されたVds（Volts）
                 "y": [1.2, 2.4, 3.1, 4.0, 4.5],  # 測定されたId（mA）
             }
-            json_data = model.plot(json=True, measurement_data=measurement_data)
+            json_data = model.plot(json=True, measurement_data=None)
             return jsonify(json_data)
         except Exception as e:
             return jsonify({"error": f"Error generating plot data: {str(e)}"}), 500
