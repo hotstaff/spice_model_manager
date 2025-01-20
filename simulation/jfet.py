@@ -98,20 +98,16 @@ class JFET_SimulationBase:
         # Bokehの場合
         if plot_type == "bokeh":
             p.circle(x, y, size=8, color=color, legend_label=legend_label)
-        
+            return p
+
         # Matplotlibの場合
         elif plot_type == "matplotlib":
             if isinstance(p, plt.Axes):  # Matplotlibのプロットオブジェクトを確認
                 p.scatter(x, y, s=8**2, c=color, label=legend_label)  # sは面積で指定
                 p.legend(title="Legend")
+                return p
             else:
                 raise ValueError("Matplotlib のプロットオブジェクトを渡してください。")
-        
-        # 無効なplot_typeの場合
-        else:
-            raise ValueError("サポートされていない plot_type が指定されました。'bokeh' または 'matplotlib' を選択してください。")
-        
-        return p
 
 
 class JFET_Basic_Performance(JFET_SimulationBase):

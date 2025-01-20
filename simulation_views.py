@@ -161,7 +161,6 @@ def api_simulate_now(output_format):
         # ステップ 7: JSONデータの生成と送信
         try:
             json_data = model.plot(json=True)
-            print("hi")
             return jsonify(json_data)
         except Exception as e:
             return jsonify({"error": f"Error generating plot data: {str(e)}"}), 500
