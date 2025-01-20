@@ -6,6 +6,7 @@ from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要�
 
 from bokeh.plotting import figure
 from bokeh.embed import json_item
+from bokeh.models import Circle
 import json
 
 class JFET_SimulationBase:
@@ -97,21 +98,21 @@ class JFET_SimulationBase:
 
     def add_measurement_data(self, p, x, y, color="black", legend_label="Measured Data", plot_type="bokeh"):
         """測定データをプロットに追加 (Bokeh または Matplotlib で対応)"""
-        
-        # Bokehの場合
         if plot_type == "bokeh":
-            p.circle(x, y, size=8, color=color, legend_label=legend_label)
-            return p
-
-        # Matplotlibの場合
+            # p.circle(x, y, size=8, color=color, legend_label=legend_label)
+            circle = Circle(x=x, y=y, size=8, color=color)
+            p.add_glyph(circle)
+            p.legend.title = legend_label
         elif plot_type == "matplotlib":
-            if isinstance(p, plt.Axes):  # Matplotlibのプロットオブジェクトを確認
-                p.scatter(x, y, s=8**2, c=color, label=legend_label)  # sは面積で指定
+            if isinstance(p, plt.Axes):  # Matplotlib のプロットオブジェクトを確認
+                p.scatter(x, y, s=8**2, c=color, label=legend_label)  # s は面積で指定
                 p.legend(title="Legend")
-                return p
             else:
                 raise ValueError("Matplotlib のプロットオブジェクトを渡してください。")
-
+        else:
+            raise ValueError("サポートされていない plot_type が指定されました。'bokeh' または 'matplotlib' を選択してください。")
+        
+        return p
 
 class JFET_Basic_Performance(JFET_SimulationBase):
 
