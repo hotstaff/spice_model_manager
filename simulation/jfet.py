@@ -60,23 +60,58 @@ class JFET_SimulationBase:
         plt.savefig(image_path)
         return image_path
 
-    def plot(self, json=False):
-        """抽出したデータをプロットし、画像ファイルのパスを返却する"""
-        if not self.raw_data:
-            raise ValueError("シミュレーション結果が読み込まれていません")
-
-        data = self.extract_data()
-        try:
-            if json:
-                return self.get_json(*data)
-            else:
-                return self.plot_data(*data)
-        finally:
-            plt.close('all')  # メモリを解放
-
     def plot_data(self, *args):
         """データをプロットするメソッド（サブクラスで実装）"""
         raise NotImplementedError("このメソッドはサブクラスで実装してください")
+
+    def plot(self, json=False, measurement_data=None):
+        """抽出したデータをプロットし、画像ファイルのパスを返却する"""
+        
+        # シミュレーション結果が読み込まれていない場合、エラーを投げる
+        if not self.raw_data:
+            raise ValueError("シミュレーション結果が読み込まれていません")
+
+        # データの抽出
+        data = self.extract_data()
+
+        # JSON形式でプロットを返す場合
+        if json:
+            p = self.plot_bokeh(*data)  # Bokehプロット作成
+            if measurement_data:
+                # 測定データをBokehプロットに追加
+                p = self.add_measurement_data(p, measurement_data["x"], measurement_data["y"], plot_type="bokeh")
+            return json.dumps(json_item(p))  # プロットをJSON形式で返す
+
+        # 画像ファイルを保存する場合（Matplotlib）
+        plt_obj = self.plot_data(*data)  # Matplotlibプロット作成
+        if measurement_data:
+            # 測定データをMatplotlibプロットに追加
+            plt_obj = self.add_measurement_data(plt_obj, measurement_data["x"], measurement_data["y"], plot_type="matplotlib")
+        
+        # 画像ファイルとして保存して返す
+        return self.save_image(plt_obj)
+
+
+    def add_measurement_data(self, p, x, y, color="black", legend_label="Measured Data", plot_type="bokeh"):
+        """測定データをプロットに追加 (Bokeh または Matplotlib で対応)"""
+        
+        # Bokehの場合
+        if plot_type == "bokeh":
+            p.circle(x, y, size=8, color=color, legend_label=legend_label)
+        
+        # Matplotlibの場合
+        elif plot_type == "matplotlib":
+            if isinstance(p, plt.Axes):  # Matplotlibのプロットオブジェクトを確認
+                p.scatter(x, y, s=8**2, c=color, label=legend_label)  # sは面積で指定
+                p.legend(title="Legend")
+            else:
+                raise ValueError("Matplotlib のプロットオブジェクトを渡してください。")
+        
+        # 無効なplot_typeの場合
+        else:
+            raise ValueError("サポートされていない plot_type が指定されました。'bokeh' または 'matplotlib' を選択してください。")
+        
+        return p
 
 
 class JFET_Basic_Performance(JFET_SimulationBase):
@@ -200,9 +235,9 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         plt.grid(True)
         plt.legend()
 
-        return self.save_image(plt)
+        return plt
 
-    def get_json(self, Vds, Vgs, Id_mA):
+    def plot_bokeh(self, Vds, Vgs, Id_mA):
         """I-V特性をBokehでプロットし、JSONデータとして返す"""
         p = figure(
             title="I-V Characteristic of JFET for Different Vgs",
@@ -231,11 +266,7 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         p.legend.title = "Vgs"
         p.legend.location = "top_left"
 
-        # プロットデータをJSON形式でエクスポート
-        plot_json = json.dumps(json_item(p))
-
-        # JSONデータを返す
-        return plot_json
+        return p
 
 class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
 
@@ -279,7 +310,7 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         plt.grid(True)
         plt.legend()
 
-        return self.save_image(plt)
+        return plt
 
 class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
 
@@ -325,7 +356,7 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         plt.grid(True)
         plt.legend()
 
-        return self.save_image(plt)
+        return plt
 
 class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
 
@@ -372,4 +403,4 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
         plt.grid(True)
         plt.legend()
 
-        return self.save_image(plt)
+        return plt
