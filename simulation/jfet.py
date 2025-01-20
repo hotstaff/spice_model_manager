@@ -60,6 +60,9 @@ class JFET_SimulationBase:
         plt.savefig(image_path)
         return image_path
 
+    def dump_json(self, p):
+        return json.dumps(json_item(p)) 
+
     def plot_data(self, *args):
         """データをプロットするメソッド（サブクラスで実装）"""
         raise NotImplementedError("このメソッドはサブクラスで実装してください")
@@ -80,7 +83,7 @@ class JFET_SimulationBase:
             if measurement_data:
                 # 測定データをBokehプロットに追加
                 p = self.add_measurement_data(p, measurement_data["x"], measurement_data["y"], plot_type="bokeh")
-            return json.dumps(json_item(p))  # プロットをJSON形式で返す
+            return self.dump_json(p) # プロットをJSON形式で返す
 
         # 画像ファイルを保存する場合（Matplotlib）
         plt_obj = self.plot_data(*data)  # Matplotlibプロット作成
