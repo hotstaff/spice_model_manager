@@ -3,7 +3,7 @@ import logging
 
 from flask import flash, redirect, url_for
 from wtforms import Form, StringField, FileField
-from wtforms.validators import DataRequired, Length, Regexp, Optional
+from wtforms.validators import DataRequired, Length, Regexp, Optional, InputRequired
 
 from client.spice_model_parser import SpiceModelParser
 
