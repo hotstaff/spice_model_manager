@@ -235,10 +235,6 @@ def upload_csv():
         return render_template(template_name, device_options=device_options)
 
     if request.method == 'POST':
-        # フォームデータのバリデーション
-
-        # バリデーション成功
-
         # フォームデータを受け取る
         selected_data_id = request.form.get('data_id')  # device_idを受け取る
         if request.form.get('new_device'):  # 新しいデバイスが選ばれた場合
@@ -260,6 +256,10 @@ def upload_csv():
         if file.filename == '':
             flash("No selected file", "error")
             return redirect(url_for('simu_views.upload_csv'))
+
+        if not file.filename.endswith('.csv'):
+        flash("Invalid file type. Only CSV files are allowed.", "error")
+        return redirect(url_for('simu_views.upload_csv'))
 
         # CSVファイルをPandas DataFrameとして読み込む
         try:
