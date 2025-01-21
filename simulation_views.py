@@ -195,8 +195,8 @@ def api_simulate_now(output_format):
 def build():
     parameters = [
         {"name": "Vto", "description": "しきい値", "unit": "V", "default": -2.0, "min": -5.0, "max": 5.0, "prefix": ""},
-        {"name": "Beta", "description": "トランスコンダクタンス・パラメータ", "unit": "μA/V^2", "default": 100, "min": 1, "max": 100000, "prefix": "u"},
-        {"name": "Lambda", "description": "チャンネル長調整パラメータ", "unit": "1/V", "default": 0, "min": 0, "max": 100, "prefix": "m"},
+        {"name": "Beta", "description": "トランスコンダクタンス・パラメータ", "unit": "μA/V^2", "default": 100, "min": 1, "max": 10000, "prefix": "u"},
+        {"name": "Lambda", "description": "チャンネル長調整パラメータ", "unit": "1/V", "default": 0, "min": 0, "max": 10, "prefix": "m"},
         {"name": "Rd", "description": "ドレインのオーミック抵抗", "unit": "Ω", "default": 0, "min": 0, "max": 1000, "prefix": ""},
         {"name": "Rs", "description": "ソースのオーミック抵抗", "unit": "Ω", "default": 0, "min": 0, "max": 1000, "prefix": ""},
         {"name": "Cgs", "description": "ゼロバイアスでのG-S接合容量", "unit": "pF", "default": 0, "min": 0, "max": 100, "prefix": "p"},
