@@ -250,11 +250,11 @@ def upload_csv():
             status = request.form.get('status', 'raw')
             
             # CSVファイルが送信されているかチェック
-            if 'csv_file' not in request.files:
+            if 'file' not in request.files:
                 flash("No file part", "error")
                 return redirect(url_for('simu_views.upload_csv'))
 
-            file = request.files['csv_file']
+            file = request.files['file']
 
             # ファイルが空でないかチェック
             if file.filename == '':
@@ -284,11 +284,7 @@ def upload_csv():
         else:
             # バリデーション失敗時のエラーメッセージ表示
             flash("Form validation failed. Please check the input fields.", "error")
-            
-            # GETリクエストと同様にデバイスリストを再度渡す
-            devices = search_data()  # 必要に応じて検索条件を追加
-            device_options = devices[['id', 'device_name', 'device_type']].drop_duplicates().to_dict(orient='records')
-            return render_template('upload_csv.html', form=form, device_options=device_options)
+            return render_template('upload_csv.html', form=form)
 
 
 
