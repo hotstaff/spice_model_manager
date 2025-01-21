@@ -110,7 +110,7 @@ def api_simulate_now(output_format):
 
     spice_string = form.spice_string.data
 
-    measurement_data_id = request.form.get('measurement_data_id', 9)  # ここで取得
+    measurement_data_id = request.form.get('measurement_data_id', None)  # ここで取得
 
     if measurement_data_id:
         # 実験データを取得
