@@ -112,15 +112,21 @@ def api_simulate_now(output_format):
 
     measurement_data_id = request.form.get('measurement_data_id', 1)  # ここで取得
 
-    # 測定データー
     if measurement_data_id:
+        # 実験データを取得
         experiment_data_df = get_experiment_data_by_id_or_data_id(measurement_data_id, by_data_id=False)
-        data_dict = experiment_data_df['data'].iloc[0]  # 最初の行のデータを取得（辞書）
-        df = pd.DataFrame(data_dict)
+        
+        # 'data'カラムに保存されたJSONデータを取得
+        data_json = experiment_data_df['data'].iloc[0]  # 最初の行のデータを取得
+        
+        # 'split'形式でJSONデータを読み込む
+        df = pd.read_json(data_json, orient='split')
+        
+        # xとyを取得（列1番目をx、列2番目をy）
         measurement_data = {
-                "x": df.iloc[:, 0].tolist(),
-                "y": df.iloc[:, 1].tolist()
-            }
+            "x": df.iloc[:, 0].tolist(),  # Vdsをxに
+            "y": df.iloc[:, 1].tolist()   # Idをyに
+        }
 
     # ステップ 2: Spice文字列の解析
     try:
@@ -280,7 +286,7 @@ def upload_csv():
             return redirect(url_for('simu_views.upload_csv'))
 
         # CSVの内容をそのままJSONに変換
-        data_json = df.to_json(orient='columns')  # 各行を辞書形式に変換してリストにする
+        data_json = df.to_json(orient='split')  # 各行を辞書形式に変換してリストにする
 
         # 実験データをデータベースに追加
         new_id = add_experiment_data(selected_data_id, new_device_name, measurement_type, data_json, operator_name, status)
