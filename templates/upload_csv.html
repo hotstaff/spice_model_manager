@@ -70,10 +70,17 @@
     </div>
 
     <script>
-        window.onload = function() {
-            const newDeviceCheckbox = document.getElementById('new_device');
+        document.getElementById('new_device').addEventListener('change', function() {
             const deviceNameDiv = document.getElementById('device_name_div');
+            deviceNameDiv.style.display = this.checked ? 'block' : 'none';
+        });
+
+        let availableMeasurementTypes = ['IV']; // 現在はIVのみ。将来的に増加予定
+
+        window.onload = function() {
             const measurementTypeSelect = document.getElementById('measurement_type');
+
+            deviceNameDiv.style.display = this.checked ? 'block' : 'none';
 
             // 測定タイプを動的に追加
             availableMeasurementTypes.forEach(function(type) {
@@ -82,16 +89,7 @@
                 option.textContent = type;
                 measurementTypeSelect.appendChild(option);
             });
-
-            // チェックボックスの状態を確認し、表示状態を更新
-            deviceNameDiv.style.display = newDeviceCheckbox.checked ? 'block' : 'none';
-
-            // チェックボックスの状態変更時に表示状態を更新
-            newDeviceCheckbox.addEventListener('change', function() {
-                deviceNameDiv.style.display = this.checked ? 'block' : 'none';
-            });
         };
     </script>
-
 </body>
 </html>
