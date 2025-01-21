@@ -5,105 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block head_title %}Upload CSV{% endblock %}</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        let measurementConditions = {};
-
-        const availableConditions = [
-            "Measurement Equipment",
-            "Power Supply",
-            "Measurement Mode",
-            "Measurement Range",
-            "Measurement Step",
-            "Data Collection Interval",
-            "Temperature Setting",
-            "Measurement Accuracy",
-            "Instrument Settings",
-            "Connection Method",
-            "Noise Mitigation",
-            "Measurement Time",
-            "Test Signal Type",
-            "Test Signal Frequency",
-            "Signal Amplitude",
-            "Voltage Levels",
-            "Current Levels",
-            "Temperature Control",
-            "Humidity Control",
-            "Test Duration",
-            "Environmental Conditions",
-            "Signal Conditioning",
-            "Filter Settings",
-            "Calibration Settings",
-            "Test Setup",
-            "Device Configuration",
-            "Safety Protocols"
-        ];
-
-        let availableMeasurementTypes = ['IV'];
-
-        function updateMeasurementConditions() {
-            document.getElementById('measurement_conditions').value = JSON.stringify(measurementConditions, null, 2);
-        }
-
-        function addMeasurementCondition() {
-            const conditionKey = document.getElementById('condition_key').value;
-            const conditionValue = document.getElementById('condition_value').value;
-
-            if (conditionKey && conditionValue) {
-                measurementConditions[conditionKey] = conditionValue;
-                updateMeasurementConditions();
-                document.getElementById('condition_key').value = '';
-                document.getElementById('condition_value').value = '';
-            } else {
-                alert('Both key and value are required.');
-            }
-        }
-
-        function resetMeasurementConditions() {
-            measurementConditions = {};
-            updateMeasurementConditions();
-        }
-
-        window.onload = function() {
-            const measurementTypeSelect = document.getElementById('measurement_type');
-            const newDeviceCheckbox = document.getElementById('new_device');
-            const dataIdSelect = document.getElementById('data_id');
-
-            // Measurement types are added dynamically by JavaScript
-            availableMeasurementTypes.forEach(function(type) {
-                const option = document.createElement('option');
-                option.value = type;
-                option.textContent = type;
-                measurementTypeSelect.appendChild(option);
-            });
-
-            // Update the 'data_id' select based on the 'new_device' checkbox state
-            newDeviceCheckbox.addEventListener('change', function() {
-                if (newDeviceCheckbox.checked) {
-                    dataIdSelect.removeAttribute('required');
-                } else {
-                    dataIdSelect.setAttribute('required', 'true');
-                }
-            });
-        }
-
-        function prepareFormData(event) {
-            const newDeviceCheckbox = document.getElementById('new_device');
-            const deviceNameInput = document.getElementById('device_name');
-            if (newDeviceCheckbox.checked && deviceNameInput.value) {
-                const deviceNameInputField = document.createElement('input');
-                deviceNameInputField.type = 'hidden';
-                deviceNameInputField.name = 'device_name';
-                deviceNameInputField.value = deviceNameInput.value;
-                event.target.appendChild(deviceNameInputField);
-            }
-        }
-    </script>
 </head>
 <body class="bg-gray-100 p-8">
     <div class="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-lg">
         <h1 class="text-2xl font-bold mb-6 text-center">{% block title %}Upload CSV File and Experiment Data{% endblock %}</h1>
-        
-        <form action="/upload_csv" method="POST" enctype="multipart/form-data" onsubmit="prepareFormData(event)">
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="mb-4">
+            {% for category, message in messages %}
+            <div class="p-4 mb-4 text-sm text-white bg-{{ 'green' if category == 'success' else 'red' }}-600 rounded-lg">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form action="/upload_csv" method="POST" enctype="multipart/form-data">
             <div class="mb-4">
                 <label for="data_id" class="block text-sm font-medium text-gray-700">{% block device_label %}Select Device{% endblock %}</label>
                 <select name="data_id" id="data_id" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
@@ -113,76 +33,36 @@
                     {% endfor %}
                 </select>
             </div>
-            
+
             <div class="mb-4">
                 <label for="new_device" class="inline-flex items-center text-sm font-medium text-gray-700">
                     <input type="checkbox" id="new_device" name="new_device" class="mr-2">
                     {% block new_device_label %}Register New Device{% endblock %}
                 </label>
             </div>
-            
+
             <div class="mb-4" id="device_name_div" style="display: none;">
                 <label for="device_name" class="block text-sm font-medium text-gray-700">{% block device_name_label %}Device Name{% endblock %}</label>
                 <input type="text" name="device_name" id="device_name" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" placeholder="{% block device_name_placeholder %}Enter new device name{% endblock %}">
             </div>
-            
+
             <div class="mb-4">
                 <label for="measurement_type" class="block text-sm font-medium text-gray-700">{% block measurement_type_label %}Measurement Type{% endblock %}</label>
                 <select name="measurement_type" id="measurement_type" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
-                    <!-- Measurement types are added dynamically by JavaScript -->
+                    <!-- Measurement types are dynamically added by the backend or JavaScript -->
                 </select>
             </div>
-            
+
             <div class="mb-4">
                 <label for="operator_name" class="block text-sm font-medium text-gray-700">{% block operator_name_label %}Operator Name{% endblock %}</label>
                 <input type="text" name="operator_name" id="operator_name" value="Unknown" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
             </div>
-            
-            <div class="mb-4">
-                <label for="measurement_conditions" class="block text-sm font-medium text-gray-700">{% block measurement_conditions_label %}Measurement Conditions (Option){% endblock %}</label>
-                <textarea name="measurement_conditions" id="measurement_conditions" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" rows="4" readonly>{}</textarea>
-            </div>
-            
-            <div class="mb-4">
-                <label for="condition_key" class="block text-sm font-medium text-gray-700">{% block condition_key_label %}Condition Key{% endblock %}</label>
-                <select id="condition_key" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-                    <option value="" disabled selected>{% block condition_key_placeholder %}Select a condition{% endblock %}</option>
-                    <script>
-                        availableConditions.forEach(function(condition) {
-                            const option = document.createElement('option');
-                            option.value = condition;
-                            option.textContent = condition;
-                            document.getElementById('condition_key').appendChild(option);
-                        });
-                    </script>
-                </select>
-            </div>
 
-            <div class="mb-4">
-                <label for="condition_value" class="block text-sm font-medium text-gray-700">{% block condition_value_label %}Condition Value{% endblock %}</label>
-                <input type="text" id="condition_value" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-            </div>
-
-            <div class="flex justify-center mb-4 space-x-4">
-                <button type="button" onclick="addMeasurementCondition()" class="px-6 py-2 bg-green-600 text-white rounded-md hover:bg-green-700">
-                    {% block add_condition_button %}Add Condition{% endblock %}
-                </button>
-
-                <button type="button" onclick="resetMeasurementConditions()" class="px-6 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
-                    {% block reset_condition_button %}Reset Conditions{% endblock %}
-                </button>
-            </div>
-
-            <div style="display: none;">
-                <label for="status" class="block text-sm font-medium text-gray-700">{% block status_label %}Status{% endblock %}</label>
-                <input type="text" name="status" id="status" value="raw" class="mt-1 block w-full p-2 border border-gray-300 rounded-md">
-            </div>
-            
             <div class="mb-4">
                 <label for="file" class="block text-sm font-medium text-gray-700">{% block file_label %}CSV File{% endblock %}</label>
                 <input type="file" name="file" id="file" accept=".csv" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
             </div>
-            
+
             <div class="flex justify-center">
                 <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">{% block submit_button %}Upload{% endblock %}</button>
             </div>
@@ -192,11 +72,7 @@
     <script>
         document.getElementById('new_device').addEventListener('change', function() {
             const deviceNameDiv = document.getElementById('device_name_div');
-            if (this.checked) {
-                deviceNameDiv.style.display = 'block';
-            } else {
-                deviceNameDiv.style.display = 'none';
-            }
+            deviceNameDiv.style.display = this.checked ? 'block' : 'none';
         });
     </script>
 </body>

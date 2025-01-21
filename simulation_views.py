@@ -1,7 +1,7 @@
 import os
 import json
 from io import BytesIO
-from flask import Flask, Blueprint, request, send_file, jsonify, render_template
+from flask import Flask, Blueprint, request, send_file, jsonify, render_template, redirect, url_for, flash
 import pandas as pd
 
 # 自作モジュールのインポート
@@ -223,8 +223,6 @@ def start_all_simulations():
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
-from flask import redirect, url_for
-
 @simu_views.route('/upload_csv', methods=['GET', 'POST'])
 def upload_csv():
     if request.method == 'GET':
@@ -243,42 +241,40 @@ def upload_csv():
         new_device_name = request.form.get('device_name')
         measurement_type = request.form.get('measurement_type', 'General')
         operator_name = request.form.get('operator_name', 'Unknown')
-        measurement_conditions = request.form.get('measurement_conditions', '{}')  # JSON文字列として受け取る
         status = request.form.get('status', 'raw')
-        
-        # 測定条件がJSON文字列として送られるので、パースして辞書に変換
-        try:
-            measurement_conditions = json.dumps(json.loads(measurement_conditions))  # JSONとしてパースして再度JSON文字列に変換
-        except json.JSONDecodeError:
-            return jsonify({"error": "Invalid JSON in measurement_conditions"}), 400
         
         # CSVファイルが送信されているかチェック
         if 'file' not in request.files:
-            return jsonify({"error": "No file part"}), 400
+            flash("No file part", "error")
+            return redirect(url_for('simu_views.upload_csv'))
         
         file = request.files['file']
         
         # ファイルが空でないかチェック
         if file.filename == '':
-            return jsonify({"error": "No selected file"}), 400
+            flash("No selected file", "error")
+            return redirect(url_for('simu_views.upload_csv'))
 
         # CSVファイルをPandas DataFrameとして読み込む
         try:
             df = pd.read_csv(file)
         except Exception as e:
-            return jsonify({"error": f"Failed to read CSV: {str(e)}"}), 400
+            flash(f"Failed to read CSV: {str(e)}", "error")
+            return redirect(url_for('simu_views.upload_csv'))
 
         # CSVの内容をそのままJSONに変換
         data_json = df.to_json(orient='columns')   # 各行を辞書形式に変換してリストにする
 
         # 実験データをデータベースに追加
-        new_id = add_experiment_data(selected_data_id, new_device_name, measurement_type, data_json, operator_name, measurement_conditions, status)
+        new_id = add_experiment_data(selected_data_id, new_device_name, measurement_type, data_json, operator_name, status)
 
         if new_id is None:
-            return jsonify({"error": "Failed to add experiment data to the database"}), 500
+            flash("Failed to add experiment data to the database", "error")
+            return redirect(url_for('simu_views.upload_csv'))
 
-        # 成功した場合、元のページにリダイレクト
-        return redirect(url_for('simu_views.upload_csv'))  # 元のページのURLを指定
+        # 成功した場合のフラッシュメッセージ
+        flash("Experiment data successfully added!", "success")
+        return redirect(url_for('simu_views.upload_csv'))
 
 
 
