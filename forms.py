@@ -99,19 +99,15 @@ class AddModelForm(Form):
 
 
 class CsvUploadForm(Form):
-    # CSVファイルのアップロードフィールド
-    csv_file = FileField(
-        'CSV File', 
-        [InputRequired(message="CSV file is required")]
-    )
     
-    # デバイス名（オプション）
     device_name = StringField(
         'Device Name', 
-        [Length(max=100), Optional()],
+        [Length(max=100), 
+         Regexp('^[a-zA-Z0-9_ ]+$', message="Invalid characters are included"),
+         Optional()],
         default=''  # デフォルト値を空文字列に設定
     )
-    
+
     # オペレーター名（オプション）
     operator_name = StringField(
         'Operator Name',
