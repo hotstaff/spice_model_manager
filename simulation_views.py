@@ -258,8 +258,8 @@ def upload_csv():
             return redirect(url_for('simu_views.upload_csv'))
 
         if not file.filename.endswith('.csv'):
-        flash("Invalid file type. Only CSV files are allowed.", "error")
-        return redirect(url_for('simu_views.upload_csv'))
+            flash("Invalid file type. Only CSV files are allowed.", "error")
+            return redirect(url_for('simu_views.upload_csv'))
 
         # CSVファイルをPandas DataFrameとして読み込む
         try:
