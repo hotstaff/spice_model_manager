@@ -74,6 +74,20 @@
             const deviceNameDiv = document.getElementById('device_name_div');
             deviceNameDiv.style.display = this.checked ? 'block' : 'none';
         });
+
+        let availableMeasurementTypes = ['IV']; // 現在はIVのみ。将来的に増加予定
+
+        window.onload = function() {
+            const measurementTypeSelect = document.getElementById('measurement_type');
+
+            // 測定タイプを動的に追加
+            availableMeasurementTypes.forEach(function(type) {
+                const option = document.createElement('option');
+                option.value = type;
+                option.textContent = type;
+                measurementTypeSelect.appendChild(option);
+            });
+        };
     </script>
 </body>
 </html>
