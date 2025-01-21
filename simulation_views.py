@@ -115,6 +115,7 @@ def api_simulate_now(output_format):
     # 測定データー
     if measurement_data_id:
         experiment_data_df = get_experiment_data_by_id_or_data_id(measurement_data_id, by_data_id=False)
+        print(experiment_data_df['data'])
         df = pd.read_json(experiment_data_df['data'], orient='columns')
         measurement_data = {
                 "x": df.iloc[:, 0].tolist(),
