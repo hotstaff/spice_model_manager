@@ -114,14 +114,6 @@ class CsvUploadForm(Form):
         default=''  # デフォルト値を空文字列に設定
     )
     
-    # デバイスタイプ（オプション）
-    device_type = StringField(
-        'Device Type', 
-        [Length(max=100),
-         Optional()],
-        default=''  # デフォルト値を空文字列に設定
-    )
-    
     # オペレーター名（オプション）
     operator_name = StringField(
         'Operator Name',
