@@ -98,3 +98,20 @@ class AddModelForm(Form):
             return  # バリデーションエラーとして処理を終了
 
 
+class CsvUploadForm(Form):
+    
+    # デバイス名（オプション）
+    device_name = StringField(
+        'Device Name', 
+        [Length(max=100), 
+         Regexp('^[a-zA-Z0-9_ ]+$', message="Invalid characters are included"),
+         Optional()],
+        default=''  # デフォルト値を空文字列に設定
+    )
+    
+    # オペレーター名（オプション）
+    operator_name = StringField(
+        'Operator Name',
+        [Length(max=100), Optional()],
+        default=''  # デフォルト値を空文字列に設定
+    )
