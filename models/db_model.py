@@ -64,7 +64,6 @@ def init_db():
             measurement_type TEXT DEFAULT 'General',        -- 測定種別（例: "IV Curve", "Frequency Response"）
             data JSONB NOT NULL,                            -- 測定データを格納するJSONBカラム（必須）
             operator_name TEXT DEFAULT 'Unknown',           -- 測定者の名前や識別子
-            measurement_conditions JSONB DEFAULT '{}',      -- 測定条件をJSON形式で格納
             status TEXT DEFAULT 'raw',                      -- 測定データの状態
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP  -- 測定データの登録日時
         )
@@ -341,8 +340,7 @@ def get_all_device_ids():
     return device_ids
 
 
-# 測定データをexperiment_dataテーブルに追加する関数
-def add_experiment_data(data_id=None, device_name=None, measurement_type="General", data=None, operator_name="Unknown", measurement_conditions=None, status="raw"):
+def add_experiment_data(data_id=None, device_name=None, measurement_type="General", data=None, operator_name="Unknown", status="raw"):
     """
     測定データをexperiment_dataテーブルに追加する関数。
 
@@ -352,7 +350,6 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
         measurement_type (str): 測定種別（デフォルトは "General"）
         data (dict): 測定データ（JSON形式）
         operator_name (str): 測定者の名前（デフォルトは "Unknown"）
-        measurement_conditions (dict): 測定条件（JSON形式、デフォルトは空の辞書）
         status (str): 測定データの状態（デフォルトは "raw"）
 
     Returns:
@@ -387,15 +384,11 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
             if result:
                 data_id = result[0]
 
-        # 測定条件がNoneの場合は空の辞書にする
-        if measurement_conditions is None:
-            measurement_conditions = {}
-
         # 新しい測定データをexperiment_dataテーブルに追加
         try:
             result = conn.execute(text("""
-                INSERT INTO experiment_data (data_id, device_name, measurement_type, data, operator_name, measurement_conditions, status)
-                VALUES (:data_id, :device_name, :measurement_type, :data, :operator_name, :measurement_conditions, :status)
+                INSERT INTO experiment_data (data_id, device_name, measurement_type, data, operator_name, status)
+                VALUES (:data_id, :device_name, :measurement_type, :data, :operator_name, :status)
                 RETURNING id
             """), {
                 "data_id": data_id,  # data_id が None の場合は NULL として挿入される
@@ -403,7 +396,6 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
                 "measurement_type": measurement_type,
                 "data": data,
                 "operator_name": operator_name,
-                "measurement_conditions": measurement_conditions,
                 "status": status
             })
             
@@ -431,7 +423,7 @@ def get_experiment_data_by_data_id(data_id):
     """
     engine = get_db_connection()
     query = """
-        SELECT id, device_name, measurement_type, data, operator_name, measurement_conditions, status, created_at
+        SELECT id, device_name, measurement_type, data, operator_name, status, created_at
         FROM experiment_data
         WHERE data_id = :data_id
     """
@@ -451,7 +443,7 @@ def get_experiment_data_with_null_data_id():
     """
     engine = get_db_connection()
     query = """
-        SELECT id, device_name, measurement_type, data, operator_name, measurement_conditions, status, created_at
+        SELECT id, device_name, measurement_type, data, operator_name, status, created_at
         FROM experiment_data
         WHERE data_id IS NULL
     """
