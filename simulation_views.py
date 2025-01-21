@@ -116,11 +116,14 @@ def api_simulate_now(output_format):
         # 実験データを取得
         experiment_data_df = get_experiment_data_by_id_or_data_id(measurement_data_id, by_data_id=False)
         
-        # 'data'カラムに保存されたJSONデータを取得
-        data_json = experiment_data_df['data'].iloc[0]  # 最初の行のデータを取得
+        # 'data'カラムに保存されたデータ（辞書）を取得
+        data_dict = experiment_data_df['data'].iloc[0]  # 最初の行のデータを取得
         
-        # 'split'形式でJSONデータを読み込む
-        df = pd.read_json(data_json, orient='split')
+        # 辞書をJSON文字列に変換
+        data_json_str = json.dumps(data_dict)
+        
+        # 'split'形式でJSON文字列を読み込む
+        df = pd.read_json(data_json_str, orient='split')
         
         # xとyを取得（列1番目をx、列2番目をy）
         measurement_data = {
