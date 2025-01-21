@@ -99,6 +99,11 @@ class AddModelForm(Form):
 
 
 class CsvUploadForm(Form):
+    # CSVファイルのアップロードフィールド
+    file = FileField(
+        'CSV File', 
+        [InputRequired(message="CSV file is required")]
+    )
     
     device_name = StringField(
         'Device Name', 
