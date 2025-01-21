@@ -11,7 +11,7 @@ from simulation.job_model import JobModel
 from simulation.file_extractor import FileExtractor
 from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic
 from client.spice_model_parser import SpiceModelParser
-from forms import AddModelForm, CsvUploadForm  # AddModelFormをインポート
+from forms import AddModelForm  # AddModelFormをインポート
 
 from tasks import run_basic_performance_simulation, run_and_store_plots
 
@@ -206,6 +206,8 @@ def build():
     return render_template(template_name, bokeh_json_data={}, parameters=parameters )
 
 
+
+
 @simu_views.route('/start_all_simulations', methods=['GET'])
 def start_all_simulations():
     # データベースからすべてのデバイスのdata_idを取得
@@ -220,8 +222,6 @@ def start_all_simulations():
         run_and_store_plots.apply_async(args=[data_id])
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
-
-
 
 @simu_views.route('/upload_csv', methods=['GET', 'POST'])
 def upload_csv():
@@ -285,6 +285,7 @@ def upload_csv():
             # バリデーション失敗時のエラーメッセージ表示
             flash("Form validation failed. Please check the input fields.", "error")
             return render_template('upload_csv.html', form=form)
+
 
 
 
