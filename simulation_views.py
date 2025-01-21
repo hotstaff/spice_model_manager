@@ -5,7 +5,7 @@ from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 import pandas as pd
 
 # 自作モジュールのインポート
-from models.db_model import get_all_device_ids, add_experiment_data, search_data
+from models.db_model import get_all_device_ids, add_experiment_data, search_data, get_experiment_data_by_id_or_data_id
 
 from simulation.job_model import JobModel
 from simulation.file_extractor import FileExtractor
@@ -110,6 +110,17 @@ def api_simulate_now(output_format):
 
     spice_string = form.spice_string.data
 
+    measurement_data_id = request.form.get('measurement_data_id', 1)  # ここで取得
+
+    # 測定データー
+    if measurement_data_id:
+        experiment_data_df = get_experiment_data_by_id_or_data_id(measurement_data_id, by_data_id=False)
+        df = pd.read_json(experiment_data_df['data'], orient='columns')
+        measurement_data = {
+                "x": df.iloc[:, 0].tolist(),
+                "y": df.iloc[:, 1].tolist()
+            }
+
     # ステップ 2: Spice文字列の解析
     try:
         parser = SpiceModelParser()
@@ -160,7 +171,6 @@ def api_simulate_now(output_format):
     elif output_format == 'json':
         # ステップ 7: JSONデータの生成と送信
         try:
-            measurement_data = None
             json_data = model.plot(json=True, measurement_data=measurement_data)
             return jsonify(json_data)
         except Exception as e:

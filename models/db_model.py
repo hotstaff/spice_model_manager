@@ -410,27 +410,36 @@ def add_experiment_data(data_id=None, device_name=None, measurement_type="Genera
             return None
 
 
-
-def get_experiment_data_by_data_id(data_id):
+def get_experiment_data_by_id_or_data_id(identifier, by_data_id=False):
     """
-    experiment_dataテーブルから指定されたdata_idに関連する実験データを取得し、Pandas DataFrameに変換する関数。
+    experiment_dataテーブルから指定されたidentifier（experiment_idまたはdata_id）に関連する実験データを取得し、Pandas DataFrameに変換する関数。
 
     Parameters:
-        data_id (int): data_idに基づく実験データの取得
+        identifier (int): experiment_idまたはdata_idに基づく実験データの取得
+        by_data_id (bool): Trueの場合はdata_idを基に検索、Falseの場合はexperiment_idを基に検索
 
     Returns:
         pd.DataFrame: 実験データをPandas DataFrameに変換したもの
     """
     engine = get_db_connection()
-    query = """
-        SELECT id, device_name, measurement_type, data, operator_name, status, created_at
-        FROM experiment_data
-        WHERE data_id = :data_id
-    """
+
+    if by_data_id:
+        query = """
+            SELECT id, device_name, measurement_type, data, operator_name, status, created_at
+            FROM experiment_data
+            WHERE data_id = :identifier
+        """
+    else:
+        query = """
+            SELECT id, device_name, measurement_type, data, operator_name, status, created_at
+            FROM experiment_data
+            WHERE id = :identifier
+        """
+    
     query = text(query)  # クエリを text() でラップ
 
     # クエリ結果をPandas DataFrameに変換
-    df = pd.read_sql(query, engine, params={"data_id": data_id})
+    df = pd.read_sql(query, engine, params={"identifier": identifier})
 
     return df
 
