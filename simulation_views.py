@@ -118,6 +118,9 @@ def api_simulate_now(output_format):
 
     measurement_data_id = request.form.get('measurement_data_id', None)  # ここで取得
 
+    if measurement_data_id == 'None':
+        measurement_data_id = None  # 'None'が選ばれた場合はNoneに変換
+    
     measurement_data = None
 
     if measurement_data_id:
