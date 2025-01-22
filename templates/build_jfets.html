@@ -222,7 +222,7 @@
                     <option value="None">{% block no_measurement_data %}-- No data (won't be displayed) --{% endblock %}</option>
                     <!-- テンプレートエンジンでレンダリングされる部分 -->
                     {% for data in experiment_data %}
-                    <option value="{{ data.id }}">{{ data.device_name }} ({{ data.measurement_type }}) @ {{ data.operator_name }}</option>
+                    <option value="{{ data.id }}">{{ data.device_name }} - {{ data.status }} ({{ data.measurement_type }}) @ {{ data.operator_name }}</option>
                     {% endfor %}
                 </select>
             </div>
