@@ -227,6 +227,13 @@
                     </option>
                     {% endfor %}
                 </select>
+
+                <!-- 実験データ提出ページへのリンク -->
+                <div class="mt-4 text-center">
+                    <a href="{{ url_for('simu_views.upload_csv') }}" class="text-blue-600 hover:text-blue-800">
+                        {% block upload_data_link %}Submit new experiment data{% endblock %}
+                    </a>
+                </div>
             </div>
         </div>
 
