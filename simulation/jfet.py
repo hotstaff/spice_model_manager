@@ -260,7 +260,7 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
             p.y_range.flipped = True
 
         p.legend.title = "Vgs"
-        p.legend.location = "top_left"
+        p.legend.location = "bottom_right"
 
         return p
 
