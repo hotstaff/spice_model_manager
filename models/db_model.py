@@ -443,19 +443,42 @@ def get_experiment_data_by_id_or_data_id(identifier, by_data_id=False):
 
     return df
 
-def get_experiment_data_with_null_data_id():
+def get_experiment_data(include_all=False, exclude_data=False):
     """
-    experiment_dataテーブルからdata_idがNULLの実験データを取得し、Pandas DataFrameに変換する関数。
+    experiment_dataテーブルからデータを取得し、Pandas DataFrameに変換する関数。
+    include_allがTrueの場合、すべてのデータを返します。
+    exclude_dataがTrueの場合、dataフィールドを除外します。
+
+    Args:
+        include_all (bool): Trueの場合、すべてのデータを取得。
+                            Falseの場合、data_idがNULLのデータのみを取得。
+        exclude_data (bool): Trueの場合、dataフィールドを除外。
 
     Returns:
-        pd.DataFrame: data_idがNULLの実験データをPandas DataFrameに変換したもの
+        pd.DataFrame: 実験データをPandas DataFrameに変換したもの。
     """
     engine = get_db_connection()
-    query = """
-        SELECT id, device_name, measurement_type, data, operator_name, status, created_at
+    
+    # 取得するフィールドを動的に設定
+    fields = [
+        "id", 
+        "device_name", 
+        "measurement_type", 
+        "operator_name", 
+        "status", 
+        "created_at"
+    ]
+    if not exclude_data:
+        fields.insert(3, "data")  # dataフィールドを含む場合に追加
+
+    # クエリを作成
+    query = f"""
+        SELECT {', '.join(fields)}
         FROM experiment_data
-        WHERE data_id IS NULL
     """
+    if not include_all:
+        query += " WHERE data_id IS NULL"
+    
     query = text(query)  # クエリを text() でラップ
 
     # クエリ結果をPandas DataFrameに変換

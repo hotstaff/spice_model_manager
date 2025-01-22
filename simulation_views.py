@@ -5,7 +5,13 @@ from flask import Flask, Blueprint, request, send_file, jsonify, render_template
 import pandas as pd
 
 # 自作モジュールのインポート
-from models.db_model import get_all_device_ids, add_experiment_data, search_data, get_experiment_data_by_id_or_data_id
+from models.db_model import (
+    get_all_device_ids,
+    add_experiment_data,
+    search_data,
+    get_experiment_data_by_id_or_data_id,
+    get_experiment_data
+)
 
 from simulation.job_model import JobModel
 from simulation.file_extractor import FileExtractor
@@ -221,9 +227,12 @@ def build():
         {"name": "B", "description": "ドーピングのテール・パラメータ", "unit": None, "default": 1, "min": 0, "max": 2, "prefix": ""},
         {"name": "mfg", "description": "メーカーの注釈", "unit": None, "default": "", "min": None, "max": None, "prefix": ""},
     ]
+
+    experiment_data = get_experiment_data(include_all=True, exclude_data=True).to_dict(orient='records')
+
     template_name = get_template_name('build_jfets.html')
 
-    return render_template(template_name, bokeh_json_data={}, parameters=parameters )
+    return render_template(template_name, bokeh_json_data={}, parameters=parameters, experiment_data=experiment_data)
 
 
 
