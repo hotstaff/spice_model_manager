@@ -217,9 +217,9 @@
                 <select id="measurement-data" name="measurement-data" 
                     class="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2">
                     <!-- デフォルトの空の選択肢 -->
-                    <option value="" selected disabled hidden>-- Please select --</option>
+                    <option value="" selected disabled hidden>{% block select_placeholder %}-- Please select --{% endblock %}</option>
                     <!-- 実験データを表示しないオプション -->
-                    <option value="None">-- No measurement data --</option>
+                    <option value="None">{% block no_measurement_data %}-- No data (won't be displayed) --{% endblock %}</option>
                     <!-- テンプレートエンジンでレンダリングされる部分 -->
                     {% for data in experiment_data %}
                     <option value="{{ data.id }}">{{ data.device_name }} ({{ data.measurement_type }}) @ {{ data.operator_name }}</option>
