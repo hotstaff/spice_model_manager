@@ -118,6 +118,8 @@ def api_simulate_now(output_format):
 
     measurement_data_id = request.form.get('measurement_data_id', None)  # ここで取得
 
+    measurement_data = None
+
     if measurement_data_id:
         # 実験データを取得
         experiment_data_df = get_experiment_data_by_id_or_data_id(measurement_data_id, by_data_id=False)
