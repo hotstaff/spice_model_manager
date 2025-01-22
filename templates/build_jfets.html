@@ -223,10 +223,7 @@
                     <!-- テンプレートエンジンでレンダリングされる部分 -->
                     {% for data in experiment_data %}
                     <option value="{{ data.id }}">
-                        {{ data.device_name }} 
-                        <span class="text-sm text-gray-500">({{ data.measurement_type }} - {{ data.status }})</span>
-                        <br>
-                        <span class="text-xs text-gray-400">Operator: {{ data.operator_name }}</span>
+                        {{ data.device_name }} - {{ data.measurement_type }} ({{ data.status }}) by {{ data.operator_name }}
                     </option>
                     {% endfor %}
                 </select>
