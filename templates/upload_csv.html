@@ -103,6 +103,7 @@
             const deviceNameDiv = document.getElementById('device_name_div');
             const newDeviceCheckbox = document.getElementById('new_device');
             const dataIdSelect = document.getElementById('data_id');
+            const deviceNameInput = document.getElementById('device_name');
 
             // 初期状態で新しいデバイス追加フォームの表示を調整
             deviceNameDiv.style.display = newDeviceCheckbox.checked ? 'block' : 'none';
@@ -114,6 +115,7 @@
                 // new_deviceがオンの場合、data_idのrequiredを外す
                 if (this.checked) {
                     dataIdSelect.removeAttribute('required');
+                    deviceNameInput.value = ''; // フィールドをクリア
                 } else {
                     dataIdSelect.setAttribute('required', 'required');
                 }
