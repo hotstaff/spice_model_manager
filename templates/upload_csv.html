@@ -70,6 +70,15 @@
                 <input type="file" name="file" id="file" accept=".csv" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
             </div>
 
+            <!-- Status Selection -->
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-medium text-gray-700">{% block status_label %}Data Status{% endblock %}</label>
+                <select name="status" id="status" class="mt-1 block w-full p-2 border border-gray-300 rounded-md" required>
+                    <option value="measured">{% block status_measured_label %}Measured{% endblock %}</option>
+                    <option value="datasheet">{% block status_datasheet_label %}Datasheet{% endblock %}</option>
+                </select>
+            </div>
+
             <div class="flex justify-center">
                 <button type="submit" class="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">{% block submit_button %}Upload{% endblock %}</button>
             </div>
@@ -131,7 +140,5 @@
             });
         };
     </script>
-
-
 </body>
 </html>
