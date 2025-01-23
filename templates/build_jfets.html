@@ -193,6 +193,9 @@
                 <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
                     <label for="spice-string" class="block text-lg font-semibold text-gray-700 mb-2">Enter SPICE Model</label>
                     <textarea id="spice-string" placeholder="Enter SPICE model string here" required class="w-full h-30 p-3 text-lg border border-gray-300 rounded"></textarea>
+                    <button id="copy-button" type="button" class="bg-blue-500 text-white font-semibold text-lg py-2 px-4 rounded hover:bg-blue-600 transition duration-300 mt-4">
+                        Copy to Clipboard
+                    </button>
                 </div>
 
             </div>
@@ -362,6 +365,22 @@
         document.getElementById('device-type').addEventListener('change', function() {
             generateModel();
         });
+
+        // コピー機能の追加
+        document.getElementById("copy-button").addEventListener("click", function() {
+            const spiceString = document.getElementById("spice-string");
+            
+            // テキストエリアの内容を選択
+            spiceString.select();
+            spiceString.setSelectionRange(0, 99999); // モバイル対応
+
+            // クリップボードにコピー
+            document.execCommand("copy");
+
+            // コピー後の通知（オプション）
+            alert("SPICE model copied to clipboard!");
+        });
+
 
         let sliderInstance;
 
