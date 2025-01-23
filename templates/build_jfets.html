@@ -371,29 +371,38 @@
         let sliderInstance;
 
         {% for param in parameters %}
-        // Initialize slider only if min/max is not None
-        {% if param.default is not string %}
-        const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
-        
-        noUiSlider.create(slider{{ loop.index }}, {
-            start: {{ param.default }},
-            range: {
-                min: {{ param.min }},
-                max: {{ param.max }}
-            },
-            step: 0.001
-        });
+            // Initialize slider only if min/max is not None
+            {% if param.default is not string %}
+            const slider{{ loop.index }} = document.getElementById('slider-{{ param.name }}');
+            
+            noUiSlider.create(slider{{ loop.index }}, {
+                start: {{ param.default }},
+                range: {
+                    min: {{ param.min }},
+                    max: {{ param.max }}
+                },
+                step: 0.01
+            });
 
-        // Link slider with input
-        const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
-        slider{{ loop.index }}.noUiSlider.on('update', (values) => {
-            input{{ loop.index }}.value = values[0];
-            generateModel();
-        });
+            // Link slider with input
+            const input{{ loop.index }} = document.getElementById('value-{{ param.name }}');
 
-        {% endif %}
+            // Update input value when slider changes
+            slider{{ loop.index }}.noUiSlider.on('update', (values) => {
+                input{{ loop.index }}.value = values[0];
+                generateModel();
+            });
+
+            // Update slider value when input changes
+            input{{ loop.index }}.addEventListener('input', () => {
+                const value = parseFloat(input{{ loop.index }}.value);
+                if (!isNaN(value)) {
+                    slider{{ loop.index }}.noUiSlider.set(value);
+                }
+            });
+
+            {% endif %}
         {% endfor %}
-
     </script>
 </body>
 </html>
