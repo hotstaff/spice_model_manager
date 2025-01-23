@@ -191,7 +191,7 @@
 
                 <!-- SPICEモデル入力セクション -->
                 <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
-                    <label for="spice-string" class="block text-lg font-semibold text-gray-700 mb-2">Enter SPICE Model</label>
+                    <label for="spice-string" class="block text-lg font-semibold text-gray-700 mb-2">{% block spice_string_label %}Enter SPICE Model{% endblock %}</label>
                     <textarea id="spice-string" placeholder="Enter SPICE model string here" required class="w-full h-30 p-3 text-lg border border-gray-300 rounded"></textarea>
                     
                     <!-- ボタンを横並びにするためのflexコンテナ -->
