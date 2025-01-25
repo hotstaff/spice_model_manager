@@ -80,7 +80,7 @@ def get_models():
 
 # 特定のIDのモデルデータを取得するAPI
 @model_views.route('/api/models/<int:model_id>', methods=['GET'])
-def get_model_by_id(model_id):
+def get_model(model_id):
     df = get_data_by_id(model_id)
     if df.empty:
         return abort(404, description="Model not found")
