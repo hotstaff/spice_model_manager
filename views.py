@@ -66,7 +66,7 @@ model_views = Blueprint('model_views', __name__)
 
 # 全モデルデータを取得するAPI
 @model_views.route('/api/models', methods=['GET'])
-def get_models():
+def get_models_api():
     form = SearchForm(request.args)
 
     if form.validate():
@@ -80,7 +80,7 @@ def get_models():
 
 # 特定のIDのモデルデータを取得するAPI
 @model_views.route('/api/models/<int:model_id>', methods=['GET'])
-def get_model(model_id):
+def get_model_api(model_id):
     df = get_data_by_id(model_id)
     if df.empty:
         return abort(404, description="Model not found")
@@ -88,7 +88,7 @@ def get_model(model_id):
 
 # データを新規追加するAPI
 @model_views.route('/api/models', methods=['POST'])
-def add_model():
+def add_model_api():
     if not request.json:
         return abort(400, description="Invalid data")
     
@@ -107,7 +107,7 @@ def add_model():
 
 # データを更新するAPI
 @model_views.route('/api/models/<int:model_id>', methods=['PUT'])
-def update_model(model_id):
+def update_model_api(model_id):
     if not request.json:
         return abort(400, description="Invalid data")
     
@@ -122,7 +122,7 @@ def update_model(model_id):
 
 # データを削除するAPI
 @model_views.route('/api/models/<int:model_id>', methods=['DELETE'])
-def delete_model(model_id):
+def delete_model_api(model_id):
     if not delete_data(model_id):
         return abort(404, description="Model not found")
     
@@ -132,7 +132,7 @@ def delete_model(model_id):
 
 
 @model_views.route('/api/upload_image', methods=['POST'])
-def upload_image():
+def upload_image_api():
     if 'image' not in request.files:
         return jsonify({"error": "No image file part"}), 400
     
@@ -167,8 +167,8 @@ def upload_image():
     except Exception as e:
         return jsonify({"error": f"Failed to upload image: {str(e)}"}), 500
 
-@model_views.route('/get_image/<int:data_id>/<string:image_type>', methods=['GET'])
-def get_image(data_id, image_type):
+@model_views.route('/api/get_image/<int:data_id>/<string:image_type>', methods=['GET'])
+def get_image_api(data_id, image_type):
     """Retrieve and return an image based on data_id and image_type."""
     # キャッシュパスの取得
     cache_path = get_image_cache_path(data_id, image_type)
@@ -203,7 +203,7 @@ def get_image(data_id, image_type):
 
 # モデルの一覧をHTMLで表示
 @model_views.route('/models', methods=['GET'])
-def list_models():
+def get_models_web():
     form = SearchForm(request.args)
 
     if form.validate():
@@ -246,7 +246,7 @@ def list_models():
 
 # モデルの詳細をHTMLで表示
 @model_views.route('/models/<int:model_id>', methods=['GET'])
-def model_detail(model_id):
+def get_model_detail_web(model_id):
     # data テーブルからモデル情報を取得
     model = get_data_by_id(model_id)
     if model.empty:
@@ -269,7 +269,7 @@ def model_detail(model_id):
 
 
 @model_views.route('/models/add', methods=['GET', 'POST'])
-def add_new_model():
+def add_model_web():
     form = AddModelForm(request.form)
 
     if request.method == 'POST':
@@ -319,7 +319,7 @@ def add_new_model():
     return render_template(template_name, form=form)
 
 @model_views.route('/api/parse', methods=['POST'])
-def parse_spice_model():
+def parse_spice_model_api():
     """
     Parse a SPICE model string and return the parsed parameters.
     """
@@ -344,9 +344,9 @@ def parse_spice_model():
 
 # エラーハンドリング
 @model_views.errorhandler(404)
-def not_found(error):
+def not_found_common(error):
     return jsonify({"error": str(error)}), 404
 
 @model_views.errorhandler(400)
-def bad_request(error):
+def bad_request_common(error):
     return jsonify({"error": str(error)}), 400
