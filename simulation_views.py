@@ -51,7 +51,7 @@ def request_entity_too_large(error):
 
 
 @simu_views.route("/api/simulations", methods=["GET"])
-def api_simulations():
+def get_simulations_api():
     jobs = job_model.get_all_jobs()
     return jsonify({
         job_id: {
@@ -63,7 +63,7 @@ def api_simulations():
 
 
 @simu_views.route("/api/simulations/<job_id>", methods=["GET"])
-def api_simulation_status(job_id):
+def get_simulation_status_api(job_id):
     job_data = job_model.get_job_meta(job_id)
     if job_data is None:
         return jsonify({"error": f"Job with ID {job_id} not found."}), 404
@@ -71,7 +71,7 @@ def api_simulation_status(job_id):
 
 
 @simu_views.route("/api/simulations/<job_id>/result", methods=["GET"])
-def api_simulation_result(job_id):
+def get_simulation_result_api(job_id):
     job_data = job_model.get_job_meta(job_id)
 
     if not job_data:
@@ -91,7 +91,7 @@ def api_simulation_result(job_id):
     )
 
 @simu_views.route("/api/simulate", methods=["POST"])
-def api_simulate():
+def run_simulate_api():
     file = request.files.get("file")
     if not file or file.filename == "":
         return jsonify({"error": "No file uploaded or filename is empty"}), 400
@@ -103,7 +103,7 @@ def api_simulate():
     return jsonify({"job_id": job_id}), 202
 
 @simu_views.route("/api/simulate_now/<output_format>", methods=["POST"])
-def api_simulate_now(output_format):
+def run_simulate_now_api(output_format):
     """
     /api/simulate_now/<output_format>エンドポイント
     - output_formatが'image'の場合は画像を返す
@@ -203,7 +203,7 @@ def api_simulate_now(output_format):
 
 ## test用
 @simu_views.route("/build")
-def build():
+def build_model_web():
     parameters = [
         {"name": "Vto", "description": "しきい値", "unit": "V", "default": -2.0, "min": -5.0, "max": 5.0, "prefix": ""},
         {"name": "Beta", "description": "トランスコンダクタンス・パラメータ", "unit": "μA/V^2", "default": 100, "min": 1, "max": 100000, "prefix": "u"},
@@ -243,7 +243,7 @@ def build():
 
 
 @simu_views.route('/start_all_simulations', methods=['GET'])
-def start_all_simulations():
+def run_all_simulations_web():
     # データベースからすべてのデバイスのdata_idを取得
     device_ids = get_all_device_ids()
     
@@ -259,7 +259,7 @@ def start_all_simulations():
 
 
 @simu_views.route('/upload_csv', methods=['GET', 'POST'])
-def upload_csv():
+def upload_csv_web():
 
     if request.method == 'GET':
         # GETリクエストの場合、デバイスリストを取得
@@ -318,12 +318,12 @@ def upload_csv():
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
-def clear_redis_jobs():
+def clear_jobs_api():
     """Redisのジョブをすべて削除"""
     result = job_model.clear_all_jobs()  # JobModelのメソッドを呼び出し
     return jsonify({"message": result})
 
 
 @simu_views.route("/jobs")
-def home():
+def get_jobs_web():
     return render_template("jobs.html")
