@@ -76,19 +76,10 @@
                 runButton.classList.add("bg-gray-400", "cursor-not-allowed");
 
                 // 現在表示されているタブを取得
-                const activeTab = document.querySelector('.tab-item.active').id;
+                const activeTab = document.querySelector('.tab-content.active').id;
 
                 // タブに対応するシミュレーション名を決定
-                let simulationName = '';
-                if (activeTab === 'iv-tab') {
-                    simulationName = 'iv';
-                } else if (activeTab === 'vgs-id-tab') {
-                    simulationName = 'vgs_id';
-                } else if (activeTab === 'gm-vgs-tab') {
-                    simulationName = 'gm_vgs';
-                } else if (activeTab === 'gm-id-tab') {
-                    simulationName = 'gm_id';
-                }
+                let simulationName = activeTab;
 
                 try {
                     // フォームデータを作成
@@ -334,8 +325,6 @@
                 });
                 document.querySelectorAll('.space-y-4').forEach(tabContent => {
                     tabContent.classList.add('hidden');
-                    tabContent.classList.remove('active');
-
                 });
 
                 // クリックされたタブをアクティブにし、関連するコンテンツを表示する
@@ -343,7 +332,6 @@
                 this.classList.add('text-blue-700');
                 const targetTab = document.querySelector(this.getAttribute('href'));
                 targetTab.classList.remove('hidden');
-                targetTab.classList.add('active');
             });
         });
 
