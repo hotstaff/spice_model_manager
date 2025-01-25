@@ -305,6 +305,25 @@
             });
         });
 
+        // result section tab
+        function showTab(tabName) {
+            // すべてのタブコンテンツを非表示にする
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(function(tab) {
+                tab.style.display = 'none';
+            });
+
+            // すべてのタブアイテムのアクティブ状態を解除
+            const tabItems = document.querySelectorAll('.tab-item');
+            tabItems.forEach(function(item) {
+                item.classList.remove('active');
+            });
+
+            // 選択されたタブを表示
+            document.getElementById(tabName).style.display = 'block';
+            document.getElementById(tabName + '-tab').classList.add('active');
+        }
+
         // spice model string
         function generateModel() {
             const deviceName = document.getElementById('device-name').value;
