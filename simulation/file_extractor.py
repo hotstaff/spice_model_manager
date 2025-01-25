@@ -28,7 +28,7 @@ class FileExtractor:
                     return None
 
                 self.temp_files[job_id] = {'files': extracted_files, 'dir': extraction_dir}
-                print(f"Job results extracted: {extracted_files}")
+                # print(f"Job results extracted: {extracted_files}")
                 return extracted_files
 
         except zipfile.BadZipFile:
