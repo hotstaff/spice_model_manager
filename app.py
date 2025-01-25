@@ -25,7 +25,7 @@ app.register_blueprint(simu_views)
 @app.route('/')
 def home():
     # model_views.list_modelsが正しいエンドポイント名
-    return redirect(url_for('model_views.list_models'))
+    return redirect(url_for('model_views.get_models_web'))
 
 @app.route('/sitemap')
 def sitemap():
