@@ -137,10 +137,7 @@ def run_and_store_plots(data_id):
     非同期でJFETの特性をシミュレーションし、生成した画像をデータベースに登録します。
     """
 
-    
-
     try:
-        tracemalloc.start()
         # シミュレーションと画像登録をまとめて行う
         characteristic_models = [
             JFET_IV_Characteristic,
@@ -162,10 +159,6 @@ def run_and_store_plots(data_id):
             # 画像をデータベースに登録
             with open(image_path, 'rb') as image_file:
                 save_image_to_db(data_id, image_file, image_type, 'png')
-
-        current, peak = tracemalloc.get_traced_memory()
-        print(f"Current memory usage: {current / 10**6} MB; Peak: {peak / 10**6} MB")
-        tracemalloc.stop()
 
         return {"status": "success", "data_id": data_id}
 
