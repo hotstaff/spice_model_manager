@@ -12,5 +12,4 @@ RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # 起動
-CMD gunicorn app:app --workers 4 --worker-class gevent --bind 0.0.0.0:$PORT & celery -A tasks.celery worker --loglevel=info
-
+CMD ["sh", "-c", "gunicorn app:app --bind 0.0.0.0:$PORT & celery -A tasks.celery worker --loglevel=info & wait"]
