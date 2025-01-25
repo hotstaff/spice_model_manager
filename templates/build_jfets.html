@@ -211,17 +211,17 @@
                     <!-- タブメニュー -->
                     <div class="tabs">
                         <ul class="flex space-x-4 border-b">
-                            <li class="tab-item active" id="iv-tab">
-                                <a href="javascript:void(0);" onclick="showTab('iv')">IV</a>
+                            <li class="tab-item">
+                                <a href="javascript:void(0);" onclick="showTab('iv')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">IV</a>
                             </li>
-                            <li class="tab-item" id="vgs-id-tab">
-                                <a href="javascript:void(0);" onclick="showTab('vgs-id')">Vgs-Id</a>
+                            <li class="tab-item">
+                                <a href="javascript:void(0);" onclick="showTab('vgs-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Vgs-Id</a>
                             </li>
-                            <li class="tab-item" id="gm-vgs-tab">
-                                <a href="javascript:void(0);" onclick="showTab('gm-vgs')">Gm-Vgs</a>
+                            <li class="tab-item">
+                                <a href="javascript:void(0);" onclick="showTab('gm-vgs')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Vgs</a>
                             </li>
-                            <li class="tab-item" id="gm-id-tab">
-                                <a href="javascript:void(0);" onclick="showTab('gm-id')">Gm-Id</a>
+                            <li class="tab-item">
+                                <a href="javascript:void(0);" onclick="showTab('gm-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Id</a>
                             </li>
                         </ul>
                     </div>
@@ -248,6 +248,8 @@
                         </div>
                     </div>
                 </div>
+
+
                 <!-- SPICEモデル入力セクション -->
                 <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
                     <label for="spice-string" class="block text-lg font-semibold text-gray-700 mb-2">{% block spice_string_label %}Enter SPICE Model{% endblock %}</label>
@@ -307,6 +309,16 @@
         </div>
     </div>
 
+    <!-- スタイルの追加 -->
+    <style>
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+
     <!-- Tab Click event -->
     <script>
         // タブのクリックイベントを設定
@@ -333,24 +345,24 @@
 
         // result tab
         function showTab(tabName) {
-            // すべてのタブコンテンツを非表示に
-            const allTabs = document.querySelectorAll('.tab-content');
-            allTabs.forEach(tab => {
-                tab.style.display = 'none';
+            // タブの内容を非表示にする
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
             });
 
-            // すべてのタブアイテムのアクティブ状態を解除
-            const allTabItems = document.querySelectorAll('.tab-item');
-            allTabItems.forEach(tabItem => {
-                tabItem.classList.remove('active');
+            // タブのリンクのスタイルをリセット
+            const tabLinks = document.querySelectorAll('.tab-link');
+            tabLinks.forEach(link => {
+                link.classList.remove('text-blue-600', 'border-blue-600');
+                link.classList.add('text-gray-600', 'border-transparent');
             });
 
-            // 対象タブを表示
-            document.getElementById(tabName).style.display = 'block';
-
-            // 対象タブをアクティブに
-            const activeTab = document.getElementById(`${tabName}-tab`);
-            activeTab.classList.add('active');
+            // 選択されたタブを表示
+            document.getElementById(tabName).classList.add('active');
+            const selectedTab = document.querySelector(`#${tabName}-tab .tab-link`);
+            selectedTab.classList.add('text-blue-600', 'border-blue-600');
+            selectedTab.classList.remove('text-gray-600', 'border-transparent');
         }
 
 
