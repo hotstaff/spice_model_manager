@@ -223,16 +223,16 @@
                     <div class="tabs mb-4">
                         <ul class="flex space-x-4 border-b">
                             <li class="tab-item" id="iv-tab">
-                                <a href="javascript:void(0);" onclick="showTab('iv')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">IV</a>
+                                <a href="javascript:void(0);" onclick="showTab('iv')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600 active:text-red-600">IV</a>
                             </li>
                             <li class="tab-item" id="vgs-id-tab">
-                                <a href="javascript:void(0);" onclick="showTab('vgs-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Vgs-Id</a>
+                                <a href="javascript:void(0);" onclick="showTab('vgs-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600 active:text-red-600">Vgs-Id</a>
                             </li>
                             <li class="tab-item" id="gm-vgs-tab">
-                                <a href="javascript:void(0);" onclick="showTab('gm-vgs')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Vgs</a>
+                                <a href="javascript:void(0);" onclick="showTab('gm-vgs')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600 active:text-red-600">Gm-Vgs</a>
                             </li>
                             <li class="tab-item" id="gm-id-tab">
-                                <a href="javascript:void(0);" onclick="showTab('gm-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Id</a>
+                                <a href="javascript:void(0);" onclick="showTab('gm-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600 active:text-red-600">Gm-Id</a>
                             </li>
                         </ul>
                     </div>
@@ -346,30 +346,26 @@
 
         // result tab
         function showTab(tabName) {
-
-            console.log(tabName);
             // すべてのタブコンテンツを非表示に
             const allTabs = document.querySelectorAll('.tab-content');
             allTabs.forEach(tab => {
-                tab.classList.remove('active'); // activeクラスを削除して非表示に
+                tab.classList.remove('active');
             });
 
             // すべてのタブアイテムのアクティブ状態を解除
-            const allTabItems = document.querySelectorAll('.tab-item');
+            const allTabItems = document.querySelectorAll('.tab-item .tab-link');
             allTabItems.forEach(tabItem => {
-                tabItem.classList.remove('active'); // activeクラスを削除
+                tabItem.classList.remove('text-red-600', 'border-red-600');
                 tabItem.classList.add('text-gray-600');
-                tabItem.classList.remove('text-blue-700');
             });
 
             // 対象タブを表示
             const activeTab = document.getElementById(tabName);
-            activeTab.classList.add('active'); // activeクラスを追加して表示
+            activeTab.classList.add('active');
 
             // 対象タブをアクティブに
-            const activeTabItem = document.getElementById(`${tabName}-tab`);
-            activeTabItem.classList.add('active'); // activeクラスを追加してアクティブに
-            activeTabItem.classList.add('text-blue-700');
+            const activeTabItem = document.querySelector(`#${tabName}-tab .tab-link`);
+            activeTabItem.classList.add('text-red-600', 'border-red-600');
             activeTabItem.classList.remove('text-gray-600');
         }
 
