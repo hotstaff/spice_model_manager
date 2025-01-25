@@ -27,5 +27,18 @@ def home():
     # model_views.list_modelsが正しいエンドポイント名
     return redirect(url_for('model_views.list_models'))
 
+@app.route('/sitemap')
+def sitemap():
+    links = []
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != 'static':  # staticファイルは除外
+            url = {
+                'endpoint': rule.endpoint,
+                'methods': list(rule.methods),
+                'url': str(rule)
+            }
+            links.append(url)
+    return jsonify(links)
+
 if __name__ == '__main__':
     app.run()
