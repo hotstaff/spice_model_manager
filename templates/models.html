@@ -256,7 +256,7 @@
                         <td>{{ model.device_name }}</td>
                         <td>{{ model.device_type }}</td>
                         <td>{{ model.created_at.strftime('%Y-%m-%d') }}</td>
-                        <td><a href="{{ url_for('model_views.model_detail', model_id=model.id) }}">View</a></td>
+                        <td><a href="{{ url_for('model_views.get_model_detail_web', model_id=model.id) }}">View</a></td>
                     </tr>
                     {% endfor %}
                 {% else %}
@@ -272,8 +272,8 @@
         {% block pagination %}
         <div class="pagination">
             {% if page > 1 %}
-            <a href="{{ url_for('model_views.list_models', page=1, device_name=device_name, device_type=device_type) }}" class="pagination-link">First</a>
-            <a href="{{ url_for('model_views.list_models', page=page-1, device_name=device_name, device_type=device_type) }}" class="pagination-link"><</a>
+            <a href="{{ url_for('model_views.get_models_web', page=1, device_name=device_name, device_type=device_type) }}" class="pagination-link">First</a>
+            <a href="{{ url_for('model_views.get_models_web', page=page-1, device_name=device_name, device_type=device_type) }}" class="pagination-link"><</a>
             {% else %}
             <span class="pagination-link disabled">First</span>
             <span class="pagination-link disabled"><</span>
@@ -282,8 +282,8 @@
             <span class="pagination-info">Page {{ page }} of {{ total_pages }}</span>
 
             {% if page < total_pages %}
-            <a href="{{ url_for('model_views.list_models', page=page+1, device_name=device_name, device_type=device_type) }}" class="pagination-link">></a>
-            <a href="{{ url_for('model_views.list_models', page=total_pages, device_name=device_name, device_type=device_type) }}" class="pagination-link">Last</a>
+            <a href="{{ url_for('model_views.get_models_web', page=page+1, device_name=device_name, device_type=device_type) }}" class="pagination-link">></a>
+            <a href="{{ url_for('model_views.get_models_web', page=total_pages, device_name=device_name, device_type=device_type) }}" class="pagination-link">Last</a>
             {% else %}
             <span class="pagination-link disabled">></span>
             <span class="pagination-link disabled">Last</span>
@@ -293,7 +293,7 @@
         
         <!-- 右上に新しいモデル追加ボタン -->
         {% block add_model_button %}
-        <a href="{{ url_for('model_views.add_new_model') }}">
+        <a href="{{ url_for('model_views.add_model_web') }}">
             <button class="add-model-btn">+ New Model</button>
         </a>
         {% endblock %}
