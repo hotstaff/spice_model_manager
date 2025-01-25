@@ -334,6 +334,8 @@
                 });
                 document.querySelectorAll('.space-y-4').forEach(tabContent => {
                     tabContent.classList.add('hidden');
+                    tabContent.classList.remove('active');
+
                 });
 
                 // クリックされたタブをアクティブにし、関連するコンテンツを表示する
@@ -341,6 +343,7 @@
                 this.classList.add('text-blue-700');
                 const targetTab = document.querySelector(this.getAttribute('href'));
                 targetTab.classList.remove('hidden');
+                targetTab.classList.add('active');
             });
         });
 
