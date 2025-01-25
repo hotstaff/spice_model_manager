@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Site Map</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <header class="bg-blue-600 text-white py-4">
+        <h1 class="text-center text-2xl font-bold">Site Map</h1>
+    </header>
+    <main class="container mx-auto p-4">
+        <div class="bg-white shadow-md rounded-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Available Endpoints</h2>
+            <table class="table-auto w-full border-collapse border border-gray-300">
+                <thead>
+                    <tr class="bg-gray-200">
+                        <th class="border border-gray-300 px-4 py-2 text-left">Endpoint</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">Methods</th>
+                        <th class="border border-gray-300 px-4 py-2 text-left">URL</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for link in links %}
+                    <tr class="hover:bg-gray-100">
+                        <td class="border border-gray-300 px-4 py-2">{{ link.endpoint }}</td>
+                        <td class="border border-gray-300 px-4 py-2">{{ link.methods | join(", ") }}</td>
+                        <td class="border border-gray-300 px-4 py-2">
+                            <a href="{{ link.url }}" class="text-blue-600 hover:underline">{{ link.url }}</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <footer class="bg-gray-800 text-white py-4 text-center">
+        <p>&copy; Sitemap</p>
+    </footer>
+</body>
+</html>

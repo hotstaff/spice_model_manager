@@ -31,14 +31,14 @@ def home():
 def sitemap():
     links = []
     for rule in app.url_map.iter_rules():
-        if rule.endpoint != 'static':  # staticファイルは除外
+        if rule.endpoint != 'static':  # Exclude static files
             url = {
                 'endpoint': rule.endpoint,
                 'methods': list(rule.methods),
                 'url': str(rule)
             }
             links.append(url)
-    return jsonify(links)
+    return render_template('sitemap.html', links=links)
 
 if __name__ == '__main__':
     app.run()
