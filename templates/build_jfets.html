@@ -66,11 +66,26 @@
                 runButton.disabled = true;
                 runButton.classList.add("bg-gray-400", "cursor-not-allowed");
 
+                // 現在表示されているタブを取得
+                const activeTab = document.querySelector('.tab-item.active').id;
+
+                // タブに対応するシミュレーション名を決定
+                let simulationName = '';
+                if (activeTab === 'iv-tab') {
+                    simulationName = 'iv';
+                } else if (activeTab === 'vgs-id-tab') {
+                    simulationName = 'vgs_id';
+                } else if (activeTab === 'gm-vgs-tab') {
+                    simulationName = 'gm_vgs';
+                } else if (activeTab === 'gm-id-tab') {
+                    simulationName = 'gm_id';
+                }
+
                 try {
                     // フォームデータを作成
                     const formData = new FormData();
                     formData.append("measurement_data_id", measurementDataId);
-                    formData.append("simulation_name", "vgs_id")
+                    formData.append("simulation_name", simulationName);
                     formData.append("spice_string", spiceString);
 
                     // 非同期リクエストを送信
@@ -91,11 +106,21 @@
                     }
 
                     // Bokehプロットを表示
-                    const bokehDiv = document.getElementById("bokeh-iv-plot");
-                    bokehDiv.innerHTML = ""; // 既存のプロットをクリア
+                    let plotDiv;
+                    if (simulationName === 'iv') {
+                        plotDiv = document.getElementById("bokeh-iv-plot");
+                    } else if (simulationName === 'vgs_id') {
+                        plotDiv = document.getElementById("bokeh-vgs-id-plot");
+                    } else if (simulationName === 'gm_vgs') {
+                        plotDiv = document.getElementById("bokeh-gm-vgs-plot");
+                    } else if (simulationName === 'gm_id') {
+                        plotDiv = document.getElementById("bokeh-gm-id-plot");
+                    }
+
+                    plotDiv.innerHTML = ""; // 既存のプロットをクリア
 
                     Bokeh.safely(function () {
-                        Bokeh.embed.embed_item(JSON.parse(jsonData), "bokeh-iv-plot");
+                        Bokeh.embed.embed_item(JSON.parse(jsonData), plotDiv.id);
                     });
 
                     // 結果セクションを表示
@@ -306,24 +331,28 @@
             });
         });
 
-        // result section tab
+        // result tab
         function showTab(tabName) {
-            // すべてのタブコンテンツを非表示にする
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(function(tab) {
+            // すべてのタブコンテンツを非表示に
+            const allTabs = document.querySelectorAll('.tab-content');
+            allTabs.forEach(tab => {
                 tab.style.display = 'none';
             });
 
             // すべてのタブアイテムのアクティブ状態を解除
-            const tabItems = document.querySelectorAll('.tab-item');
-            tabItems.forEach(function(item) {
-                item.classList.remove('active');
+            const allTabItems = document.querySelectorAll('.tab-item');
+            allTabItems.forEach(tabItem => {
+                tabItem.classList.remove('active');
             });
 
-            // 選択されたタブを表示
+            // 対象タブを表示
             document.getElementById(tabName).style.display = 'block';
-            document.getElementById(tabName + '-tab').classList.add('active');
+
+            // 対象タブをアクティブに
+            const activeTab = document.getElementById(`${tabName}-tab`);
+            activeTab.classList.add('active');
         }
+
 
         // spice model string
         function generateModel() {
