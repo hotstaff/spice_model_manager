@@ -10,3 +10,5 @@ redis
 PyLTSpice
 celery
 bokeh
+
+google-cloud-profiler
