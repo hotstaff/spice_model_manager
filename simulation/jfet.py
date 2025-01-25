@@ -332,7 +332,7 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
             p.x_range.end = 0
 
         p.legend.title = "Vgs"
-        p.legend.location = "bottom_right"
+        p.legend.location = "top_left"
 
         return p
 
@@ -406,7 +406,7 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
             p.x_range.end = 0
 
         p.legend.title = "Vgs"
-        p.legend.location = "bottom_right"
+        p.legend.location = "top_left"
 
         return p
 
