@@ -11,7 +11,7 @@ from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, 
 from simulation.file_extractor import FileExtractor  # ファイル抽出
 from simulation.job_model import JobModel
 
-import tracemalloc
+from memory_profiler import profile
 
 # 環境変数からREDIS_HOSTを取得（デフォルトはlocalhost）
 redis_host = os.getenv('REDIS_HOST', 'localhost')
@@ -130,7 +130,7 @@ def run_basic_performance_simulation(data_id):
         # エラー処理
         return {"status": "error", "message": f"Error: {str(e)}"}
 
-
+@profile
 @celery.task
 def run_and_store_plots(data_id):
     """
