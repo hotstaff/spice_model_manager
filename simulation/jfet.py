@@ -325,8 +325,8 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         if self.device_type == 'PJF':
             p.x_range.flipped = True
             p.y_range.flipped = True
-            p.x_range.start = 3
-            p.x_range.end = 0
+            p.x_range.start = 0
+            p.x_range.end = 3
         elif self.device_type == 'NJF':
             p.x_range.start = -3
             p.x_range.end = 0
