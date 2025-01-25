@@ -23,11 +23,6 @@ celery = Celery(
     broker=f'redis://{redis_host}:6379/1'  # RedisのURL、DB番号は1に設定
 )
 
-celery.conf.update(
-    task_acks_late=True,
-    task_reject_on_worker_lost=True
-)
-
 
 def get_device_data(data_id):
     """
