@@ -58,6 +58,8 @@ class JFET_SimulationBase:
         os.makedirs(image_dir, exist_ok=True)
         image_path = os.path.join(image_dir, filename)
         plt.savefig(image_path)
+        plt.clf()
+        plt.close()
         return image_path
 
     def dump_json(self, p):
