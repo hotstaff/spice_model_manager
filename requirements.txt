@@ -1,6 +1,7 @@
 Flask
 pandas
 gunicorn
+gevent
 python-dotenv
 psycopg2-binary
 wtforms
