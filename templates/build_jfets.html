@@ -75,23 +75,19 @@
                 runButton.disabled = true;
                 runButton.classList.add("bg-gray-400", "cursor-not-allowed");
 
+                // 現在表示されているタブを取得
+                const activeTab = document.querySelector('.tab-content.active').id;
+
                 // タブに対応するシミュレーション名を決定
                 let simulationName = '';
-                switch (activeTab) {
-                    case 'iv':
-                        simulationName = 'iv';
-                        break;
-                    case 'vgs-id':
-                        simulationName = 'vgs_id';
-                        break;
-                    case 'gm-vgs':
-                        simulationName = 'gm_vgs';
-                        break;
-                    case 'gm-id':
-                        simulationName = 'gm_id';
-                        break;
-                    default:
-                        simulationName = '';
+                if (activeTab === 'iv') {
+                    simulationName = 'iv';
+                } else if (activeTab === 'vgs-id') {
+                    simulationName = 'vgs_id';
+                } else if (activeTab === 'gm-vgs') {
+                    simulationName = 'gm_vgs';
+                } else if (activeTab === 'gm-id') {
+                    simulationName = 'gm_id';
                 }
 
                 try {
