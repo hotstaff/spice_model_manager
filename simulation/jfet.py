@@ -323,10 +323,10 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         p.line(Vgs, Id_mA, legend_label="Id vs Vgs", line_width=2, color="blue")
 
         if self.device_type == 'PJF':
-            p.x_range.flipped = True
-            p.y_range.flipped = True
             p.x_range.start = 0
             p.x_range.end = 3
+            p.x_range.flipped = True
+            p.y_range.flipped = True
         elif self.device_type == 'NJF':
             p.x_range.start = -3
             p.x_range.end = 0
@@ -471,9 +471,9 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
         p.line(Id_mA, np.abs(gm), legend_label="gm vs Id", line_width=2, color="green")
 
         if self.device_type == 'PJF':
-            p.x_range.flipped = True
             p.x_range.start = max(Id_mA)
             p.x_range.end = min(Id_mA)
+            p.x_range.flipped = True
         elif self.device_type == 'NJF':
             p.x_range.start = min(Id_mA)
             p.x_range.end = max(Id_mA)
