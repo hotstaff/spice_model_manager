@@ -6,14 +6,6 @@ from models.db_model import init_db, migrate_db
 from views import model_views  # views.pyからmodel_viewsをインポート
 from simulation_views import simu_views
 
-# debug
-import googlecloudprofiler
-
-try:
-    googlecloudprofiler.start(service='spice-model-magager', service_version='0.8.0')
-except (ValueError, NotImplementedError) as exc:
-    print(f"Unable to start the profiler: {exc}")
-
 # dotenv
 load_dotenv()
 
