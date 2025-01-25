@@ -310,6 +310,34 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
 
         return plt
 
+    def plot_bokeh(self, Vgs, Id_mA):
+        """VgsとIdの特性をBokehでプロットし、JSONデータとして返す"""
+        p = figure(
+            title="Vgs-Id Characteristic of JFET",
+            x_axis_label='Vgs (Volts)',
+            y_axis_label='Id (mA)',
+            width=800, height=600
+        )
+
+        # VgsとIdをプロット
+        p.line(Vgs, Id_mA, legend_label="Id vs Vgs", line_width=2, color="blue")
+
+        if self.device_type == 'PJF':
+            p.x_range.flipped = True
+            p.y_range.flipped = True
+            p.x_range.start = 0
+            p.x_range.end = 3
+        elif self.device_type == 'NJF':
+            p.x_range.start = -3
+            p.x_range.end = 0
+
+        p.legend.title = "Vgs"
+        p.legend.location = "bottom_right"
+
+        return p
+
+
+
 class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'gm_vgs'
@@ -355,6 +383,32 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         plt.legend()
 
         return plt
+
+    def plot_bokeh(self, Vgs, gm):
+        """gm-Vgs特性をBokehでプロットし、JSONデータとして返す"""
+        p = figure(
+            title="gm-Vgs Characteristic of JFET",
+            x_axis_label='Vgs (Volts)',
+            y_axis_label='gm (mS)',
+            width=800, height=600
+        )
+
+        # gm-Vgsをプロット
+        p.line(Vgs, gm, legend_label="gm vs Vgs", line_width=2, color="blue")
+
+        if self.device_type == 'PJF':
+            p.x_range.flipped = True
+            p.y_range.flipped = True
+            p.x_range.start = 0
+            p.x_range.end = 3
+        elif self.device_type == 'NJF':
+            p.x_range.start = -3
+            p.x_range.end = 0
+
+        p.legend.title = "Vgs"
+        p.legend.location = "bottom_right"
+
+        return p
 
 class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
 
@@ -402,3 +456,32 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
         plt.legend()
 
         return plt
+
+
+    def plot_bokeh(self, Id_mA, gm):
+        """gm-Id特性をBokehでプロットし、JSONデータとして返す"""
+        p = figure(
+            title="gm-Id Characteristic of JFET",
+            x_axis_label='Id (mA)',
+            y_axis_label='gm (mS)',
+            width=800, height=600
+        )
+
+        # gm-Idをプロット（絶対値gmを使用）
+        p.line(Id_mA, np.abs(gm), legend_label="gm vs Id", line_width=2, color="green")
+
+        if self.device_type == 'PJF':
+            p.x_range.flipped = True
+            p.x_range.start = max(Id_mA)
+            p.x_range.end = min(Id_mA)
+        elif self.device_type == 'NJF':
+            p.x_range.start = min(Id_mA)
+            p.x_range.end = max(Id_mA)
+
+        p.y_range.start = min(np.abs(gm))
+        p.y_range.end = max(np.abs(gm))
+
+        p.legend.title = "Id"
+        p.legend.location = "top_left"
+
+        return p
