@@ -138,7 +138,6 @@ def run_and_store_plots(data_id):
     非同期でJFETの特性をシミュレーションし、生成した画像をデータベースに登録します。
     """
     try:
-        # シミュレーションと画像登録をまとめて行う
         characteristic_models = [
             JFET_IV_Characteristic,
             JFET_Vgs_Id_Characteristic,
@@ -146,20 +145,25 @@ def run_and_store_plots(data_id):
             JFET_Gm_Id_Characteristic
         ]
 
-        
         for characteristic_class in characteristic_models:
+            # シミュレーションを実行
             model = run_simulation(data_id, characteristic_class)
+
+            # 一時ファイルに画像を保存
             image_path = model.plot()  # 画像生成メソッド
 
-            # simulation_name プロパティを使用して画像タイプを決定
-            image_type = model.simulation_name
+            # メモリ解放
+            del model
 
             # 画像をデータベースに登録
             with open(image_path, 'rb') as image_file:
-                save_image_to_db(data_id, image_file, image_type, 'png')
+                save_image_to_db(data_id, image_file, characteristic_class.simulation_name, 'png')
+
+            # 画像ファイル削除
+            os.remove(image_path)
 
         return {"status": "success", "data_id": data_id}
 
     except Exception as e:
-        # エラー処理
         return {"status": "error", "message": f"Error: {str(e)}"}
+
