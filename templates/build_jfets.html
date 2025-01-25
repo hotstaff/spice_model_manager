@@ -153,7 +153,7 @@
                 }
             });
 
-            showTab('iv'); // 初期タブとしてIVタブを表示
+            showTab('iv')
         });
 
     </script>
@@ -228,45 +228,45 @@
                 <div class="bg-white p-6 rounded-lg shadow-md" id="result-section" style="display: block;">
                     <h3 class="text-2xl font-semibold text-gray-800 mb-4">{% block simulation_result_heading %}Simulation Result{% endblock %}</h3>
 
-                <!-- タブメニュー -->
-                <div class="tabs">
-                    <ul class="flex space-x-4 border-b">
-                        <li class="tab-item" id="iv-tab">
-                            <a href="javascript:void(0);" onclick="showTab('iv')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">IV</a>
-                        </li>
-                        <li class="tab-item" id="vgs-id-tab">
-                            <a href="javascript:void(0);" onclick="showTab('vgs-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Vgs-Id</a>
-                        </li>
-                        <li class="tab-item" id="gm-vgs-tab">
-                            <a href="javascript:void(0);" onclick="showTab('gm-vgs')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Vgs</a>
-                        </li>
-                        <li class="tab-item" id="gm-id-tab">
-                            <a href="javascript:void(0);" onclick="showTab('gm-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Id</a>
-                        </li>
-                    </ul>
-                </div>
+                    <!-- タブメニュー -->
+                    <div class="tabs">
+                        <ul class="flex space-x-4 border-b">
+                            <li class="tab-item" id="iv-tab">
+                                <a href="javascript:void(0);" onclick="showTab('iv')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">IV</a>
+                            </li>
+                            <li class="tab-item" id="vgs-id-tab">
+                                <a href="javascript:void(0);" onclick="showTab('vgs-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Vgs-Id</a>
+                            </li>
+                            <li class="tab-item" id="gm-vgs-tab">
+                                <a href="javascript:void(0);" onclick="showTab('gm-vgs')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Vgs</a>
+                            </li>
+                            <li class="tab-item" id="gm-id-tab">
+                                <a href="javascript:void(0);" onclick="showTab('gm-id')" class="tab-link py-2 px-4 text-gray-600 hover:text-blue-600 transition duration-300 border-b-2 border-transparent hover:border-blue-600">Gm-Id</a>
+                            </li>
+                        </ul>
+                    </div>
 
-                <!-- タブコンテンツ -->
-                <div id="iv" class="tab-content hidden">
-                    <div id="bokeh-iv-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
-                        <p class="text-center text-gray-500">IV Plot will be displayed here.</p>
+                    <!-- タブコンテンツ -->
+                    <div id="iv" class="tab-content hidden">
+                        <div id="bokeh-iv-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
+                            <p class="text-center text-gray-500">IV Plot will be displayed here.</p>
+                        </div>
                     </div>
-                </div>
-                <div id="vgs-id" class="tab-content hidden">
-                    <div id="bokeh-vgs-id-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
-                        <p class="text-center text-gray-500">Vgs-Id Plot will be displayed here.</p>
+                    <div id="vgs-id" class="tab-content hidden">
+                        <div id="bokeh-vgs-id-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
+                            <p class="text-center text-gray-500">Vgs-Id Plot will be displayed here.</p>
+                        </div>
                     </div>
-                </div>
-                <div id="gm-vgs" class="tab-content hidden">
-                    <div id="bokeh-gm-vgs-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
-                        <p class="text-center text-gray-500">Gm-Vgs Plot will be displayed here.</p>
+                    <div id="gm-vgs" class="tab-content hidden">
+                        <div id="bokeh-gm-vgs-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
+                            <p class="text-center text-gray-500">Gm-Vgs Plot will be displayed here.</p>
+                        </div>
                     </div>
-                </div>
-                <div id="gm-id" class="tab-content hidden">
-                    <div id="bokeh-gm-id-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
-                        <p class="text-center text-gray-500">Gm-Id Plot will be displayed here.</p>
+                    <div id="gm-id" class="tab-content hidden">
+                        <div id="bokeh-gm-id-plot" class="w-full mb-4" style="width: 800px; height: 600px; max-width: 100%; max-height: 600px; margin: 0 auto; border: 1px solid #ddd;">
+                            <p class="text-center text-gray-500">Gm-Id Plot will be displayed here.</p>
+                        </div>
                     </div>
-                </div>
 
 
                 <!-- SPICEモデル入力セクション -->
@@ -357,7 +357,7 @@
             // すべてのタブコンテンツを非表示に
             const allTabs = document.querySelectorAll('.tab-content');
             allTabs.forEach(tab => {
-                tab.classList.add('hidden'); // hiddenクラスで非表示に
+                tab.classList.remove('active'); // activeクラスを削除して非表示に
             });
 
             // すべてのタブアイテムのアクティブ状態を解除
@@ -368,17 +368,12 @@
 
             // 対象タブを表示
             const activeTab = document.getElementById(tabName);
-            if (activeTab) {
-                activeTab.classList.remove('hidden'); // hiddenクラスを削除して表示
-            }
+            activeTab.classList.add('active'); // activeクラスを追加して表示
 
             // 対象タブをアクティブに
             const activeTabItem = document.getElementById(`${tabName}-tab`);
-            if (activeTabItem) {
-                activeTabItem.classList.add('active'); // activeクラスを追加
-            }
+            activeTabItem.classList.add('active'); // activeクラスを追加してアクティブに
         }
-
 
 
         // spice model string
