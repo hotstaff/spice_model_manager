@@ -50,11 +50,11 @@ class AddModelForm(Form):
             if not device_name.isalnum():
                 flash('Device name must be alphanumeric.', 'error')
                 logging.warning(f"Invalid device name: {device_name}")
-                return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+                return redirect(url_for('model_views.add_model_web'))  # エラーページにリダイレクト
             if not device_type.isalnum():
                 flash('Device type must be alphanumeric.', 'error')
                 logging.warning(f"Invalid device type: {device_type}")
-                return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+                return redirect(url_for('model_views.add_model_web'))  # エラーページにリダイレクト
 
         except (SyntaxError, KeyError, ValueError) as e:
             # 共通のエラーハンドリング
@@ -62,14 +62,14 @@ class AddModelForm(Form):
             flash(f"Failed to add model: {error_message}", 'error')
             logging.warning(f"Error with input: {field.data}")
             logging.warning(f"{error_message}")
-            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+            return redirect(url_for('model_views.add_model_web'))  # エラーページにリダイレクト
 
         except Exception as e:
             # 予期しないエラー
             flash('An unexpected error occurred during parsing.', 'error')
             logging.warning(f"Unexpected error with input: {field.data}")
             logging.warning(f"Unexpected error: {str(e)}")
-            return redirect(url_for('model_views.add_new_model'))  # エラーページにリダイレクト
+            return redirect(url_for('model_views.add_model_web'))  # エラーページにリダイレクト
 
     def validate_author(self, field):
         # 英数字とスペースのみ許可
