@@ -11,6 +11,8 @@ from simulation.jfet import JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, 
 from simulation.file_extractor import FileExtractor  # ファイル抽出
 from simulation.job_model import JobModel
 
+import tracemalloc
+
 # 環境変数からREDIS_HOSTを取得（デフォルトはlocalhost）
 redis_host = os.getenv('REDIS_HOST', 'localhost')
 
@@ -134,7 +136,11 @@ def run_and_store_plots(data_id):
     """
     非同期でJFETの特性をシミュレーションし、生成した画像をデータベースに登録します。
     """
+
+    
+
     try:
+        tracemalloc.start()
         # シミュレーションと画像登録をまとめて行う
         characteristic_models = [
             JFET_IV_Characteristic,
@@ -157,8 +163,12 @@ def run_and_store_plots(data_id):
             with open(image_path, 'rb') as image_file:
                 save_image_to_db(data_id, image_file, image_type, 'png')
 
+        tracemalloc.stop()
+
         return {"status": "success", "data_id": data_id}
 
     except Exception as e:
         # エラー処理
         return {"status": "error", "message": f"Error: {str(e)}"}
+
+
