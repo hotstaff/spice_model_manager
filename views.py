@@ -230,7 +230,7 @@ def list_models():
         end_index = start_index + items_per_page
         page_models = models[start_index:end_index]
 
-        template_name = get_template_name('index.html')
+        template_name = get_template_name('models.html')
         
         return render_template(
             template_name,
