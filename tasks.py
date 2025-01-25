@@ -34,7 +34,10 @@ celery = Celery(
 )
 
 celery.conf.broker_connection_retry_on_startup = True  # 起動時の接続再試行を有効にする
-
+# タスクが完了してからAckする（タスクはべき等であるべき）
+celery.conf.task_acks_late = True
+# ワーカーの異常終了で、Ackされていないタスクを際スケジューリングする
+celery.conf.task_reject_on_worker_lost = True
 
 def get_device_data(data_id):
     """
