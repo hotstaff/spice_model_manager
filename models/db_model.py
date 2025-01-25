@@ -11,7 +11,13 @@ load_dotenv()
 # 環境変数から接続情報を取得
 def get_db_connection():
     # 環境変数からDB接続URLを取得
-    engine = create_engine(os.getenv("DB_URL"))
+    engine = create_engine(
+        os.getenv("DB_URL"),
+        pool_size=10,  # 最大接続数
+        max_overflow=5,  # 最大オーバーフロー数
+        pool_timeout=30,  # タイムアウト時間
+        pool_recycle=1800  # 接続の再利用時間
+    )
     return engine
 
 # データベースに再接続してテーブルを作成
