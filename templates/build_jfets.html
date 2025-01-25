@@ -90,11 +90,11 @@
                     }
 
                     // Bokehプロットを表示
-                    const bokehDiv = document.getElementById("bokeh-plot");
+                    const bokehDiv = document.getElementById("bokeh-iv-plot");
                     bokehDiv.innerHTML = ""; // 既存のプロットをクリア
 
                     Bokeh.safely(function () {
-                        Bokeh.embed.embed_item(JSON.parse(jsonData), "bokeh-plot");
+                        Bokeh.embed.embed_item(JSON.parse(jsonData), "bokeh-iv-plot");
                     });
 
                     // 結果セクションを表示
