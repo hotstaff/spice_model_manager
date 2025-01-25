@@ -397,10 +397,10 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         p.line(Vgs, gm, legend_label="gm vs Vgs", line_width=2, color="blue")
 
         if self.device_type == 'PJF':
-            p.x_range.flipped = True
-            p.y_range.flipped = True
             p.x_range.start = 0
             p.x_range.end = 3
+            p.x_range.flipped = True
+            p.y_range.flipped = True
         elif self.device_type == 'NJF':
             p.x_range.start = -3
             p.x_range.end = 0
