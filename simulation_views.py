@@ -102,6 +102,7 @@ def run_simulate_api():
     job_id = job_model.create_job(uploaded_file_path)
     return jsonify({"job_id": job_id}), 202
 
+
 @simu_views.route("/api/simulate_now/<output_format>", methods=["POST"])
 def run_simulate_now_api(output_format):
     """
@@ -115,9 +116,9 @@ def run_simulate_now_api(output_format):
         return jsonify({"error": "Invalid spice_string format or missing fields."}), 400
 
     spice_string = form.spice_string.data
-
     measurement_data_id = request.form.get('measurement_data_id', None)  # ここで取得
-
+    simulation_name = request.form.get('simulation_name', 'iv')
+    
     if measurement_data_id == 'None':
         measurement_data_id = None  # 'None'が選ばれた場合はNoneに変換
     
@@ -126,17 +127,9 @@ def run_simulate_now_api(output_format):
     if measurement_data_id:
         # 実験データを取得
         experiment_data_df = get_experiment_data_by_id_or_data_id(measurement_data_id, by_data_id=False)
-        
-        # 'data'カラムに保存されたデータ（辞書）を取得
         data_dict = experiment_data_df['data'].iloc[0]  # 最初の行のデータを取得
-        
-        # 辞書をJSON文字列に変換
         data_json_str = json.dumps(data_dict)
-        
-        # 'split'形式でJSON文字列を読み込む
         df = pd.read_json(data_json_str, orient='split')
-        
-        # xとyを取得（列1番目をx、列2番目をy）
         measurement_data = {
             "x": df.iloc[:, 0].tolist(),  # Vdsをxに
             "y": df.iloc[:, 1].tolist()   # Idをyに
@@ -155,7 +148,17 @@ def run_simulate_now_api(output_format):
     if device_type not in JFET_IV_Characteristic.VALID_TYPES:
         return jsonify({"error": f"Unsupported device type: {device_type}"}), 400
 
-    model = JFET_IV_Characteristic(device_name, device_type, spice_string)
+    # シミュレーションの種類に応じてモデルを選択
+    if simulation_name == 'iv':
+        model = JFET_IV_Characteristic(device_name, device_type, spice_string)
+    elif simulation_name == 'vgs_id':
+        model = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
+    elif simulation_name == 'gm_vgs':
+        model = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
+    elif simulation_name == 'gm_id':
+        model = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
+    else:
+        return jsonify({"error": f"Unsupported simulation type: {simulation_name}"}), 400
 
     # ステップ 4: シミュレーション実行と結果取得
     try:
@@ -199,6 +202,7 @@ def run_simulate_now_api(output_format):
 
     # 無効な形式の場合のエラー
     return jsonify({"error": f"Unsupported output format: {output_format}"}), 400
+
 
 
 ## test用

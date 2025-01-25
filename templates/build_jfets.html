@@ -70,6 +70,7 @@
                     // フォームデータを作成
                     const formData = new FormData();
                     formData.append("measurement_data_id", measurementDataId);
+                    formData.append("simulation_name", "vgs_id")
                     formData.append("spice_string", spiceString);
 
                     // 非同期リクエストを送信
