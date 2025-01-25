@@ -358,6 +358,8 @@
             const allTabItems = document.querySelectorAll('.tab-item');
             allTabItems.forEach(tabItem => {
                 tabItem.classList.remove('active'); // activeクラスを削除
+                tabItem.classList.add('text-gray-600');
+                tabItem.classList.remove('text-blue-700');
             });
 
             // 対象タブを表示
@@ -367,6 +369,8 @@
             // 対象タブをアクティブに
             const activeTabItem = document.getElementById(`${tabName}-tab`);
             activeTabItem.classList.add('active'); // activeクラスを追加してアクティブに
+            activeTabItem.classList.add('text-blue-700');
+            activeTabItem.classList.remove('text-gray-600');
         }
 
 
