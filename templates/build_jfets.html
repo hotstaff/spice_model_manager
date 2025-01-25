@@ -75,13 +75,24 @@
                 runButton.disabled = true;
                 runButton.classList.add("bg-gray-400", "cursor-not-allowed");
 
-                // 現在表示されているタブを取得
-                const activeTab = document.querySelector('.tab-content.active').id;
-
                 // タブに対応するシミュレーション名を決定
-                let simulationName = activeTab;
-
-                console.log(activeTab);
+                let simulationName = '';
+                switch (activeTab) {
+                    case 'iv':
+                        simulationName = 'iv';
+                        break;
+                    case 'vgs-id':
+                        simulationName = 'vgs_id';
+                        break;
+                    case 'gm-vgs':
+                        simulationName = 'gm_vgs';
+                        break;
+                    case 'gm-id':
+                        simulationName = 'gm_id';
+                        break;
+                    default:
+                        simulationName = '';
+                }
 
                 try {
                     // フォームデータを作成
