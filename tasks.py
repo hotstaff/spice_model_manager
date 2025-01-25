@@ -151,6 +151,8 @@ def run_and_store_plots(data_id):
             # simulation_name プロパティを使用して画像タイプを決定
             image_type = model.simulation_name
 
+            del model
+
             # 画像をデータベースに登録
             with open(image_path, 'rb') as image_file:
                 save_image_to_db(data_id, image_file, image_type, 'png')
