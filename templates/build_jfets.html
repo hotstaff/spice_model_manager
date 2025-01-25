@@ -45,12 +45,22 @@
         }
 
 
+        /* タブのコンテンツ */
         .tab-content {
             display: none;
         }
+
+        /* アクティブなタブコンテンツは表示 */
         .tab-content.active {
             display: block;
         }
+
+        /* アクティブなタブアイテム */
+        .tab-item.active a {
+            color: #1D4ED8; /* アクティブタブの色 */
+            border-bottom: 2px solid #1D4ED8; /* アクティブタブの下線 */
+        }
+
  
     </style>
 
@@ -343,24 +353,25 @@
 
         // result tab
         function showTab(tabName) {
-            // タブの内容を非表示にする
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => {
-                content.classList.remove('active');
+            // すべてのタブコンテンツを非表示に
+            const allTabs = document.querySelectorAll('.tab-content');
+            allTabs.forEach(tab => {
+                tab.classList.remove('active'); // activeクラスを削除して非表示に
             });
 
-            // タブのリンクのスタイルをリセット
-            const tabLinks = document.querySelectorAll('.tab-link');
-            tabLinks.forEach(link => {
-                link.classList.remove('text-blue-600', 'border-blue-600');
-                link.classList.add('text-gray-600', 'border-transparent');
+            // すべてのタブアイテムのアクティブ状態を解除
+            const allTabItems = document.querySelectorAll('.tab-item');
+            allTabItems.forEach(tabItem => {
+                tabItem.classList.remove('active'); // activeクラスを削除
             });
 
-            // 選択されたタブを表示
-            document.getElementById(tabName).classList.add('active');
-            const selectedTab = document.querySelector(`#${tabName}-tab .tab-link`);
-            selectedTab.classList.add('text-blue-600', 'border-blue-600');
-            selectedTab.classList.remove('text-gray-600', 'border-transparent');
+            // 対象タブを表示
+            const activeTab = document.getElementById(tabName);
+            activeTab.classList.add('active'); // activeクラスを追加して表示
+
+            // 対象タブをアクティブに
+            const activeTabItem = document.getElementById(`${tabName}-tab`);
+            activeTabItem.classList.add('active'); // activeクラスを追加してアクティブに
         }
 
 
