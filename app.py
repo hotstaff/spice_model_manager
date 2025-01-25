@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 
-from flask import Flask, redirect, url_for
+from flask import Flask, redirect, url_for, jsonify
 from models.db_model import init_db, migrate_db
 from views import model_views  # views.pyからmodel_viewsをインポート
 from simulation_views import simu_views
