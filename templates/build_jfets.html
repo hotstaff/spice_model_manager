@@ -349,6 +349,9 @@
         function showTab(tabName) {
             if (!tabName) return;
 
+            const currentTab = document.querySelector('.tab-content.active');
+            currentTab.setAttribute('data-selected', measurementSelect.selectedIndex);
+
             const allTabs = document.querySelectorAll('.tab-content');
             allTabs.forEach(tab => tab.classList.remove('active'));
 
@@ -372,9 +375,6 @@
 
             const measurementSelect = document.getElementById('measurement-data');
             const options = measurementSelect.querySelectorAll('option');
-
-            const currentTab = document.querySelectorAll('.tab-content .active');
-            currentTab.setAttribute('data-selected', measurementSelect.selectedIndex);
 
             options.forEach(option => {
                 const optionType = option.getAttribute('data-type');
