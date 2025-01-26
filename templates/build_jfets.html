@@ -266,17 +266,6 @@
                 <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
                     <label for="spice-string" class="block text-lg font-semibold text-gray-700 mb-2">{% block spice_string_label %}Enter SPICE Model{% endblock %}</label>
                     <textarea id="spice-string" placeholder="Enter SPICE model string here" required class="w-full h-30 p-3 text-lg border border-gray-300 rounded"></textarea>
-
-                    <!-- コンボボックス -->
-                    <label for="device-select" class="block text-lg font-semibold text-gray-700 mt-4 mb-2">Select Device</label>
-                    <select id="device-select" class="w-full p-3 text-lg border border-gray-300 rounded">
-                        <option value="">-- Select a Device --</option>
-                        {% for device in devices_list %}
-                            <option value="{{ device.id }}" data-spice="{{ device.spice_string }}">
-                                {{ device.device_name }} ({{ device.device_type }})
-                            </option>
-                        {% endfor %}
-                    </select>
                     
                     <!-- ボタンを横並びにするためのflexコンテナ -->
                     <div class="flex space-x-4 mt-4">
@@ -296,6 +285,7 @@
                         </button>
                     </div>
                 </div>
+
 
             </div>
 
@@ -327,6 +317,24 @@
                         {% block run_button_text %}Run Simulation{% endblock %}
                     </button>
                 </div>
+            </div>
+
+            <!-- モデル選択セクション -->
+            <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
+                <label for="device-select" class="block text-lg font-semibold text-gray-700 mt-4 mb-2">Select Device</label>
+                <select id="device-select" class="w-full p-3 text-lg border border-gray-300 rounded">
+                    <option value="">-- Select a Device --</option>
+                    {% for device in devices_list %}
+                        <option value="{{ device.id }}" data-spice="{{ device.spice_string }}">
+                            {{ device.device_name }} ({{ device.device_type }})
+                        </option>
+                    {% endfor %}
+                </select>
+                
+                <!-- データベースからSPICEモデルをロードするボタン -->
+                <button id="load-spice-button" type="button" class="bg-orange-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-orange-600 transition duration-300 mt-4">
+                    Load SPICE Model
+                </button>
             </div>
 
         </div>
@@ -483,6 +491,27 @@
 
         document.getElementById('device-type').addEventListener('change', function() {
             generateModel();
+        });
+
+        // "Load SPICE Model"ボタンのクリックイベント
+        document.getElementById('load-spice-button').addEventListener('click', function() {
+            // コンボボックスから選択されたオプションを取得
+            const selectedOption = document.getElementById('device-select').selectedOptions[0];
+            
+            // 選択されていない場合はアラートを表示
+            if (!selectedOption) {
+                alert("Please select a device first.");
+                return;
+            }
+            
+            // data-spice属性の値を取得
+            const spiceString = selectedOption.getAttribute('data-spice');
+            
+            // テキストエリアにSPICEモデルを設定
+            document.getElementById('spice-string').value = spiceString;
+            
+            // loadSpiceString関数を実行
+            loadSpiceString();
         });
 
         // コピー機能の追加
