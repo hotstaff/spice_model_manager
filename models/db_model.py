@@ -108,7 +108,7 @@ def get_all_data():
     df = pd.read_sql(query, engine)
     return df
 
-# 特定の条件でデータを検索する関数
+
 def search_data(device_name=None, device_type=None, spice_string=None):
     engine = get_db_connection()
     
@@ -117,19 +117,36 @@ def search_data(device_name=None, device_type=None, spice_string=None):
     params = {}
     
     if device_name:
-        query += " AND device_name ILIKE :device_name"
-        params["device_name"] = f"%{device_name}%"
+        # リストが渡された場合、IN句を使用して検索
+        if isinstance(device_name, list):
+            query += " AND device_name ILIKE ANY(:device_name)"
+            params["device_name"] = [f"%{name}%" for name in device_name]
+        else:
+            query += " AND device_name ILIKE :device_name"
+            params["device_name"] = f"%{device_name}%"
+    
     if device_type:
-        query += " AND device_type ILIKE :device_type"
-        params["device_type"] = f"%{device_type}%"
+        # 同様に、device_typeもリストを使ってIN句を使用
+        if isinstance(device_type, list):
+            query += " AND device_type ILIKE ANY(:device_type)"
+            params["device_type"] = [f"%{dtype}%" for dtype in device_type]
+        else:
+            query += " AND device_type ILIKE :device_type"
+            params["device_type"] = f"%{device_type}%"
+    
     if spice_string:
-        query += " AND spice_string ILIKE :spice_string"
-        params["spice_string"] = f"%{spice_string}%"
+        if isinstance(spice_string, list):
+            query += " AND spice_string ILIKE ANY(:spice_string)"
+            params["spice_string"] = [f"%{s}%" for s in spice_string]
+        else:
+            query += " AND spice_string ILIKE :spice_string"
+            params["spice_string"] = f"%{spice_string}%"
     
     # 構築されたクエリを実行
     query = text(query)  # クエリを text() でラップ
     df = pd.read_sql(query, engine, params=params)
     return df
+
 
 def get_data_by_id(data_id):
     engine = get_db_connection()
