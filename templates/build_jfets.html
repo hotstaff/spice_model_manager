@@ -350,7 +350,9 @@
             if (!tabName) return;
 
             const currentTab = document.querySelector('.tab-content.active');
+            const measurementSelect = document.getElementById('measurement-data');
             currentTab.setAttribute('data-selected', measurementSelect.selectedIndex);
+
 
             const allTabs = document.querySelectorAll('.tab-content');
             allTabs.forEach(tab => tab.classList.remove('active'));
@@ -371,9 +373,7 @@
                 activeTabItem.classList.add('text-red-600', 'border-red-600');
                 activeTabItem.classList.remove('text-gray-600');
             }
-
-
-            const measurementSelect = document.getElementById('measurement-data');
+            
             const options = measurementSelect.querySelectorAll('option');
 
             options.forEach(option => {
