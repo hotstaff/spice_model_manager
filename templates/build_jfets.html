@@ -317,26 +317,26 @@
                         {% block run_button_text %}Run Simulation{% endblock %}
                     </button>
                 </div>
-            </div>
+            
 
-            <!-- モデル選択セクション -->
-            <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
-                <label for="device-select" class="block text-lg font-semibold text-gray-700 mt-4 mb-2">Select Device</label>
-                <select id="device-select" class="w-full p-3 text-lg border border-gray-300 rounded">
-                    <option value="">-- Select a Device --</option>
-                    {% for device in devices_list %}
-                        <option value="{{ device.id }}" data-spice="{{ device.spice_string }}">
-                            {{ device.device_name }} ({{ device.device_type }})
-                        </option>
-                    {% endfor %}
-                </select>
-                
-                <!-- データベースからSPICEモデルをロードするボタン -->
-                <button id="load-spice-button" type="button" class="bg-orange-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-orange-600 transition duration-300 mt-4">
-                    Load SPICE Model
-                </button>
+                <!-- モデル選択セクション -->
+                <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
+                    <label for="device-select" class="block text-lg font-semibold text-gray-700 mt-4 mb-2">Select Device</label>
+                    <select id="device-select" class="w-full p-3 text-lg border border-gray-300 rounded">
+                        <option value="">-- Select a Device --</option>
+                        {% for device in devices_list %}
+                            <option value="{{ device.id }}" data-spice="{{ device.spice_string }}">
+                                {{ device.device_name }} ({{ device.device_type }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                    
+                    <!-- データベースからSPICEモデルをロードするボタン -->
+                    <button id="load-spice-button" type="button" class="bg-orange-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-orange-600 transition duration-300 mt-4">
+                        Load SPICE Model
+                    </button>
+                </div>
             </div>
-
         </div>
     </div>
 
