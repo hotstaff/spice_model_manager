@@ -371,11 +371,10 @@
 
             const measurementSelect = document.getElementById('measurement-data');
             const options = measurementSelect.querySelectorAll('option');
-            const simulation_name = tabName.toLowerCase().replace(/-/g, '_');
 
             options.forEach(option => {
-                const optionType = option.getAttribute('data-type');
-                option.hidden = optionType && optionType !== simulation_name;
+                const optionType = option.getAttribute('data-type').toLowerCase();
+                option.hidden = optionType && optionType !== tabName;
             });
 
             measurementSelect.value = '';
