@@ -57,9 +57,22 @@
 
     <!-- Simulation Request -->
     <script type="text/javascript">
-
         document.addEventListener("DOMContentLoaded", function () {
             const runButton = document.getElementById("run-button");
+
+            // シミュレーション開始時の処理
+            function startSimulation() {
+                runButton.disabled = true;
+                runButton.classList.add("bg-gray-400", "cursor-not-allowed");
+                document.getElementById("loading-overlay").classList.remove("hidden");
+            }
+
+            // シミュレーション終了時の処理
+            function endSimulation() {
+                runButton.disabled = false;
+                runButton.classList.remove("bg-gray-400", "cursor-not-allowed");
+                document.getElementById("loading-overlay").classList.add("hidden");
+            }
 
             runButton.addEventListener("click", async function () {
                 // 測定データとSPICEモデルを取得
@@ -72,9 +85,8 @@
                     return;
                 }
 
-                // ボタンを無効化
-                runButton.disabled = true;
-                runButton.classList.add("bg-gray-400", "cursor-not-allowed");
+                // シミュレーション開始
+                startSimulation();
 
                 // 現在表示されているタブを取得
                 const activeTab = document.querySelector('.tab-content.active').id;
@@ -139,14 +151,14 @@
                     console.error("Error during simulation:", error);
                     alert("An unexpected error occurred. Please try again.");
                 } finally {
-                    // ボタンを有効化
-                    runButton.disabled = false;
-                    runButton.classList.remove("bg-gray-400", "cursor-not-allowed");
+                    // シミュレーション終了
+                    endSimulation();
                 }
             });
 
-            showTab('iv')
+            showTab('iv');
         });
+
 
     </script>
 
@@ -312,12 +324,19 @@
                 </div>
                 
                 <!-- 実行ボタン -->
-                <div id="action-buttons" class="flex flex-col items-stretch mt-6">
-                    <button id="run-button" type="button" class="bg-red-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-red-600 transition duration-300 mb-4">
+                <div id="action-buttons" class="flex flex-col items-center mt-6 relative">
+                    <button id="run-button" type="button" class="bg-red-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-red-600 transition duration-300">
                         {% block run_button_text %}Run Simulation{% endblock %}
                     </button>
+                    <!-- ローディングスピナー -->
+                    <div id="loading-overlay" class="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
+                        <div class="flex flex-col items-center">
+                            <div class="w-12 h-12 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                            <p class="text-white mt-4">{% block run_button_loading_text %}Simulating...% endblock %}</p>
+                        </div>
+                    </div>
                 </div>
-            
+                <p id="status-text" class="text-gray-600 text-center mt-4"></p>
 
                 <!-- モデル選択セクション -->
                 <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
