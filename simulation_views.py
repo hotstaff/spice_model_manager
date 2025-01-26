@@ -248,7 +248,7 @@ def build_model_web():
 
     template_name = get_template_name('build_jfets.html')
 
-    return render_template(template_name, bokeh_json_data={}, parameters=parameters, experiment_data=experiment_data, devices_list=device_list)
+    return render_template(template_name, bokeh_json_data={}, parameters=parameters, experiment_data=experiment_data, devices_list=devices_list)
 
 
 
