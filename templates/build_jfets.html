@@ -472,6 +472,7 @@
                     document.getElementById('device-name').value = parsedParams.device_name || '';
                     document.getElementById('device-type').value = parsedParams.device_type || '';
 
+                    generateModel();
                     // alert("Parameters Loaded Successfully!");
                 } else if (data.error) {
                     // エラーがあれば
