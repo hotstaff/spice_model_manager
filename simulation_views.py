@@ -286,25 +286,25 @@ def upload_csv_web():
         # CSVファイルが送信されているかチェック
         if 'file' not in request.files:
             flash("No file part", "error")
-            return redirect(url_for('simu_views.upload_csv'))
+            return redirect(url_for('simu_views.upload_csv_web'))
 
         file = request.files['file']
 
         # ファイルが空でないかチェック
         if file.filename == '':
             flash("No selected file", "error")
-            return redirect(url_for('simu_views.upload_csv'))
+            return redirect(url_for('simu_views.upload_csv_web'))
 
         if not file.filename.endswith('.csv'):
             flash("Invalid file type. Only CSV files are allowed.", "error")
-            return redirect(url_for('simu_views.upload_csv'))
+            return redirect(url_for('simu_views.upload_csv_web'))
 
         # CSVファイルをPandas DataFrameとして読み込む
         try:
             df = pd.read_csv(file)
         except Exception as e:
             flash(f"Failed to read CSV: {str(e)}", "error")
-            return redirect(url_for('simu_views.upload_csv'))
+            return redirect(url_for('simu_views.upload_csv_web'))
 
         # CSVの内容をそのままJSONに変換
         data_json = df.to_json(orient='split')  # 各行を辞書形式に変換してリストにする
@@ -314,11 +314,11 @@ def upload_csv_web():
 
         if new_id is None:
             flash("Failed to add experiment data to the database", "error")
-            return redirect(url_for('simu_views.upload_csv'))
+            return redirect(url_for('simu_views.upload_csv_web'))
 
         # 成功した場合のフラッシュメッセージ
         flash("Experiment data successfully added!", "success")
-        return redirect(url_for('simu_views.upload_csv'))
+        return redirect(url_for('simu_views.upload_csv_web'))
 
 
 @simu_views.route("/api/clear_jobs", methods=["POST"])
