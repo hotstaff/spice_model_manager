@@ -60,18 +60,36 @@
         document.addEventListener("DOMContentLoaded", function () {
             const runButton = document.getElementById("run-button");
 
-            // シミュレーション開始時の処理
             function startSimulation() {
+                const runButton = document.getElementById("run-button");
+                const loadingOverlay = document.getElementById("loading-overlay");
+                const statusText = document.getElementById("status-text");
+
+                // ボタンを無効化
                 runButton.disabled = true;
                 runButton.classList.add("bg-gray-400", "cursor-not-allowed");
-                document.getElementById("loading-overlay").classList.remove("hidden");
+
+                // ローディングスピナーを表示
+                loadingOverlay.classList.remove("hidden");
+
+                // ステータステキストを更新
+                statusText.textContent = "Simulation in progress...";
             }
 
-            // シミュレーション終了時の処理
             function endSimulation() {
+                const runButton = document.getElementById("run-button");
+                const loadingOverlay = document.getElementById("loading-overlay");
+                const statusText = document.getElementById("status-text");
+
+                // ボタンを有効化
                 runButton.disabled = false;
                 runButton.classList.remove("bg-gray-400", "cursor-not-allowed");
-                document.getElementById("loading-overlay").classList.add("hidden");
+
+                // ローディングスピナーを非表示
+                loadingOverlay.classList.add("hidden");
+
+                // ステータステキストをクリア
+                statusText.textContent = "";
             }
 
             runButton.addEventListener("click", async function () {
@@ -323,20 +341,25 @@
                     </div>
                 </div>
                 
-                <!-- 実行ボタン -->
-                <div id="action-buttons" class="flex flex-col items-center mt-6 relative">
-                    <button id="run-button" type="button" class="bg-red-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-red-600 transition duration-300">
-                        {% block run_button_text %}Run Simulation{% endblock %}
-                    </button>
-                    <!-- ローディングスピナー -->
-                    <div id="loading-overlay" class="absolute inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50 hidden">
-                        <div class="flex flex-col items-center">
-                            <div class="w-12 h-12 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
-                            <p class="text-white mt-4">{% block run_button_loading_text %}Simulating...{% endblock %}</p>
+                <!-- 実行ボタンセクション -->
+                <section id="simulation-section" class="bg-gray-100 p-6 rounded-lg shadow-md mt-6">
+                    <div class="flex flex-col items-center">
+                        <!-- 実行ボタン -->
+                        <button id="run-button" type="button" class="w-48 bg-red-500 text-white font-semibold text-lg py-3 px-6 rounded hover:bg-red-600 transition duration-300">
+                            {% block run_button_text %}Run Simulation{% endblock %}
+                        </button>
+
+                        <!-- ローディングスピナー -->
+                        <div id="loading-overlay" class="flex items-center justify-center mt-4 hidden">
+                            <div class="flex flex-col items-center">
+                                <div class="w-12 h-12 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                                <p class="text-gray-700 mt-4">{% block run_button_loading_text %}Simulating...{% endblock %}</p>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <p id="status-text" class="text-gray-600 text-center mt-4"></p>
+                    <!-- ステータステキスト -->
+                    <p id="status-text" class="text-gray-600 text-center mt-4"></p>
+                </section>
 
                 <!-- モデル選択セクション -->
                 <div id="spice-section" class="bg-white p-6 rounded-lg shadow-md mb-4">
