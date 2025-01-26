@@ -369,15 +369,20 @@
                 activeTabItem.classList.remove('text-gray-600');
             }
 
+
             const measurementSelect = document.getElementById('measurement-data');
             const options = measurementSelect.querySelectorAll('option');
+
+
+            const currentTab = document.querySelectorAll('.tab-content .active');
+            currentTab.setAttribute('data-selected', measurementSelect.selectedIndex);
 
             options.forEach(option => {
                 const optionType = option.getAttribute('data-type');
                 option.hidden = optionType && optionType !== tabName;
             });
 
-            measurementSelect.value = '';
+            measurementSelect.value = activeTab.getAttribute('data-selected');
         }
 
 
