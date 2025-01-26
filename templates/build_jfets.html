@@ -57,6 +57,7 @@
 
     <!-- Simulation Request -->
     <script type="text/javascript">
+
         document.addEventListener("DOMContentLoaded", function () {
             const runButton = document.getElementById("run-button");
 
@@ -297,7 +298,7 @@
                         <option value="" selected disabled hidden>{% block select_placeholder %}-- Please select --{% endblock %}</option>
                         <option value="None">{% block no_measurement_data %}-- No data (won't be displayed) --{% endblock %}</option>
                         {% for data in experiment_data %}
-                        <option value="{{ data.id }}">
+                        <option value="{{ data.id }}" data-tab="{{ data.measurement_type }}">
                             {{ data.device_name }} - {{ data.measurement_type }} ({{ data.status }}) by {{ data.operator_name }}
                         </option>
                         {% endfor %}
@@ -344,29 +345,40 @@
             });
         });
 
-        // result tab
+        // Result Tab
         function showTab(tabName) {
-            // すべてのタブコンテンツを非表示に
-            const allTabs = document.querySelectorAll('.tab-content');
-            allTabs.forEach(tab => {
-                tab.classList.remove('active');
-            });
+            if (!tabName) return;
 
-            // すべてのタブアイテムのアクティブ状態を解除
+            const allTabs = document.querySelectorAll('.tab-content');
+            allTabs.forEach(tab => tab.classList.remove('active'));
+
             const allTabItems = document.querySelectorAll('.tab-item .tab-link');
             allTabItems.forEach(tabItem => {
                 tabItem.classList.remove('text-red-600', 'border-red-600');
                 tabItem.classList.add('text-gray-600');
             });
 
-            // 対象タブを表示
             const activeTab = document.getElementById(tabName);
+            if (!activeTab) return;
+
             activeTab.classList.add('active');
 
-            // 対象タブをアクティブに
             const activeTabItem = document.querySelector(`#${tabName}-tab .tab-link`);
-            activeTabItem.classList.add('text-red-600', 'border-red-600');
-            activeTabItem.classList.remove('text-gray-600');
+            if (activeTabItem) {
+                activeTabItem.classList.add('text-red-600', 'border-red-600');
+                activeTabItem.classList.remove('text-gray-600');
+            }
+
+            const measurementSelect = document.getElementById('measurement-data');
+            const options = measurementSelect.querySelectorAll('option');
+            const simulation_name = tabName.toLowerCase().replace(/-/g, '_');
+
+            options.forEach(option => {
+                const optionType = option.getAttribute('data-type');
+                option.hidden = optionType && optionType !== simulation_name;
+            });
+
+            measurementSelect.value = '';
         }
 
 
