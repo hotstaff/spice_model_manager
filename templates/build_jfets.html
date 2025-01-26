@@ -373,8 +373,9 @@
             const options = measurementSelect.querySelectorAll('option');
 
             options.forEach(option => {
-                const optionType = option.getAttribute('data-type').toLowerCase().replace(/-/g, '_');
-                option.hidden = optionType && optionType !== tabName;
+                const optionType = option.getAttribute('data-type');
+                const formatType = optionType.toLowerCase().replace(/-/g, '_');
+                option.hidden = formatType && formatType !== tabName;
             });
 
             measurementSelect.value = '';
