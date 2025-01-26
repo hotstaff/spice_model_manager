@@ -239,9 +239,16 @@ def build_model_web():
 
     experiment_data = get_experiment_data(include_all=True, exclude_data=True).to_dict(orient='records')
 
+    # device_typeが'NJF'または'PJF'のデバイスを検索
+    device_types = ['NJF', 'PJF']
+    devices_df = search_data(device_type=device_types)
+    
+    # データフレームをリスト形式に変換
+    devices_list = devices_df.to_dict(orient='records')
+
     template_name = get_template_name('build_jfets.html')
 
-    return render_template(template_name, bokeh_json_data={}, parameters=parameters, experiment_data=experiment_data)
+    return render_template(template_name, bokeh_json_data={}, parameters=parameters, experiment_data=experiment_data, devices_list=device_list)
 
 
 
