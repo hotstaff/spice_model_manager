@@ -244,7 +244,6 @@ def build_model_web():
     devices_df = search_data(device_type=device_types)
     
     # データフレームをリスト形式に変換
-    print(devices_df)
     devices_list = devices_df.to_dict(orient='records')
 
     template_name = get_template_name('build_jfets.html')
