@@ -1,14 +1,15 @@
 import os  # ファイルパスやディレクトリ操作
 import re
+import json
+import itertools
+
 import numpy as np  # 数値計算
 import matplotlib.pyplot as plt  # プロットの作成
-from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要な機能
 
+from PyLTSpice import SpiceEditor, RawRead  # PyLTSpiceライブラリの必要な機能
 from bokeh.plotting import figure
 from bokeh.embed import json_item
-import json
 
-import itertools
 
 color_map = [
     '#1f77b4',  # 青
