@@ -155,7 +155,7 @@ def run_simulate_now_api(output_format):
         # model.update_config("VDS_ABSMAX", 50)
     elif simulation_name == 'vgs_id':
         model = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
-        model.update_config("VGS_ABSMAX", 0.7)
+        # model.update_config("VGS_ABSMAX", 0.7)
     elif simulation_name == 'gm_vgs':
         model = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
     elif simulation_name == 'gm_id':
