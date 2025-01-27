@@ -496,6 +496,7 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
 
         return p
 
+
 class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'gm_id'
