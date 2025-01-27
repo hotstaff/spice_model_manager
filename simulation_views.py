@@ -164,7 +164,7 @@ def run_simulate_now_api(output_format):
     else:
         return jsonify({"error": f"Unsupported simulation type: {simulation_name}"}), 400
 
-    print(model.show_config)
+    print(model.show_config())
 
     # ステップ 4: シミュレーション実行と結果取得
     try:
