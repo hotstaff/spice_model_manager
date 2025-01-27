@@ -344,10 +344,10 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         # DC sweep
         if self.device_type == 'NJF':
             self.net.set_element_model('V2',f'DC {vds_abs}')
-            self.net.add_instructions(f'.dc V1 -{vds_absmax} 0 {vds_step}')
+            self.net.add_instructions(f'.dc V1 -{vgs_absmax} 0 {vds_step}')
         elif self.device_type == 'PJF':
             self.net.set_element_model(f'V2',f'DC -{vds_abs}')
-            self.net.add_instructions(f'.dc V1 0 {vds_absmax} {vds_step}')
+            self.net.add_instructions(f'.dc V1 0 {vgs_absmax} {vds_step}')
 
     def extract_data(self):
         """VgsとIdの関係を抽出"""
