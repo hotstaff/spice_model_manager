@@ -416,16 +416,26 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'gm_vgs'
 
+    _CONFIG = {
+        "VGS_ABSMAX": 3,
+        "VGS_STEP": 0.001,
+        "VDS_ABS": 10,
+    }
+
     def modify_netlist(self):
         super().modify_netlist()
 
+        vds_abs = self.get_config("VDS_ABS")
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+        vgs_step = self.get_config("VGS_STEP")
+
         # DC sweep
         if self.device_type == 'NJF':
-            self.net.set_element_model('V2',"DC 10")
-            self.net.add_instructions('.dc V1 -3 0 0.001')
+            self.net.set_element_model('V2',f"DC {vds_abs}")
+            self.net.add_instructions(f'.dc V1 -{vgs_absmax} 0 {vgs_step}')
         elif self.device_type == 'PJF':
-            self.net.set_element_model('V2',"DC -10")
-            self.net.add_instructions('.dc V1 0 3 0.001')
+            self.net.set_element_model('V2',f"DC -{vds_abs}")
+            self.net.add_instructions(f'.dc V1 0 {vgs_absmax} {vgs_step}')
 
     def extract_data(self):
         """VgsとIdからgmを計算"""
@@ -446,11 +456,13 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         plt.xlabel("Vgs (Volts)")
         plt.ylabel("gm (mS)")
 
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+
         if self.device_type == 'PJF':
             plt.gca().invert_xaxis()
-            plt.xlim(3, 0)
+            plt.xlim(vgs_absmax, 0)
         elif self.device_type == 'NJF':
-            plt.xlim(-3, 0)
+            plt.xlim(-vgs_absmax, 0)
 
         plt.ylim(0)
         plt.grid(True)
@@ -470,11 +482,13 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         # gm-Vgsをプロット
         p.line(Vgs, gm, legend_label="gm vs Vgs", line_width=2, color="blue")
 
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+
         if self.device_type == 'PJF':
-            p.x_range.start = 3
+            p.x_range.start = vgs_absmax
             p.x_range.end = 0
         elif self.device_type == 'NJF':
-            p.x_range.start = -3
+            p.x_range.start = -vgs_absmax
             p.x_range.end = 0
 
         p.legend.title = "Vgs"
