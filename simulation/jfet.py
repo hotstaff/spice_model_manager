@@ -500,6 +500,12 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'gm_id'
 
+    _CONFIG = {
+        "VGS_ABSMAX": 3,
+        "VGS_STEP": 0.001,
+        "VDS_ABS": 10,
+    }
+
     def modify_netlist(self):
         super().modify_netlist()
 
