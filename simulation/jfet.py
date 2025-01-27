@@ -328,16 +328,26 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'vgs_id'
 
+    _CONFIG = {
+        "VGS_ABSMAX": 3,
+        "VGS_STEP": 0.01,
+        "VDS_ABS": 10,
+    }
+
     def modify_netlist(self):
         super().modify_netlist()
 
+        vds_abs = self.get_config("VDS_ABS")
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+        vgs_step = self.get_config("VGS_STEP")
+
         # DC sweep
         if self.device_type == 'NJF':
-            self.net.set_element_model('V2',"DC 10")
-            self.net.add_instructions('.dc V1 -3 0 0.01')
+            self.net.set_element_model('V2',f'DC {vds_abs}')
+            self.net.add_instructions(f'.dc V1 -{vds_absmax} 0 {vds_step}')
         elif self.device_type == 'PJF':
-            self.net.set_element_model('V2',"DC -10")
-            self.net.add_instructions('.dc V1 0 3 0.01')
+            self.net.set_element_model(f'V2',f'DC -{vds_abs}')
+            self.net.add_instructions(f'.dc V1 0 {vds_absmax} {vds_step}')
 
     def extract_data(self):
         """VgsとIdの関係を抽出"""
@@ -348,6 +358,8 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
 
     def plot_data(self, Vgs, Id_mA):
         """VgsとIdの特性をプロットする"""
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+
         plt.figure(figsize=(8, 6))
         plt.plot(Vgs, Id_mA, label=f'Id vs Vgs')
 
@@ -358,9 +370,9 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         if self.device_type == 'PJF':
             plt.gca().invert_xaxis()
             plt.gca().invert_yaxis()
-            plt.xlim(3, 0)
+            plt.xlim(vgs_absmax, 0)
         elif self.device_type == 'NJF':
-            plt.xlim(-3, 0)
+            plt.xlim(-vgs_absmax, 0)
 
         plt.ylim(0)
         plt.grid(True)
@@ -380,12 +392,16 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         # VgsとIdをプロット
         p.line(Vgs, Id_mA, legend_label="Id vs Vgs", line_width=2, color="blue")
 
+        # VGS_ABSMAXを取得
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+
+        # デバイスタイプに応じて範囲を設定
         if self.device_type == 'PJF':
             p.y_range.flipped = True
-            p.x_range.start = 3
+            p.x_range.start = vgs_absmax
             p.x_range.end = 0
         elif self.device_type == 'NJF':
-            p.x_range.start = -3
+            p.x_range.start = -vgs_absmax
             p.x_range.end = 0
 
         p.legend.title = "Vgs"
