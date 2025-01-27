@@ -8,6 +8,14 @@ from bokeh.plotting import figure
 from bokeh.embed import json_item
 import json
 
+import itertools
+
+# 色リスト
+color_map = [
+    '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', 
+    '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf'
+]
+
 class JFET_SimulationBase:
 
     VALID_TYPES = ["NJF", "PJF"]
@@ -26,6 +34,23 @@ class JFET_SimulationBase:
         self.net = None
         self.raw_data = None
         self.log_data = None
+
+        self.config = self._CONFIG.copy()  # インスタンスごとに設定を分離
+
+    def update_config(self, key, value):
+        """設定値を動的に更新する"""
+        if key in self.config:
+            self.config[key] = value
+        else:
+            raise KeyError(f"Invalid config key: {key}")
+
+    def get_config(self, key):
+        """設定値を取得する"""
+        return self.config.get(key)
+
+    def show_config(self):
+        """現在の設定を表示する"""
+        return self.config
 
     def modify_netlist(self):
         """JFETのモデルを交換する(共通の動作)"""
@@ -189,14 +214,30 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'iv'
 
+    _CONFIG = {
+        "VGS_ABSMAX": 0.4,
+        "VGS_STEP": 0.1,
+        "VDS_ABSMAX": 20,
+        "VDS_STEP": 0.1
+    }
+
     def modify_netlist(self):
         super().modify_netlist()
 
         # DC sweep
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+        vgs_step = self.get_config("VGS_STEP")
+        vds_absmax = self.get_config("VDS_ABSMAX")
+        vds_step = self.get_config("VDS_STEP")
+
         if self.device_type == 'NJF':
-            self.net.add_instructions('.dc V1 -0.4 0 0.1 V2 0 20 0.1')
+            self.net.add_instructions(
+                f'.dc V1 -{vgs_absmax} 0 {vgs_step} V2 0 {vds_absmax} {vds_step}'
+            )
         elif self.device_type == 'PJF':
-            self.net.add_instructions('.dc V1 0 0.4 0.1 V2 0 -20 -0.1')
+            self.net.add_instructions(
+                f'.dc V1 0 {vgs_absmax} {vgs_step} V2 0 -{vds_absmax} -{vds_step}'
+            )
 
     def extract_data(self):
         """I-V特性に必要なデータを抽出"""
@@ -210,14 +251,20 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         """I-V特性をプロットする"""
         plt.figure(figsize=(8, 6))
 
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+        vgs_step = self.get_config("VGS_STEP")
+
         if self.device_type == 'NJF':
-            vgs_list = [-0.4, -0.3, -0.2, -0.1, 0]
+            vgs_list = np.linspace(-vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # -vgs_absmaxから0までの範囲
         elif self.device_type == 'PJF':
-            vgs_list = [0.4, 0.3, 0.2, 0.1, 0]
+            vgs_list = np.linspace(vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # vgs_absmaxから0までの範囲
+
+        color_cycle = itertools.cycle(color_map)
 
         for vgs_value in vgs_list:
-            mask = (Vgs >= vgs_value - 0.05) & (Vgs <= vgs_value + 0.05)
-            plt.plot(Vds[mask], Id_mA[mask], label=f'Vgs = {vgs_value}V')
+            color = next(color_cycle)
+            mask = (Vgs >= vgs_value - vgs_step / 2) & (Vgs <= vgs_value + vgs_step / 2)
+            plt.plot(Vds[mask], Id_mA[mask], color=color, label=f'Vgs = {vgs_value:.2f}V')
 
         plt.title("I-V Characteristic of JFET for Different Vgs")
         plt.xlabel("Vds (Volts)")
@@ -244,18 +291,22 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
             width=800, height=600
         )
 
-        # Vgsのリストと色のリスト
+        # Vgsのリスト
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+        vgs_step = self.get_config("VGS_STEP")
+
         if self.device_type == 'NJF':
-            vgs_list = [-0.4, -0.3, -0.2, -0.1, 0]
-            colors = ["blue", "green", "cyan", "orange", "red"]  # 色のリスト（黄色をcyanに変更）
+            vgs_list = np.linspace(-vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # -vgs_absmaxから0までの範囲
         elif self.device_type == 'PJF':
-            vgs_list = [0.4, 0.3, 0.2, 0.1, 0]
-            colors = ["red", "orange", "cyan", "green", "blue"]  # 色のリスト（黄色をcyanに変更）
+            vgs_list = np.linspace(vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # vgs_absmaxから0までの範囲
+
+        color_cycle = itertools.cycle(color_map)
 
         # Vgsごとにプロット
-        for vgs_value, color in zip(vgs_list, colors):
-            mask = (Vgs >= vgs_value - 0.05) & (Vgs <= vgs_value + 0.05)
-            p.line(Vds[mask], Id_mA[mask], legend_label=f'Vgs = {vgs_value}V', line_width=2, color=color)
+        for vgs_value in vgs_list:
+            color = next(color_cycle)
+            mask = (Vgs >= vgs_value - vgs_step / 2) & (Vgs <= vgs_value + vgs_step / 2)
+            p.line(Vds[mask], Id_mA[mask], legend_label=f'Vgs = {vgs_value:.2f}V', line_width=2, color=color)
 
         if self.device_type == 'PJF':
             p.x_range.flipped = True
