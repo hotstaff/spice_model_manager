@@ -503,14 +503,17 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
     def modify_netlist(self):
         super().modify_netlist()
 
+        vds_abs = self.get_config("VDS_ABS")
+        vgs_absmax = self.get_config("VGS_ABSMAX")
+        vgs_step = self.get_config("VGS_STEP")
+
         # DC sweep
         if self.device_type == 'NJF':
-            self.net.set_element_model('V2',"DC 10")
-            self.net.add_instructions('.dc V1 -3 0 0.001')
+            self.net.set_element_model('V2',f"DC {vds_abs}")
+            self.net.add_instructions(f'.dc V1 -{vgs_absmax} 0 {vgs_step}')
         elif self.device_type == 'PJF':
-            self.net.set_element_model('V2',"DC -10")
-            self.net.add_instructions('.dc V1 0 3 0.001')
-
+            self.net.set_element_model('V2',f"DC -{vds_abs}")
+            self.net.add_instructions(f'.dc V1 0 {vgs_absmax} {vgs_step}')
 
     def extract_data(self):
         """VgsとIdからgmを計算（mS単位に変換）"""
