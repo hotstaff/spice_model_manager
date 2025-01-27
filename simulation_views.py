@@ -160,6 +160,7 @@ def run_simulate_now_api(output_format):
         model = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
     elif simulation_name == 'gm_id':
         model = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
+        model.update_config("VDS_ABS", 50)
     else:
         return jsonify({"error": f"Unsupported simulation type: {simulation_name}"}), 400
 
