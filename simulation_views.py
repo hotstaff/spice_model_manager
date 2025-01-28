@@ -250,6 +250,7 @@ def build_model_web():
     for c in Characteristics:
         print(c._SIMULATION_NAME, c.show_default_config())
 
+
     # device_typeが'NJF'または'PJF'のデバイスを検索
     device_types = ['NJF', 'PJF']
     devices_df = search_data(device_type=device_types)
