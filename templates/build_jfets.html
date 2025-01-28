@@ -199,6 +199,12 @@
             });
 
             showTab('iv');
+
+            document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const body = header.nextElementSibling;
+                body.classList.toggle('active');
+            });
         });
 
 
@@ -580,12 +586,6 @@
                 alert("Fetch Error: " + error);
             });
         }
-
-        document.querySelectorAll('.accordion-header').forEach(header => {
-            header.addEventListener('click', () => {
-                const body = header.nextElementSibling;
-                body.classList.toggle('active');
-            });
 
         document.getElementById('default-button').addEventListener('click', function() {
                 resetSliders();
