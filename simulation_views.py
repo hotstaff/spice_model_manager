@@ -172,7 +172,7 @@ def run_simulate_now_api(output_format):
         # request.form.get()で、フォームから取得した値があればそれを使い、なければdefault_valueを使う
         value = request.form.get(key, default_value)  # デフォルト値を設定
         model.update_config(key, value)  # モデルの設定を更新
-        if value != value:
+        if value != default_value:
             print(f"Simulation Config Set {key} -> {value}")
 
     # ステップ 4: シミュレーション実行と結果取得
