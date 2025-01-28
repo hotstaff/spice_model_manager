@@ -248,7 +248,7 @@ def build_model_web():
     Characteristics = [JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic]
 
     for c in Characteristics:
-        print(c._SIMULATION_NAME, c._CONFIG)
+        print(c._SIMULATION_NAME, c.show_default_config())
 
     # device_typeが'NJF'または'PJF'のデバイスを検索
     device_types = ['NJF', 'PJF']

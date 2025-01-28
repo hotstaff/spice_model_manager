@@ -45,6 +45,11 @@ class JFET_SimulationBase:
 
         self.config = self._CONFIG.copy()  # インスタンスごとに設定を分離
 
+    @classmethod
+    def show_default_config(cls):
+        """クラスのデフォルト設定を表示する"""
+        return cls._CONFIG
+
     def update_config(self, key, value):
         """設定値を動的に更新する"""
         if key in self.config:
