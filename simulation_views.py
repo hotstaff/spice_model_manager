@@ -166,6 +166,11 @@ def run_simulate_now_api(output_format):
 
     print(model.show_config())
 
+    configs = model.show_config()
+
+    for key, value in configs:
+        print(key, value)
+
     # ステップ 4: シミュレーション実行と結果取得
     try:
         netfile_path = model.build()  # ネットリストの作成
