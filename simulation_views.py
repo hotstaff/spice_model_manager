@@ -164,12 +164,14 @@ def run_simulate_now_api(output_format):
     else:
         return jsonify({"error": f"Unsupported simulation type: {simulation_name}"}), 400
 
-    print(model.show_config())
-
+    # シミュレーション設定
     configs = model.show_config()
 
-    for key, value in configs:
-        print(key, value)
+    for key, default_value in configs.items():
+        # request.form.get()で、フォームから取得した値があればそれを使い、なければdefault_valueを使う
+        value = request.form.get(key, default_value)  # デフォルト値を設定
+        model.update(key, value)  # モデルの設定を更新
+        print(f"Simulation Config Set {key} -> {value}")
 
     # ステップ 4: シミュレーション実行と結果取得
     try:
