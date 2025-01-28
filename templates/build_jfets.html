@@ -152,6 +152,12 @@
                     formData.append("simulation_name", simulationName);
                     formData.append("spice_string", spiceString);
 
+                    // シミュレーション設定を個別のキーと値として追加
+                    const simulationConfig = getSimulationConfig(simulationName);
+                    for (const [key, value] of Object.entries(simulationConfig)) {
+                        formData.append(`${key}`, value);
+                    }
+
                     // 非同期リクエストを送信
                     const response = await fetch("/api/simulate_now/json", {
                         method: "POST",
@@ -490,6 +496,19 @@
                 activeTabItem.classList.add('text-red-600', 'border-red-600');
                 activeTabItem.classList.remove('text-gray-600');
             }
+        }
+
+        function getSimulationConfig(simulationName) {
+            const config = {};
+            const form = document.querySelector(`#${simulationName}-form`);
+            
+            if (form) {
+                form.querySelectorAll('input').forEach(input => {
+                    config[input.name.replace(`${simulationName}-`, '')] = input.value;
+                });
+            }
+            
+            return config;
         }
 
 
