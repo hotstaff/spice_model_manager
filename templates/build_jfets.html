@@ -395,7 +395,7 @@
                             <div class="accordion-item">
                                 <button class="accordion-header">{{ simulation_name }}</button>
                                 <div class="accordion-body">
-                                    <form>
+                                    <form id="{{ simulation_name }}-form">
                                         {% for config_name, value in config.items() %}
                                             <div class="form-group">
                                                 <label for="{{ simulation_name }}-{{ config_name }}" class="block text-lg font-semibold text-gray-700 mt-4 mb-2">
