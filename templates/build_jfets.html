@@ -357,14 +357,20 @@
                         {% block simulation_configs_title %}Simulation Configuration{% endblock %}
                     </h3>
 
-                    {% for config_name, config_value in _CONFIG.items() %}
-                        <div class="mb-4">
-                            <label for="{{ config_name }}" class="block text-lg font-semibold text-gray-700 mb-2">
-                                {{ config_name }}
-                            </label>
-                            <input type="text" id="{{ config_name }}" name="{{ config_name }}" 
-                                   class="w-full p-3 text-lg border border-gray-300 rounded" 
-                                   value="{{ config_value }}">
+                    {% for simulation_name, config in simulation_configs.items() %}
+                        <div class="mb-6">
+                            <h4 class="text-lg font-semibold text-gray-700 mb-4">{{ simulation_name | capitalize }} Settings</h4>
+                            
+                            {% for config_name, config_value in config.items() %}
+                                <div class="mb-4">
+                                    <label for="{{ config_name }}" class="block text-lg font-semibold text-gray-700 mb-2">
+                                        {{ config_name }}
+                                    </label>
+                                    <input type="text" id="{{ config_name }}" name="{{ config_name }}" 
+                                           class="w-full p-3 text-lg border border-gray-300 rounded" 
+                                           value="{{ config_value }}">
+                                </div>
+                            {% endfor %}
                         </div>
                     {% endfor %}
                 </div>
