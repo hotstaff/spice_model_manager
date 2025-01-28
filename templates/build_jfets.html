@@ -52,6 +52,38 @@
         .tab-content.active {
             display: block;
         }
+
+        /* アコーディオン */
+        .accordion-item {
+            margin-bottom: 10px;
+        }
+
+        .accordion-header {
+            background-color: #f1f1f1;
+            padding: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+            border: none;
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            background-color: #e1e1e1;
+        }
+
+        .accordion-body {
+            display: none;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        .accordion-body.active {
+            display: block;
+        }
  
     </style>
 
@@ -357,22 +389,30 @@
                         {% block simulation_configs_title %}Simulation Configuration{% endblock %}
                     </h3>
 
-                    {% for simulation_name, config in simulation_configs.items() %}
-                        <div class="mb-6">
-                            <h4 class="text-lg font-semibold text-gray-700 mb-4">{{ simulation_name | capitalize }} Settings</h4>
-                            
-                            {% for config_name, config_value in config.items() %}
-                                <div class="mb-4">
-                                    <label for="{{ config_name }}" class="block text-lg font-semibold text-gray-700 mb-2">
-                                        {{ config_name }}
-                                    </label>
-                                    <input type="text" id="{{ config_name }}" name="{{ config_name }}" 
-                                           class="w-full p-3 text-lg border border-gray-300 rounded" 
-                                           value="{{ config_value }}">
+                    <!-- アコーディオン -->
+                    <div class="accordion">
+                        {% for simulation_name, config in simulation_configs.items() %}
+                            <div class="accordion-item">
+                                <button class="accordion-header">{{ simulation_name }}</button>
+                                <div class="accordion-body">
+                                    <form>
+                                        {% for config_name, value in config.items() %}
+                                            <div class="form-group">
+                                                <label for="{{ simulation_name }}-{{ config_name }}" class="block text-lg font-semibold text-gray-700 mt-4 mb-2">
+                                                    {{ config_name }}
+                                                </label>
+                                                <input type="text" 
+                                                       id="{{ simulation_name }}-{{ config_name }}" 
+                                                       name="{{ simulation_name }}-{{ config_name }}" 
+                                                       value="{{ value }}" 
+                                                       class="w-full p-3 text-lg border border-gray-300 rounded">
+                                            </div>
+                                        {% endfor %}
+                                    </form>
                                 </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
 
                 <!-- モデル選択セクション -->
@@ -540,6 +580,12 @@
                 alert("Fetch Error: " + error);
             });
         }
+
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', () => {
+                const body = header.nextElementSibling;
+                body.classList.toggle('active');
+            });
 
         document.getElementById('default-button').addEventListener('click', function() {
                 resetSliders();
