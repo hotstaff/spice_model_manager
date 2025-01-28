@@ -171,9 +171,18 @@ def run_simulate_now_api(output_format):
     for key, default_value in configs.items():
         # request.form.get()で、フォームから取得した値があればそれを使い、なければdefault_valueを使う
         value = request.form.get(key, default_value)  # デフォルト値を設定
-        if value is not default_value:
+        
+        # valueを数値に変換（デフォルト値も数値に変換して比較）
+        try:
+            value = float(value)  # 文字列を数値に変換
+            default_value = float(default_value)  # デフォルト値も数値に変換
+        except ValueError:
+            pass  # 数値に変換できない場合はそのまま文字列として扱う
+
+        if value != default_value:  # 値が異なる場合のみ処理
             print(f"Simulation Config Set {key} -> {value}, default: {default_value}")
             model.update_config(key, value)  # モデルの設定を更新
+
 
     # ステップ 4: シミュレーション実行と結果取得
     try:
