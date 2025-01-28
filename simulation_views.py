@@ -255,7 +255,7 @@ def build_model_web():
 
     # 辞書生成
     simulation_configs = {
-        char.get_simulation_name(): char.get_default_config()
+        char.get_simulation_name(): char.show_default_config()
         for char in characteristics
     }
 
