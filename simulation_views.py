@@ -252,6 +252,7 @@ def build_model_web():
     # データフレームをリスト形式に変換
     devices_list = devices_df.to_dict(orient='records')
 
+
     template_name = get_template_name('build_jfets.html')
 
     return render_template(
@@ -260,8 +261,6 @@ def build_model_web():
         experiment_data=experiment_data,
         devices_list=devices_list
     )
-
-
 
 
 @simu_views.route('/start_all_simulations', methods=['GET'])
