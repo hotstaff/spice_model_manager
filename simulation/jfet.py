@@ -46,6 +46,10 @@ class JFET_SimulationBase:
         self.config = self._CONFIG.copy()  # インスタンスごとに設定を分離
 
     @classmethod
+    def get_simulation_name(cls):
+        return cls._SIMULATION_NAME
+
+    @classmethod
     def show_default_config(cls):
         """クラスのデフォルト設定を表示する"""
         return cls._CONFIG

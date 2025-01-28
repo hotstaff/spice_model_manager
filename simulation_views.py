@@ -245,11 +245,19 @@ def build_model_web():
 
     experiment_data = get_experiment_data(include_all=True, exclude_data=True).to_dict(orient='records')
 
-    Characteristics = [JFET_IV_Characteristic, JFET_Vgs_Id_Characteristic, JFET_Gm_Vgs_Characteristic, JFET_Gm_Id_Characteristic]
+    # クラスリスト
+    characteristics = [
+        JFET_IV_Characteristic,
+        JFET_Vgs_Id_Characteristic,
+        JFET_Gm_Vgs_Characteristic,
+        JFET_Gm_Id_Characteristic,
+    ]
 
-    for c in Characteristics:
-        print(c._SIMULATION_NAME, c.show_default_config())
-
+    # 辞書生成
+    simulation_configs = {
+        char.get_simulation_name(): char.get_default_config()
+        for char in characteristics
+    }
 
     # device_typeが'NJF'または'PJF'のデバイスを検索
     device_types = ['NJF', 'PJF']
@@ -265,7 +273,8 @@ def build_model_web():
         template_name,
         parameters=parameters,
         experiment_data=experiment_data,
-        devices_list=devices_list
+        devices_list=devices_list,
+        simulation_configs=simulation_configs
     )
 
 
