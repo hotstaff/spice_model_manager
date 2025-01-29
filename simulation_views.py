@@ -307,7 +307,7 @@ def run_all_simulations_web():
     # 非同期タスクをキューに追加
     for data_id in device_ids:
         run_basic_performance_simulation.apply_async(args=[data_id])
-        run_and_store_plots.apply_async(args=[data_id])
+        # run_and_store_plots.apply_async(args=[data_id])
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
