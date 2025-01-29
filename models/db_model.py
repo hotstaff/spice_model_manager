@@ -82,10 +82,10 @@ def migrate_db():
     engine = get_db_connection()
     with engine.connect() as conn:
         # gdsカラムを追加するALTER TABLE文
-        conn.execute("""
+        conn.execute(text("""
             ALTER TABLE basic_performance
             ADD COLUMN gds DOUBLE PRECISION;
-        """)
+        """))
 
         conn.commit()  # 明示的にコミット
 
