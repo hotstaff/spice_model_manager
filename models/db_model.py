@@ -51,15 +51,16 @@ def init_db():
         """))
 
         conn.execute(text("""
-        CREATE TABLE IF NOT EXISTS basic_performance (
-            id SERIAL PRIMARY KEY,
-            data_id INT REFERENCES data(id) ON DELETE CASCADE,  -- dataテーブルと結合
-            idss DOUBLE PRECISION,  -- Idss (Drain current) 浮動小数点型
-            gm DOUBLE PRECISION,    -- Transconductance (Gm) 浮動小数点型
-            cgs DOUBLE PRECISION,   -- Gate-Source capacitance (Cgs) 浮動小数点型
-            cgd DOUBLE PRECISION,   -- Gate-Drain capacitance (Cgd) 浮動小数点型
-            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        )
+            CREATE TABLE IF NOT EXISTS basic_performance (
+                id SERIAL PRIMARY KEY,
+                data_id INT REFERENCES data(id) ON DELETE CASCADE,  -- dataテーブルと結合
+                idss DOUBLE PRECISION,  -- Idss (Drain current) 浮動小数点型
+                gm DOUBLE PRECISION,    -- Transconductance (Gm) 浮動小数点型
+                cgs DOUBLE PRECISION,   -- Gate-Source capacitance (Cgs) 浮動小数点型
+                cgd DOUBLE PRECISION,   -- Gate-Drain capacitance (Cgd) 浮動小数点型
+                gds DOUBLE PRECISION,   -- Drain-Source conductance (Gds) 浮動小数点型
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
         """))
 
         conn.execute(text("""
@@ -80,11 +81,11 @@ def init_db():
 def migrate_db():
     engine = get_db_connection()
     with engine.connect() as conn:
-        # 'data_name' カラムに NOT NULL 制約を追加
-        conn.execute(text("""
-        ALTER TABLE data
-        ALTER COLUMN device_name SET NOT NULL
-        """))
+        # gdsカラムを追加するALTER TABLE文
+        conn.execute("""
+            ALTER TABLE basic_performance
+            ADD COLUMN gds DOUBLE PRECISION;
+        """)
 
         # 'device_type' カラムに NOT NULL 制約を追加
         conn.execute(text("""
@@ -317,7 +318,7 @@ def get_image_from_db(data_id, image_type=None):
 
 
 # basic_performanceテーブルのデータを追加・更新する関数
-def update_basic_performance(data_id, idss=None, gm=None, cgs=None, cgd=None):
+def update_basic_performance(data_id, idss=None, gm=None, cgs=None, cgd=None, gds=None):
     engine = get_db_connection()
     with engine.connect() as conn:
         # data_idに対応するデータが存在するか確認
@@ -326,9 +327,9 @@ def update_basic_performance(data_id, idss=None, gm=None, cgs=None, cgd=None):
         if result is None:
             # データが存在しない場合は新しく挿入
             conn.execute(text("""
-                INSERT INTO basic_performance (data_id, idss, gm, cgs, cgd)
-                VALUES (:data_id, :idss, :gm, :cgs, :cgd)
-            """), {"data_id": data_id, "idss": idss, "gm": gm, "cgs": cgs, "cgd": cgd})
+                INSERT INTO basic_performance (data_id, idss, gm, cgs, cgd, gds)
+                VALUES (:data_id, :idss, :gm, :cgs, :cgd, :gds)
+            """), {"data_id": data_id, "idss": idss, "gm": gm, "cgs": cgs, "cgd": cgd, "gds": gds})
         else:
             # データが存在する場合は更新
             conn.execute(text("""
@@ -336,9 +337,10 @@ def update_basic_performance(data_id, idss=None, gm=None, cgs=None, cgd=None):
                 SET idss = COALESCE(:idss, idss),
                     gm = COALESCE(:gm, gm),
                     cgs = COALESCE(:cgs, cgs),
-                    cgd = COALESCE(:cgd, cgd)
+                    cgd = COALESCE(:cgd, cgd),
+                    gds = COALESCE(:gds, gds)
                 WHERE data_id = :data_id
-            """), {"idss": idss, "gm": gm, "cgs": cgs, "cgd": cgd, "data_id": data_id})
+            """), {"idss": idss, "gm": gm, "cgs": cgs, "cgd": cgd, "gds": gds, "data_id": data_id})
         
         conn.commit()  # 明示的にコミット
     return True  # 更新または追加成功
