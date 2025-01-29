@@ -272,9 +272,9 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         vgs_step = self.get_config("VGS_STEP")
 
         if self.device_type == 'NJF':
-            vgs_list = np.linspace(-vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # -vgs_absmaxから0までの範囲
+            vgs_list = np.linspace(-vgs_absmax, 0, round(vgs_absmax / vgs_step) + 1)  # -vgs_absmaxから0までの範囲
         elif self.device_type == 'PJF':
-            vgs_list = np.linspace(vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # vgs_absmaxから0までの範囲
+            vgs_list = np.linspace(vgs_absmax, 0, round(vgs_absmax / vgs_step) + 1)  # vgs_absmaxから0までの範囲
 
         color_cycle = itertools.cycle(color_map)
 
@@ -313,9 +313,9 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         vgs_step = self.get_config("VGS_STEP")
 
         if self.device_type == 'NJF':
-            vgs_list = np.linspace(-vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # -vgs_absmaxから0までの範囲
+            vgs_list = np.linspace(-vgs_absmax, 0, round(vgs_absmax / vgs_step) + 1)  # -vgs_absmaxから0までの範囲
         elif self.device_type == 'PJF':
-            vgs_list = np.linspace(vgs_absmax, 0, int(vgs_absmax / vgs_step) + 1)  # vgs_absmaxから0までの範囲
+            vgs_list = np.linspace(vgs_absmax, 0, round(vgs_absmax / vgs_step) + 1)  # vgs_absmaxから0までの範囲
 
         color_cycle = itertools.cycle(color_map)
 
