@@ -87,18 +87,6 @@ def migrate_db():
             ADD COLUMN gds DOUBLE PRECISION;
         """)
 
-        # 'device_type' カラムに NOT NULL 制約を追加
-        conn.execute(text("""
-        ALTER TABLE data
-        ALTER COLUMN device_type SET NOT NULL
-        """))
-
-        # 'device_name' と 'device_type' のユニーク制約を追加
-        conn.execute(text("""
-        ALTER TABLE data
-        ADD CONSTRAINT unique_device UNIQUE (device_name, device_type)
-        """))
-
         conn.commit()  # 明示的にコミット
 
 # データを取得する関数 (全データ取得)
