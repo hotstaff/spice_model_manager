@@ -240,19 +240,29 @@
 
             <!-- Basic Performance Section -->
             <div class="performance-section">
-                <h2 class="performance-title">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
+                <h2 class="performance-title" style="font-size: 1.4em;">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
                 {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
-                    <ul class="performance-list">
-                        <li><strong>Idss:</strong> {{ basic_performance.idss }} mA</li>
-                        <li><strong>Gm:</strong> {{ basic_performance.gm }} mS</li>
-                        <li><strong>Gds:</strong> {{ basic_performance.gds }} mS</li>
-                        <li><strong>Cgs:</strong> {{ basic_performance.cgs }} pF</li>
-                        <li><strong>Cgd:</strong> {{ basic_performance.cgd }} pF</li>
+                    <ul class="performance-list" style="font-size: 1.1em;">
+                        <li><strong>Idss:</strong> {{ basic_performance.idss }} mA  
+                            <span class="param-description">{% block idss_description %}(Self-bias current){% endblock %}</span>
+                        </li>
+                        <li><strong>Gm:</strong> {{ basic_performance.gm }} mS  
+                            <span class="param-description">{% block gm_description %}(Transconductance){% endblock %}</span>
+                        </li>
+                        <li><strong>Gds (1/ZOUT):</strong> {{ basic_performance.gds }} mS  
+                            <span class="param-description">{% block gds_description %}(Reciprocal of output impedance){% endblock %}</span>
+                        </li>
+                        <li><strong>Cgs:</strong> {{ basic_performance.cgs }} pF  
+                            <span class="param-description">{% block cgs_description %}(Gate-to-source capacitance){% endblock %}</span>
+                        </li>
+                        <li><strong>Cgd:</strong> {{ basic_performance.cgd }} pF  
+                            <span class="param-description">{% block cgd_description %}(Gate-to-drain capacitance){% endblock %}</span>
+                        </li>
                     </ul>
                 {% else %}
-                    <p class="no-data-message">No basic performance data available for this device type.</p>
+                    <p class="no-data-message" style="font-size: 1.1em;">No basic performance data available for this device type.</p>
                 {% endif %}
-                <p class="performance-note">
+                <p class="performance-note" style="font-size: 1em;">
                     <em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation (.op).{% endblock %}</em>
                 </p>
             </div>
