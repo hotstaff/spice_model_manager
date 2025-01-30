@@ -5,7 +5,8 @@ from celery import Celery  # Celeryタスクの作成
 from models.db_model import (
     update_basic_performance,
     get_data_by_id,
-    save_image_to_db  # データベース操作
+    save_image_to_db,  # データベース操作
+    update_simulation_done
 )
 
 # シミュレーション関連
@@ -34,9 +35,9 @@ celery = Celery(
 
 celery.conf.broker_connection_retry_on_startup = True  # 起動時の接続再試行を有効にする
 # タスクが完了してからAckする（タスクはべき等であるべき）
-celery.conf.task_acks_late = True
+# celery.conf.task_acks_late = True
 # ワーカーの異常終了で、Ackされていないタスクを際スケジューリングする
-celery.conf.task_reject_on_worker_lost = True
+# celery.conf.task_reject_on_worker_lost = True
 
 def get_device_data(data_id):
     """
@@ -130,7 +131,7 @@ def run_basic_performance_simulation(data_id):
         gm = result.get('gm')
         cgs = result.get('cgs')
         cgd = result.get('cgd')
-        cgd = result.get('gds')
+        gds = result.get('gds')
 
         # 結果をデータベースに追加または更新
         update_basic_performance(data_id, idss=idss, gm=gm, cgs=cgs, cgd=cgd, gds=gds)
@@ -167,6 +168,8 @@ def run_and_store_plots(data_id):
             # 画像をデータベースに登録
             with open(image_path, 'rb') as image_file:
                 save_image_to_db(data_id, image_file, image_type, 'png')
+
+            update_simulation_done(data_id):
 
         return {"status": "success", "data_id": data_id}
 
