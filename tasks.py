@@ -39,6 +39,11 @@ celery.conf.broker_connection_retry_on_startup = True  # 起動時の接続再�
 # ワーカーの異常終了で、Ackされていないタスクを際スケジューリングする
 # celery.conf.task_reject_on_worker_lost = True
 
+
+class JobError(Exception):
+    """ジョブ処理中のエラー"""
+    pass
+
 def get_device_data(data_id):
     """
     データベースからデバイス情報を取得します。
