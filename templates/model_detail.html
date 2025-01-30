@@ -240,9 +240,9 @@
 
         <!-- Basic Performance Section -->
         <div class="performance-section">
-            <h2 class="performance-title" style="font-size: 1.4em;">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
+            <h2 class="performance-title" style="font-size: 2.4em;">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
             {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
-                <ul class="performance-list" style="font-size: 1.1em;">
+                <ul class="performance-list" style="font-size: 2.1em;">
                     <li>
                         <strong>Idss:</strong> {{ basic_performance.idss }} mA  
                         <br>
@@ -270,9 +270,9 @@
                     </li>
                 </ul>
             {% else %}
-                <p class="no-data-message" style="font-size: 1.1em;">No basic performance data available for this device type.</p>
+                <p class="no-data-message" style="font-size: 2.1em;">No basic performance data available for this device type.</p>
             {% endif %}
-            <p class="performance-note" style="font-size: 1em;">
+            <p class="performance-note" style="font-size: 2em;">
                 <em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation (.op).{% endblock %}</em>
             </p>
         </div>
