@@ -169,7 +169,7 @@ def run_and_store_plots(data_id):
             with open(image_path, 'rb') as image_file:
                 save_image_to_db(data_id, image_file, image_type, 'png')
 
-            update_simulation_done(data_id):
+            update_simulation_done(data_id)
 
         return {"status": "success", "data_id": data_id}
 
