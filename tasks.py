@@ -3,7 +3,6 @@ from celery import Celery  # Celeryタスクの作成
 
 # データベース関連
 from models.db_model import (
-    get_db_connection,
     update_basic_performance,
     get_data_by_id,
     save_image_to_db  # データベース操作
