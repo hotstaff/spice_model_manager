@@ -94,7 +94,8 @@ def get_all_data():
     engine = get_db_connection()
     query = "SELECT * FROM data"
     query = text(query)  # クエリを text() でラップ
-    df = pd.read_sql(query, engine)
+    with engine.connect() as conn:
+        df = pd.read_sql(query, conn)
     return df
 
 
@@ -133,7 +134,8 @@ def search_data(device_name=None, device_type=None, spice_string=None):
     
     # 構築されたクエリを実行
     query = text(query)  # クエリを text() でラップ
-    df = pd.read_sql(query, engine, params=params)
+    with engine.connect() as conn:
+        df = pd.read_sql(query, conn, params=params)
     return df
 
 
@@ -341,8 +343,8 @@ def get_basic_performance_by_data_id(data_id):
         WHERE data_id = :data_id
     """
     query = text(query)  # クエリを text() でラップ
-
-    df = pd.read_sql(query, engine, params={"data_id": data_id})
+    with engine.connect() as conn:
+        df = pd.read_sql(query, conn, params={"data_id": data_id})
     return df
 
 def get_all_device_ids():
@@ -453,7 +455,8 @@ def get_experiment_data_by_id_or_data_id(identifier, by_data_id=False):
     query = text(query)  # クエリを text() でラップ
 
     # クエリ結果をPandas DataFrameに変換
-    df = pd.read_sql(query, engine, params={"identifier": identifier})
+    with engine.connect() as conn:
+        df = pd.read_sql(query, conn, params={"identifier": identifier})
 
     return df
 
@@ -494,9 +497,10 @@ def get_experiment_data(include_all=False, exclude_data=False):
         query += " WHERE data_id IS NULL"
     
     query = text(query)  # クエリを text() でラップ
-
+    
     # クエリ結果をPandas DataFrameに変換
-    df = pd.read_sql(query, engine)
+    with engine.connect() as conn:
+        df = pd.read_sql(query, conn)
 
     return df
 
