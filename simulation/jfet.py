@@ -158,13 +158,19 @@ class JFET_Basic_Performance(JFET_SimulationBase):
 
     _SIMULATION_NAME = 'basic_performance'
 
+    _CONFIG = {
+        "VDS_ABSMAX": 10,
+    }
+
     def modify_netlist(self):
         super().modify_netlist()
 
+        vds_absmax = self.get_config("VDS_ABSMAX")
+
         if self.device_type == 'NJF':
-            self.net.set_element_model('V2', "DC 10")
+            self.net.set_element_model('V2', f"DC {vds_absmax}")
         elif self.device_type == 'PJF':
-            self.net.set_element_model('V2', "DC -10")
+            self.net.set_element_model('V2', f"DC -{vds_absmax}")
 
         # .op解析（定常状態解析）
         self.net.add_instructions('.op')

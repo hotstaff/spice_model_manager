@@ -130,9 +130,10 @@ def run_basic_performance_simulation(data_id):
         gm = result.get('gm')
         cgs = result.get('cgs')
         cgd = result.get('cgd')
+        cgd = result.get('gds')
 
         # 結果をデータベースに追加または更新
-        update_basic_performance(data_id, idss, gm, cgs, cgd)
+        update_basic_performance(data_id, idss=idss, gm=gm, cgs=cgs, cgd=cgd, gds=gds)
 
         return {"status": "success", "data_id": data_id}
 
