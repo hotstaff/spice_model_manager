@@ -144,8 +144,7 @@ def get_data_by_id(data_id):
     
     # パラメータを辞書として渡す
     with engine.connect() as conn:
-        df = pd.read_sql(query, engine, params={"data_id": data_id})
-
+        df = pd.read_sql(query, conn, params={"data_id": data_id})
     return df
 
 # データを新規追加する関数
