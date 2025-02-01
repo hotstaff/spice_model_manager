@@ -272,10 +272,11 @@ def build_model_web():
     ]
 
     # 辞書生成
-    simulation_configs = {
-        char.get_simulation_name(): char.show_default_config()
-        for char in characteristics
-    }
+    simulation_configs = {}
+    for char in characteristics:
+        conf = char.show_default_config()
+        conf.pop('LIMIT', None)
+        simulation_configs[char.get_simulation_name()] = conf
 
     # device_typeが'NJF'または'PJF'のデバイスを検索
     device_types = ['NJF', 'PJF']
