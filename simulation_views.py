@@ -164,8 +164,6 @@ def run_simulate_now_api(output_format):
     # シミュレーション設定
     configs = model.show_default_config()
 
-    print(configs)
-
     for key, default_value in configs.items():
 
         if key == 'LIMITS':
@@ -277,8 +275,7 @@ def build_model_web():
     simulation_configs = {}
     for char in characteristics:
         conf = char.show_default_config()
-        conf.pop('LIMITS', None)
-        simulation_configs[char.get_simulation_name()] = conf
+        simulation_configs[char.get_simulation_name()] = {key: value for key, value in conf.items() if key != 'LIMIT'}
 
     # device_typeが'NJF'または'PJF'のデバイスを検索
     device_types = ['NJF', 'PJF']
