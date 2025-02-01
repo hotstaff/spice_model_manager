@@ -243,26 +243,48 @@
             <div class="performance-section">
                 <h2 class="performance-title" style="font-size: 1.4em;">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
                 {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
-                    <ul class="performance-list" style="font-size: 1.1em;">
-                        <li><strong>Idss {% block idss_description %}(Self-bias current){% endblock %}:</strong> {{ basic_performance.idss }} mA  
-                        </li>
-                        <li><strong>Gm {% block gm_description %}(Transconductance){% endblock %}:</strong> {{ basic_performance.gm }} mS  
-                        </li>
-<!--                         <li><strong>Gds {% block gds_description %}(Reciprocal of output impedance){% endblock %}:</strong> {{ basic_performance.gds }} mS  
-                        </li> -->
-                        <li>
-                            <strong>ROUT {% block rout_description %}(Output Impedance){% endblock %}:</strong>
-                            {% if basic_performance.gds is not none %}
-                                {{ (1 / basic_performance.gds) | round(2) }} kΩ
-                            {% else %}
-                                N/A (Gds not available)
-                            {% endif %}
-                        </li>
-                        <li><strong>Cgs {% block cgs_description %}(Gate-to-source capacitance){% endblock %}:</strong> {{ basic_performance.cgs }} pF  
-                        </li>
-                        <li><strong>Cgd {% block cgd_description %}(Gate-to-drain capacitance){% endblock %}:</strong> {{ basic_performance.cgd }} pF  
-                        </li>
-                    </ul>
+                    <table class="performance-table" style="width: 100%; border-collapse: collapse; font-size: 1.1em;">
+                        <thead>
+                            <tr>
+                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Parameter</th>
+                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Description</th>
+                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Value</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Idss</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block idss_description %}(Self-bias current){% endblock %}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.idss }} mA</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Gm</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block gm_description %}(Transconductance){% endblock %}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.gm }} mS</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>ROUT</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block rout_description %}(Output Impedance){% endblock %}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                                    {% if basic_performance.gds is not none %}
+                                        {{ (1 / basic_performance.gds) | round(2) }} kΩ
+                                    {% else %}
+                                        N/A (Gds not available)
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Cgs</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block cgs_description %}(Gate-to-source capacitance){% endblock %}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.cgs }} pF</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Cgd</strong></td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block cgd_description %}(Gate-to-drain capacitance){% endblock %}</td>
+                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.cgd }} pF</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 {% else %}
                     <p class="no-data-message" style="font-size: 1.1em;">No basic performance data available for this device type.</p>
                 {% endif %}
