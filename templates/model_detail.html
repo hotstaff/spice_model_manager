@@ -296,7 +296,7 @@
                             </tr>
                             <tr>
                                 <td><strong>ROUT</strong></td>
-                                <td>{% block rout_description %}Output Impedance{% endblock %}</td>
+                                <td>{% block rout_description %}Output Impedance (1/Gds){% endblock %}</td>
                                 <td>
                                     {% if basic_performance.gds is not none %}
                                         {{ (1 / basic_performance.gds) | round(2) }} kΩ
