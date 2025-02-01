@@ -75,9 +75,9 @@ class JFET_SimulationBase:
         """設定値のバリデーションと範囲内に補正"""
         # _CONFIGにLIMITSが含まれているか確認
 
+        print(name, value)
         limits = self.get_config("LIMITS")
         if limits:
-            print(value)
             # 対象となる名前（name）の最小値と最大値を確認
             min_limit = limits.get(f"{name}_MIN")
             max_limit = limits.get(f"{name}_MAX")
