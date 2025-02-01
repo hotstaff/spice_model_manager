@@ -54,16 +54,6 @@ class JFET_SimulationBase:
         """クラスのデフォルト設定を表示する"""
         return cls._CONFIG
 
-    def update_config(self, key, value):
-        """設定値を動的に更新する"""
-        # バリデーションを実行
-        self.validate_config(key)
-
-        if key in self.config:
-            self.config[key] = value
-        else:
-            raise KeyError(f"Invalid config key: {key}")
-
     def get_config(self, key):
         """設定値を取得する"""
         return self.config.get(key)
@@ -72,10 +62,17 @@ class JFET_SimulationBase:
         """現在の設定を表示する"""
         return self.config
 
-    def validate_config(self, name):
-        # _CONFIGから設定値を取得
-        config_value = self.get_config(name)
-        
+    def update_config(self, key, value):
+        """設定値を動的に更新する"""
+        if key in self.config:
+            # validate_configを呼び出して範囲内に補正された値を設定
+            corrected_value = self.validate_config(key, value)
+            self.config[key] = corrected_value
+        else:
+            raise KeyError(f"Invalid config key: {key}")
+
+    def validate_config(self, name, value):
+        """設定値のバリデーションと範囲内に補正"""
         # _CONFIGにLIMITSが含まれているか確認
         limits = self.get_config("LIMITS")
         if limits:
@@ -83,11 +80,14 @@ class JFET_SimulationBase:
             min_limit = limits.get(f"{name}_MIN")
             max_limit = limits.get(f"{name}_MAX")
             
-            if min_limit is not None and config_value < min_limit:
-                raise ValueError(f"{name} must be greater than or equal to {min_limit}")
-            
-            if max_limit is not None and config_value > max_limit:
-                raise ValueError(f"{name} must be less than or equal to {max_limit}")
+            # 範囲内であればそのまま値を返す
+            if min_limit is not None and value < min_limit:
+                return min_limit  # 最小値を返す
+            if max_limit is not None and value > max_limit:
+                return max_limit  # 最大値を返す
+        
+        # 範囲内であればそのまま値を返す
+        return value
 
     def modify_netlist(self):
         """JFETのモデルを交換する(共通の動作)"""
