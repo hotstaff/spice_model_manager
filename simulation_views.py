@@ -151,14 +151,10 @@ def run_simulate_now_api(output_format):
     # シミュレーションの種類に応じてモデルを選択
     if simulation_name == 'iv':
         model = JFET_IV_Characteristic(device_name, device_type, spice_string)
-        # model.update_config("VGS_STEP", 0.05)
-        # model.update_config("VDS_ABSMAX", 5)
     elif simulation_name == 'vgs_id':
         model = JFET_Vgs_Id_Characteristic(device_name, device_type, spice_string)
-        # model.update_config("VGS_ABSMAX", 0.7)
     elif simulation_name == 'gm_vgs':
         model = JFET_Gm_Vgs_Characteristic(device_name, device_type, spice_string)
-        # model.update_config("VDS_ABS", 10)
     elif simulation_name == 'gm_id':
         model = JFET_Gm_Id_Characteristic(device_name, device_type, spice_string)
     else:
