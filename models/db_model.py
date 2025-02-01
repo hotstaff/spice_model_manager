@@ -17,10 +17,11 @@ def get_db_connection():
     if _engine is None:
         _engine = create_engine(
             os.getenv("DB_URL"),
-            pool_size=10,  # 最大接続数
-            max_overflow=5,  # 最大オーバーフロー数
-            pool_timeout=30,  # タイムアウト時間
-            pool_recycle=1800  # 接続の再利用時間
+            pool_size=5,
+            max_overflow=5,
+            pool_timeout=30,
+            pool_recycle=1800,
+            pool_pre_ping=True
         )
     return _engine
 
