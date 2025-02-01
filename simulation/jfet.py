@@ -79,6 +79,8 @@ class JFET_SimulationBase:
             # 対象となる名前（name）の最小値と最大値を確認
             min_limit = limits.get(f"{name}_MIN")
             max_limit = limits.get(f"{name}_MAX")
+
+            print(value, min_limit, max_limit)
             
             # 範囲内であればそのまま値を返す
             if min_limit is not None and value < min_limit:
