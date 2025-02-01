@@ -286,17 +286,17 @@
                         <tbody>
                             <tr>
                                 <td><strong>Idss</strong></td>
-                                <td>{% block idss_description %}(Self-bias current){% endblock %}</td>
+                                <td>{% block idss_description %}Self-bias current{% endblock %}</td>
                                 <td>{{ basic_performance.idss }} mA</td>
                             </tr>
                             <tr>
                                 <td><strong>Gm</strong></td>
-                                <td>{% block gm_description %}(Transconductance){% endblock %}</td>
+                                <td>{% block gm_description %}Transconductance{% endblock %}</td>
                                 <td>{{ basic_performance.gm }} mS</td>
                             </tr>
                             <tr>
                                 <td><strong>ROUT</strong></td>
-                                <td>{% block rout_description %}(Output Impedance){% endblock %}</td>
+                                <td>{% block rout_description %}Output Impedance{% endblock %}</td>
                                 <td>
                                     {% if basic_performance.gds is not none %}
                                         {{ (1 / basic_performance.gds) | round(2) }} kΩ
@@ -307,12 +307,12 @@
                             </tr>
                             <tr>
                                 <td><strong>Cgs</strong></td>
-                                <td>{% block cgs_description %}(Gate-to-source capacitance){% endblock %}</td>
+                                <td>{% block cgs_description %}Gate-to-source capacitance{% endblock %}</td>
                                 <td>{{ basic_performance.cgs }} pF</td>
                             </tr>
                             <tr>
                                 <td><strong>Cgd</strong></td>
-                                <td>{% block cgd_description %}(Gate-to-drain capacitance){% endblock %}</td>
+                                <td>{% block cgd_description %}Gate-to-drain capacitance{% endblock %}</td>
                                 <td>{{ basic_performance.cgd }} pF</td>
                             </tr>
                         </tbody>
