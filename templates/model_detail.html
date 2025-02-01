@@ -320,9 +320,9 @@
                 {% else %}
                     <p class="no-data-message">No basic performance data available for this device type.</p>
                 {% endif %}
-                <p class="performance-note">
-                    <em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation (.op).{% endblock %}</em>
-                </p>
+                    <p class="performance-note">
+                        <em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation (.op). This simulation uses Vds = 10V.{% endblock %}</em>
+                    </p>
             </div>
 
             <!-- SPICE String Section -->
