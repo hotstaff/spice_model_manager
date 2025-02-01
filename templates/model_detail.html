@@ -251,7 +251,7 @@
 <!--                         <li><strong>Gds {% block gds_description %}(Reciprocal of output impedance){% endblock %}:</strong> {{ basic_performance.gds }} mS  
                         </li> -->
                         <li>
-                            <strong>ROUT (Output Impedance):</strong>
+                            <strong>ROUT {% block rout_description %}(Output Impedance){% endblock %}:</strong>
                             {% if basic_performance.gds is not none %}
                                 {{ (1 / basic_performance.gds) | round(2) }} kΩ
                             {% else %}
