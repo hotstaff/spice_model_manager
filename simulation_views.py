@@ -6,7 +6,6 @@ import pandas as pd
 
 # 自作モジュールのインポート
 from models.db_model import (
-    get_data_by_id,
     get_all_device_ids,
     add_experiment_data,
     search_data,
@@ -316,9 +315,9 @@ def run_all_simulations_web():
 @simu_views.route('/start_simulation/<int:data_id>', methods=['GET'])
 def run_single_simulation_web(data_id):
     # データベースから指定されたdata_idのデバイスを取得
-    device = get_data_by_id(data_id)
+    device_ids = get_all_device_ids()
     
-    if not device:
+    if data_id not in device_ids:
         return jsonify({"error": f"Device with data_id {data_id} not found"}), 404  # デバイスが見つからない場合のエラーハンドリング
     
     # 非同期タスクをキューに追加
