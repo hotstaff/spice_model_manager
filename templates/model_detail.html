@@ -88,6 +88,38 @@
             padding-bottom: 5px;
             margin-bottom: 10px;
         }
+        
+        .performance-section {
+            font-family: Arial, sans-serif;
+        }
+        .performance-title {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        .performance-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95em;
+            margin-bottom: 10px;
+        }
+        .performance-table th,
+        .performance-table td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        .performance-table th {
+            background-color: #f9f9f9;
+        }
+        .no-data-message {
+            font-size: 0.95em;
+            color: #888;
+        }
+        .performance-note {
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
 
         /* Lists */
         ul {
@@ -241,31 +273,31 @@
 
             <!-- Basic Performance Section -->
             <div class="performance-section">
-                <h2 class="performance-title" style="font-size: 1.4em;">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
+                <h2 class="performance-title">{% block basic_performance_title %}Basic Performance{% endblock %}</h2>
                 {% if basic_performance and (model.device_type == 'NJF' or model.device_type == 'PJF') %}
-                    <table class="performance-table" style="width: 100%; border-collapse: collapse; font-size: 1.1em;">
+                    <table class="performance-table">
                         <thead>
                             <tr>
-                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Parameter</th>
-                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Description</th>
-                                <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Value</th>
+                                <th>Parameter</th>
+                                <th>Description</th>
+                                <th>Value</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Idss</strong></td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block idss_description %}(Self-bias current){% endblock %}</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.idss }} mA</td>
+                                <td><strong>Idss</strong></td>
+                                <td>{% block idss_description %}(Self-bias current){% endblock %}</td>
+                                <td>{{ basic_performance.idss }} mA</td>
                             </tr>
                             <tr>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Gm</strong></td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block gm_description %}(Transconductance){% endblock %}</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.gm }} mS</td>
+                                <td><strong>Gm</strong></td>
+                                <td>{% block gm_description %}(Transconductance){% endblock %}</td>
+                                <td>{{ basic_performance.gm }} mS</td>
                             </tr>
                             <tr>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>ROUT</strong></td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block rout_description %}(Output Impedance){% endblock %}</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">
+                                <td><strong>ROUT</strong></td>
+                                <td>{% block rout_description %}(Output Impedance){% endblock %}</td>
+                                <td>
                                     {% if basic_performance.gds is not none %}
                                         {{ (1 / basic_performance.gds) | round(2) }} kΩ
                                     {% else %}
@@ -274,21 +306,21 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Cgs</strong></td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block cgs_description %}(Gate-to-source capacitance){% endblock %}</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.cgs }} pF</td>
+                                <td><strong>Cgs</strong></td>
+                                <td>{% block cgs_description %}(Gate-to-source capacitance){% endblock %}</td>
+                                <td>{{ basic_performance.cgs }} pF</td>
                             </tr>
                             <tr>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;"><strong>Cgd</strong></td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{% block cgd_description %}(Gate-to-drain capacitance){% endblock %}</td>
-                                <td style="padding: 8px; border-bottom: 1px solid #ddd;">{{ basic_performance.cgd }} pF</td>
+                                <td><strong>Cgd</strong></td>
+                                <td>{% block cgd_description %}(Gate-to-drain capacitance){% endblock %}</td>
+                                <td>{{ basic_performance.cgd }} pF</td>
                             </tr>
                         </tbody>
                     </table>
                 {% else %}
-                    <p class="no-data-message" style="font-size: 1.1em;">No basic performance data available for this device type.</p>
+                    <p class="no-data-message">No basic performance data available for this device type.</p>
                 {% endif %}
-                <p class="performance-note" style="font-size: 1em;">
+                <p class="performance-note">
                     <em>{% block basic_performance_note %}Note: These results are based on LTspice static analysis simulation (.op).{% endblock %}</em>
                 </p>
             </div>
