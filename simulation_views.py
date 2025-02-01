@@ -275,7 +275,7 @@ def build_model_web():
     simulation_configs = {}
     for char in characteristics:
         conf = char.show_default_config()
-        simulation_configs[char.get_simulation_name()] = {key: value for key, value in conf.items() if key != 'LIMIT'}
+        simulation_configs[char.get_simulation_name()] = {key: value for key, value in conf.items() if key != 'LIMITS'}
 
     # device_typeが'NJF'または'PJF'のデバイスを検索
     device_types = ['NJF', 'PJF']
