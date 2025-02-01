@@ -167,7 +167,8 @@ def run_simulate_now_api(output_format):
 
     # シミュレーション設定
     configs = model.show_default_config()
-    configs.pop('LIMITS', None)
+
+    print(configs)
 
     for key, default_value in configs.items():
         # request.form.get()で、フォームから取得した値があればそれを使い、なければdefault_valueを使う
