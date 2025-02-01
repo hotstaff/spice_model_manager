@@ -76,8 +76,8 @@ class JFET_SimulationBase:
         # _CONFIGにLIMITSが含まれているか確認
 
         limits = self.get_config("LIMITS")
-        print(value, self.show_config())
         if limits:
+            print(value)
             # 対象となる名前（name）の最小値と最大値を確認
             min_limit = limits.get(f"{name}_MIN")
             max_limit = limits.get(f"{name}_MAX")
