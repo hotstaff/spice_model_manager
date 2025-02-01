@@ -271,16 +271,15 @@ def build_model_web():
         JFET_Gm_Id_Characteristic,
     ]
 
-    EXCLUDE_KEYS = ["LIMIT"]
-
+    # 辞書生成
     simulation_configs = {
         char.get_simulation_name(): {
-            key: value for key, value in char.show_default_config().items() if key not in EXCLUDE_KEYS
+            key: value
+            for key, value in char.show_default_config().items()
+            if 'LIMIT' not in key
         }
         for char in characteristics
     }
-
-    print(simulation_configs)
 
     # device_typeが'NJF'または'PJF'のデバイスを検索
     device_types = ['NJF', 'PJF']
