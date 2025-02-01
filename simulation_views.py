@@ -271,9 +271,12 @@ def build_model_web():
         JFET_Gm_Id_Characteristic,
     ]
 
-    # 辞書生成
+    EXCLUDE_KEYS = ["LIMIT"]
+
     simulation_configs = {
-        char.get_simulation_name(): char.show_default_config()
+        char.get_simulation_name(): {
+            key: value for key, value in char.show_default_config().items() if key not in EXCLUDE_KEYS
+        }
         for char in characteristics
     }
 

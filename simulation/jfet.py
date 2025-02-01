@@ -56,6 +56,9 @@ class JFET_SimulationBase:
 
     def update_config(self, key, value):
         """設定値を動的に更新する"""
+        # バリデーションを実行
+        self.validate_config(key)
+
         if key in self.config:
             self.config[key] = value
         else:
@@ -68,6 +71,23 @@ class JFET_SimulationBase:
     def show_config(self):
         """現在の設定を表示する"""
         return self.config
+
+    def validate_config(self, name):
+        # _CONFIGから設定値を取得
+        config_value = self.get_config(name)
+        
+        # _CONFIGにLIMITSが含まれているか確認
+        limits = self.get_config("LIMITS")
+        if limits:
+            # 対象となる名前（name）の最小値と最大値を確認
+            min_limit = limits.get(f"{name}_MIN")
+            max_limit = limits.get(f"{name}_MAX")
+            
+            if min_limit is not None and config_value < min_limit:
+                raise ValueError(f"{name} must be greater than or equal to {min_limit}")
+            
+            if max_limit is not None and config_value > max_limit:
+                raise ValueError(f"{name} must be less than or equal to {max_limit}")
 
     def modify_netlist(self):
         """JFETのモデルを交換する(共通の動作)"""
@@ -241,7 +261,15 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         "VGS_ABSMAX": 0.4,
         "VGS_STEP": 0.1,
         "VDS_ABSMAX": 20,
-        "VDS_STEP": 0.1
+        "VDS_STEP": 0.1,
+        "LIMITS": {
+            "VGS_STEP_MIN": 0.001,
+            "VGS_STEP_MAX": 0.5,
+            "VDS_STEP_MIN": 0.001,
+            "VDS_STEP_MAX": 1.0,
+            "VGS_ABSMAX_MAX": 10.0,   # 過電圧防止
+            "VDS_ABSMAX_MAX": 50.0   # 過電圧防止
+        }
     }
 
     def modify_netlist(self):
@@ -348,6 +376,12 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         "VGS_ABSMAX": 3,
         "VGS_STEP": 0.01,
         "VDS_ABS": 10,
+        "LIMITS": {
+            "VGS_STEP_MIN": 0.001,     # 最小ステップ幅
+            "VGS_STEP_MAX": 0.1,       # 最大ステップ幅
+            "VGS_ABSMAX_MAX": 5.0,     # VGS_ABSMAXの最大値
+            "VDS_ABS_MAX": 50.0        # VDS_ABSの最大値
+        }
     }
 
     def modify_netlist(self):
@@ -435,7 +469,14 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         "VGS_ABSMAX": 3,
         "VGS_STEP": 0.001,
         "VDS_ABS": 10,
+        "LIMITS": {
+            "VGS_STEP_MIN": 0.0001,    # 最小ステップ幅
+            "VGS_STEP_MAX": 0.01,      # 最大ステップ幅
+            "VGS_ABSMAX_MAX": 5.0,     # VGS_ABSMAXの最大値
+            "VDS_ABS_MAX": 50.0        # VDS_ABSの最大値
+        }
     }
+
 
     def modify_netlist(self):
         super().modify_netlist()
@@ -520,7 +561,14 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
         "VGS_ABSMAX": 3,
         "VGS_STEP": 0.001,
         "VDS_ABS": 10,
+        "LIMITS": {
+            "VGS_STEP_MIN": 0.0001,    # 最小ステップ幅
+            "VGS_STEP_MAX": 0.01,      # 最大ステップ幅
+            "VGS_ABSMAX_MAX": 5.0,     # VGS_ABSMAXの最大値
+            "VDS_ABS_MAX": 50.0        # VDS_ABSの最大値
+        }
     }
+
 
     def modify_netlist(self):
         super().modify_netlist()
