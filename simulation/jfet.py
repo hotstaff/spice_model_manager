@@ -265,7 +265,9 @@ class JFET_IV_Characteristic(JFET_SimulationBase):
         "VDS_STEP": 0.1,
         "LIMITS": {
             "VGS_STEP_MIN": 0.001,
+            "VGS_STEP_MAX": 0.5,
             "VDS_STEP_MIN": 0.001,
+            "VDS_STEP_MAX": 1.0,
             "VGS_ABSMAX_MAX": 10.0,   # 過電圧防止
             "VDS_ABSMAX_MAX": 200.0   # 過電圧防止
         }
@@ -377,6 +379,7 @@ class JFET_Vgs_Id_Characteristic(JFET_SimulationBase):
         "VDS_ABS": 10,
         "LIMITS": {
             "VGS_STEP_MIN": 0.001,     # 最小ステップ幅
+            "VGS_STEP_MAX": 0.1,       # 最大ステップ幅
             "VGS_ABSMAX_MAX": 5.0,     # VGS_ABSMAXの最大値
             "VDS_ABS_MAX": 200.0        # VDS_ABSの最大値
         }
@@ -469,6 +472,7 @@ class JFET_Gm_Vgs_Characteristic(JFET_SimulationBase):
         "VDS_ABS": 10,
         "LIMITS": {
             "VGS_STEP_MIN": 0.0001,    # 最小ステップ幅
+            "VGS_STEP_MAX": 0.01,      # 最大ステップ幅
             "VGS_ABSMAX_MAX": 5.0,     # VGS_ABSMAXの最大値
             "VDS_ABS_MAX": 200.0        # VDS_ABSの最大値
         }
@@ -560,6 +564,7 @@ class JFET_Gm_Id_Characteristic(JFET_SimulationBase):
         "VDS_ABS": 10,
         "LIMITS": {
             "VGS_STEP_MIN": 0.0001,    # 最小ステップ幅
+            "VGS_STEP_MAX": 0.01,      # 最大ステップ幅
             "VGS_ABSMAX_MAX": 5.0,     # VGS_ABSMAXの最大値
             "VDS_ABS_MAX": 200.0        # VDS_ABSの最大値
         }
