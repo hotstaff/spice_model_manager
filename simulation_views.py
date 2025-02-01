@@ -313,7 +313,7 @@ def run_all_simulations_web():
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
 
 
-@app.route('/start_simulation/<int:data_id>', methods=['GET'])
+@simu_views.route('/start_simulation/<int:data_id>', methods=['GET'])
 def run_single_simulation_web(data_id):
     # データベースから指定されたdata_idのデバイスを取得
     device = get_data_by_id(data_id)
