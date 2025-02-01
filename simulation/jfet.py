@@ -47,12 +47,12 @@ class JFET_SimulationBase:
 
     @classmethod
     def get_simulation_name(cls):
-        return cls._SIMULATION_NAME
+        return cls._SIMULATION_NAME.copy()
 
     @classmethod
     def show_default_config(cls):
         """クラスのデフォルト設定を表示する"""
-        return cls._CONFIG
+        return cls._CONFIG.copy()
 
     def get_config(self, key):
         """設定値を取得する"""
