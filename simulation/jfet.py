@@ -47,7 +47,7 @@ class JFET_SimulationBase:
 
     @classmethod
     def get_simulation_name(cls):
-        return cls._SIMULATION_NAME.copy()
+        return cls._SIMULATION_NAME
 
     @classmethod
     def show_default_config(cls):
