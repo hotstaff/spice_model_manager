@@ -6,6 +6,7 @@ import pandas as pd
 
 # 自作モジュールのインポート
 from models.db_model import (
+    get_data_by_id,
     get_all_device_ids,
     add_experiment_data,
     search_data,
@@ -310,6 +311,21 @@ def run_all_simulations_web():
         # run_and_store_plots.apply_async(args=[data_id])
     
     return jsonify({"message": f"Simulation started for {len(device_ids)} devices!"}), 202
+
+
+@app.route('/start_simulation/<int:data_id>', methods=['GET'])
+def run_single_simulation_web(data_id):
+    # データベースから指定されたdata_idのデバイスを取得
+    device = get_data_by_id(data_id)
+    
+    if not device:
+        return jsonify({"error": f"Device with data_id {data_id} not found"}), 404  # デバイスが見つからない場合のエラーハンドリング
+    
+    # 非同期タスクをキューに追加
+    run_basic_performance_simulation.apply_async(args=[data_id])
+    run_and_store_plots.apply_async(args=[data_id])  # 必要に応じて他のタスクも実行
+    
+    return jsonify({"message": f"Simulation started for device with data_id {data_id}!"}), 202
 
 
 @simu_views.route('/upload_csv', methods=['GET', 'POST'])
