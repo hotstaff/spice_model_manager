@@ -41,7 +41,6 @@
         }
 
         .container {
-            position: relative;
             background-color: #fff;
             padding: 30px;
             border-radius: 8px;
@@ -50,6 +49,7 @@
             max-width: 800px;
             width: 100%;
             margin-top: 20px;
+            position: relative;
         }
 
         p {
@@ -81,7 +81,7 @@
             outline: none;
         }
 
-         button {
+        button {
             padding: 12px 25px;
             background-color: #ff6a8b;
             color: white;
@@ -147,41 +147,12 @@
             font-size: 18px;
         }
 
-        /* 新しいモデル追加ボタンのスタイル */
-        .add-model-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;  /* 少し右に調整してスペースを確保 */
-            padding: 14px 35px;  /* ボタンを少し大きめに */
-            background-color: #FF5733;  /* 目を引くオレンジ色に変更 */
-            color: white;
-            border: none;
-            border-radius: 50px;  /* 完全に丸い形にする */
-            cursor: pointer;
-            font-size: 18px;  /* 少し大きめのフォント */
-            font-weight: bold;
-            text-transform: uppercase;  /* テキストを大文字にして視覚的に強調 */
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);  /* 少しだけ影を強めに */
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-        }
-
-        .add-model-btn:hover {
-            background-color: #FF7F50;  /* オレンジ色を少し明るく */
-            transform: scale(1.1);  /* ほんの少し大きくして目立たせる */
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);  /* 影を強調 */
-        }
-
-        .add-model-btn:active {
-            transform: scale(0.98);  /* クリック時に少し縮めて反応を良く */
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);  /* クリック時の影 */
-        }
-
         .pagination {
             display: flex;
-            justify-content: center; /* 中央に配置 */
-            align-items: center; /* 縦方向に中央配置 */
-            gap: 10px; /* 各リンクの間にスペースを追加 */
-            margin: 20px 0; /* 上下にマージンを追加 */
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
         }
 
         .pagination-link {
@@ -207,8 +178,41 @@
         .pagination-info {
             font-size: 16px;
             color: #333;
-}
+        }
 
+        /* ボタンを横並びにするコンテナ */
+        .action-buttons-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        /* 共通ボタンスタイル */
+        .action-btn {
+            padding: 14px 35px;
+            background-color: #FF5733;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background-color: #FF7F50;
+            transform: scale(1.1);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
     </style>
 </head>
 <body>
@@ -224,7 +228,7 @@
         {% block search_form %}
         <form action="/models" method="get">
             <input type="text" name="device_name" placeholder="Device Name" value="{{ device_name }}" />
-            <select name="device_type" value="{{ device_type }}">
+            <select name="device_type">
                 <option value="">Select Device Type</option>
                 <option value="NJF">NJF</option>
                 <option value="PJF">PJF</option>
@@ -290,18 +294,22 @@
             {% endif %}
         </div>
         {% endblock %}
-        
-        <!-- 右上に新しいモデル追加ボタン -->
-        {% block add_model_button %}
-        <a href="{{ url_for('model_views.add_model_web') }}">
-            <button class="add-model-btn">+ New Model</button>
-        </a>
+
+        <!-- アクションボタン（2つのボタンを横並びにレイアウト） -->
+        {% block action_buttons %}
+        <div class="action-buttons-container">
+            <a href="{{ url_for('model_views.add_model_web') }}">
+                <button class="action-btn">+ New Model</button>
+            </a>
+            <a href="{{ url_for('simu_views.build_web') }}">
+                <button class="action-btn">Create Spice Model</button>
+            </a>
+        </div>
         {% endblock %}
     </div>
     <footer style="color: black; text-align: center; padding: 20px 0; margin-top: 20px;">
         <p>&copy; 2024 SPICE Model Repository. Created with care by ChatGPT, vach, and our YouTube collaborators.</p>
         <p>Special thanks to our YouTube community for their valuable contributions and support in this project.</p>
     </footer>
-
 </body>
 </html>
