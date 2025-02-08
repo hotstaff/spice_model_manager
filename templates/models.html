@@ -296,7 +296,6 @@
         {% endblock %}
 
         <!-- アクションボタン（2つのボタンを横並びにレイアウト） -->
-        {% block action_buttons %}
         <div class="action-buttons-container">
             <a href="{{ url_for('model_views.add_model_web') }}">
                 <button class="action-btn">+ New Model</button>
@@ -305,7 +304,6 @@
                 <button class="action-btn">Create Spice Model</button>
             </a>
         </div>
-        {% endblock %}
     </div>
     <footer style="color: black; text-align: center; padding: 20px 0; margin-top: 20px;">
         <p>&copy; 2024 SPICE Model Repository. Created with care by ChatGPT, vach, and our YouTube collaborators.</p>
