@@ -180,55 +180,60 @@
             color: #333;
         }
 
-        /* ボタンを横並びにするコンテナ */
+        /* アクションボタンコンテナを洗練されたデザインに */
         .action-buttons-container {
             display: flex;
             justify-content: center;
             gap: 20px;
-            margin: 20px 0;
+            margin: 30px auto;
+            padding: 20px;
+            background: #f8f9fa; /* 薄いグレーの背景 */
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
         }
 
         /* 共通ボタンスタイル */
         .action-btn {
-            padding: 14px 35px;
+            flex: 1;
+            padding: 14px 20px;
             color: white;
             border: none;
-            border-radius: 12px;  /* 丸みを控えめにする */
+            border-radius: 8px;  /* 角を少し丸める */
             cursor: pointer;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             text-transform: uppercase;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            text-align: center;
         }
 
-        .action-btn:active {
-            transform: scale(0.98);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        /* New Model ボタン：オレンジ系 */
+        /* Submit New Model（オレンジ系） */
         .action-btn-new {
-            background-color: #FF5733;
+            background: #FF5733;
         }
 
         .action-btn-new:hover {
-            background-color: #FF7F50;
+            background: #FF7F50;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
-        /* Spice Model ボタン：ブルー系 */
+        /* Create Spice Model（ブルー系） */
         .action-btn-spice {
-            background-color: #007BFF;
+            background: #007BFF;
         }
 
         .action-btn-spice:hover {
-            background-color: #0056b3;
+            background: #0056b3;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
         }
 
     </style>
 </head>
 <body>
-    <div class="container">
         <header>
             <h1>{% block header_title %}SPICE Model Repository{% endblock %}</h1>
             <h2>{% block header_subtitle %}LTspice JFET & BJT Model Data Storage{% endblock %}</h2>
@@ -236,7 +241,7 @@
 
         <p>{% block description %}This repository contains a collection of SPICE models for JFET and BJT devices, specifically formatted for use with LTspice. Use the search fields below to filter models by name, type, or spice string.{% endblock %}</p>
 
-        <!-- アクションボタン（2つのボタンを横並びにレイアウト） -->
+        <!-- ✅ アクションボタン（よりスタイリッシュなデザイン） -->
         <div class="action-buttons-container">
             <a href="{{ url_for('model_views.add_model_web') }}">
                 <button class="action-btn action-btn-new">{% block add_button_label %}Submit New Model{% endblock %}</button>
@@ -246,7 +251,7 @@
             </a>
         </div>
 
-        <!-- 検索フォーム -->
+        <!-- 🔍 検索フォーム -->
         {% block search_form %}
         <form action="/models" method="get">
             <input type="text" name="device_name" placeholder="Device Name" value="{{ device_name }}" />
