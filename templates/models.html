@@ -191,7 +191,6 @@
         /* 共通ボタンスタイル */
         .action-btn {
             padding: 14px 35px;
-            background-color: #FF5733;
             color: white;
             border: none;
             border-radius: 50px;
@@ -203,16 +202,29 @@
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
         }
 
-        .action-btn:hover {
-            background-color: #FF7F50;
-            transform: scale(1.1);
-            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.2);
-        }
-
         .action-btn:active {
             transform: scale(0.98);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
+
+        /* New Model ボタン：オレンジ系 */
+        .action-btn-new {
+            background-color: #FF5733;
+        }
+
+        .action-btn-new:hover {
+            background-color: #FF7F50;
+        }
+
+        /* Spice Model ボタン：ブルー系 */
+        .action-btn-spice {
+            background-color: #007BFF;
+        }
+
+        .action-btn-spice:hover {
+            background-color: #0056b3;
+        }
+
     </style>
 </head>
 <body>
@@ -227,10 +239,10 @@
         <!-- アクションボタン（2つのボタンを横並びにレイアウト） -->
         <div class="action-buttons-container">
             <a href="{{ url_for('model_views.add_model_web') }}">
-                <button class="action-btn">Submit New Model</button>
+                <button class="action-btn action-btn-new">+ New Model</button>
             </a>
-            <a href="{{ url_for('simu_views.build_model_web') }}">
-                <button class="action-btn">Create Spice Model</button>
+            <a href="{{ url_for('spice_model_views.create_spice_model_web') }}">
+                <button class="action-btn action-btn-spice">Create Spice Model</button>
             </a>
         </div>
 
