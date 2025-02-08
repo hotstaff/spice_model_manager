@@ -239,10 +239,10 @@
         <!-- アクションボタン（2つのボタンを横並びにレイアウト） -->
         <div class="action-buttons-container">
             <a href="{{ url_for('model_views.add_model_web') }}">
-                <button class="action-btn action-btn-new">Submit New Model</button>
+                <button class="action-btn action-btn-new">{% block add_button_label %}Submit New Model{% endblock %}</button>
             </a>
             <a href="{{ url_for('simu_views.build_model_web') }}">
-                <button class="action-btn action-btn-spice">Create Spice Model</button>
+                <button class="action-btn action-btn-spice">{% block build_button_label %}Create Spice Model{% endblock %}</button>
             </a>
         </div>
 
