@@ -7,5 +7,6 @@ simulation/images/*
 
 !simulation/data/.gitkeep
 !simulation/images/.gitkeep
+test_data/
 
-*/__pycache__
+*/__pycache_
