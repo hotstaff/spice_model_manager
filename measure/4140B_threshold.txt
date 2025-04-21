@@ -15,7 +15,7 @@
 150 !
 160 SUB Vth_measurement(Flag,Inst,Channel$,Vd,Ith,Vth_upper, Vth_lower,Vth)
 170   DISP "THRESHOLD VOLTAGE MEASUREMENT"
-180 Image: IMAGE 2A,M3D2.2D,","
+180 Image: IMAGE 2A,M3DZ.2D,","
 190   Vth=0
 200   C=(UPC$(Channel$)="P")
 210   IF C=0 THEN 250
@@ -37,7 +37,7 @@
 370 Set: OUTPUT Inst USING Image;"PE",Step
 380    IF (I>Ith) AND (C=0) OR (I<Ith) AND (C=1) THEN GOSUB Down
 390    IF (I<Ith) AND (C=0) OR (I>Ith) AND (C=1) THEN GOSUB Up
-400    ENTER Inst,1,V
+400    ENTER Inst;I,V
 410    T=ABS(I)
 420    IF ABS(I)=Ith THEN Meas_end
 430    IF SGN(I-Ith)*SGN(J-Ith)=1 THEN GOTO 450
@@ -53,11 +53,12 @@
 530    OUTPUT Inst USING "K"; "W7"
 540  SUBEXIT
 550  SUB Meas_para_entry(Flag,Sample$,Channel$,Vd,Ith,Vth_upper,Vth_lower)
-550   EDIT "CONNECT/CHANGE DUT and EDIT SAMPLE NUMBER? (max 18 chara)",Sample$
-560   INPUT "Channel? (P or N)",Channel$
-570   INPUT "Vd (V)?",Vd
-580   INPUT "Ith (uA)?",Ith
-590   Ith=Ith/1E6
-600   INPUT "Vth upper limit (V)?",Vth_upper
-610   INPUT "Vth lower limit (V)?",Vth_lower
-620  SUBEND
+560   EDIT "CONNECT/CHANGE DUT and EDIT SAMPLE NUMBER? (max 18 chara)",Sample$
+570   IF Flag=1 THEN 640
+580   INPUT "Channel? (P or N)",Channel$
+590   INPUT "Vd (V)?",Vd
+600   INPUT "Ith (uA)?",Ith
+610   Ith=Ith/1E6
+620   INPUT "Vth upper limit (V)?",Vth_upper
+630   INPUT "Vth lower limit (V)?",Vth_lower
+640  SUBEND
