@@ -9,4 +9,4 @@ simulation/images/*
 !simulation/images/.gitkeep
 test_data/
 
-*/__pycache_
+*/__pycache__
