@@ -1,0 +1,172 @@
+10  ! *** Gm-Vgs MEASUREMENT ***
+20  !   "Gm-Vgs"   ... MAR. 13, 1981
+30  M=717                          ! GPIBアドレスの初期値（HP4140B）
+40  OPTION BASE 1                 ! 配列のインデックス開始を1に設定
+50  DIM S$[30],D$[16]            ! デバイス名(DUT)と日付の文字列用変数
+60  DIM I1(100),G1(100),V(100)   ! 電流、Gm、電圧の配列（最大100点）
+70  DISP "4140B Address Code ? (717)"  ! 測定器のGPIBアドレス確認
+80  INPUT M                      ! ユーザーにアドレス入力を求める
+90  PRINTER IS 16                ! プリンタ出力の設定
+100 GOSUB 220  ! Meas-setting     ! 測定条件の設定へ
+110 GOSUB 350  ! Measurement      ! 測定処理実行
+120 GOSUB 480  ! Output Graphic   ! Id-Vgs特性のグラフ描画
+130 GOSUB 1100 ! Gm-calculation   ! Gm計算（dId/dVgs）
+140 GOSUB 1200 ! Graphic-output   ! Gm-Vgs特性のグラフ描画
+150 END                         ! 終了
+160 !
+170 IMAGE 2A,M3DZ.2D,"."         ! 測定パラメータ表示用のフォーマット定義
+180 IMAGE 18A,": ",MDCDDZ.DD,K
+190 IMAGE MZ.DD," V  ",MZ.DDDe," A" ! Vgs電圧とId電流の測定値表示用
+200 IMAGE 18A,": ",12A
+210 !
+220 ! *** Meas-setting ***         ! 測定条件の入力
+230 DISP "OUT=? (UP to 10 characters)"  ! デバイス名入力
+240 INPUT S$
+250 DISP "DATE=?"                 ! 日付入力
+260 INPUT D$
+270 DISP "Input ; START V?, STOP V?, STEP V?, STEP DELAY(sec)?, HOLD TIME(sec?), Vds"  ! 測定パラメータ入力
+280 INPUT V1, V2, V3, T1, T2, V0
+290 N1=ABS((V2-V1)/V3)            ! 測定点数の計算（非整数の可能性あり）
+300 IF FP(N1)#0 THEN N2=INT(N1)+2 ! 小数があれば+2点
+310 IF FP(N1)=0 THEN N2=INT(N1)+1 ! ちょうど割り切れる場合は+1点
+320 REDIM I1(N2),G1(N2),V(N2)     ! 測定点数に応じて配列を再定義
+330 RETURN
+340 !
+350 ! *** Measurement ***         ! DUTに接続して測定を実行
+360 DISP "Connect DUT for Id-Vgs Meas. as D:HI, G:Va, S:GND,LO:Vb 'CONT'"
+370 PAUSE                         ! 接続の確認待ち
+380 OUTPUT M ;"F2RA1I1J1T2A3B1L3M3"  ! 測定モード設定（内部用）
+390 OUTPUT M USING 170; "PS",V1,"PT",V2,"PE",V3,"PD",T1,"PH",T2,"PB",V0  ! 電圧範囲と遅延などを設定
+400 OUTPUT M ; "W1"               ! 測定スタート
+410 DISP "MEASURING"
+420 OUTPUT M ; "W1"               ! 測定スタート指示
+430 FOR I=1 TO N2
+440 ENTER M ; I1(I),V(I)          ! 電流と電圧を取得（GPIB経由）
+450 DISP USING 190 ; V(I), I1(I)  ! 測定値表示
+460 NEXT I
+470 RETURN
+480 !  *** Graphic-output ***      ! Id-Vgs特性のグラフ描画
+490 GCLEAR                        ! グラフィック画面クリア
+500 GRAPH                         ! グラフモードに切替
+510 LOCATE 30,110,25,88           ! 描画位置設定
+520 PEN 1                         ! ペン色設定
+530 M1=1.E-15                     ! Y軸の下限（電流）
+540 M2=.01                        ! Y軸の上限（電流）
+550 SCALE V1,V2,LGT(M1),LGT(M2)   ! X:Vgs, Y:log(Id) のスケール設定
+560 AXES 1,1,V1,LGT(M1)           ! 軸の描画
+570 DEG                          ! 角度の単位を度に設定
+580 X=V2-V1
+590 Y=LGT(M2)-LGT(M1)
+600 Y1=LGT(M1)
+610 Y2=LGT(M2)
+620 MOVE V1+X*.55,Y1+Y*1.15       ! タイトル表示位置へ移動
+630 LORG 5                        ! ラベル原点指定
+640 LABEL "Id-Vgs Characteristics"
+650 MOVE V1+X*.25,Y1+Y*1.07
+660 FXD 2                         ! 小数点以下2桁で表示
+670 LABEL "DUT=";S$
+680 MOVE V1+.9*X,Y1+Y*1.05
+690 IMAGE "Vds=",MZ.DD,"V"        ! Vdsの表示フォーマット
+700 LABEL USING 690 ; V0
+710 MOVE V1+X*.3,Y1+Y*.55         ! Y軸ラベル
+720 LDIR 90
+730 LABEL "Id (A)"
+740 LDIR 0
+750 MOVE V1+X*.31,Y1-Y*.2         ! 計測器名
+760 LABEL "HP 4140B"
+770 MOVE V1+X*.99,Y1-Y*.2         ! X軸ラベル
+780 LABEL "Vgs (V)"
+790 MOVE V1+X*.99,Y1-Y*.3         ! 測定日
+800 LABEL D$
+810 PEN 1
+820 ! *** Vgs Axis unit Plot ***
+830 CSIZE 3
+840 LDIR 0
+850 LORG 6
+860 FOR I=INT(V1) TO INT(V2)
+870 MOVE 1,Y1-1
+880 FXD 1
+890 LABEL I                      ! X軸目盛
+900 NEXT I
+910 ! *** Id Axis unit Plot ***
+920 CSIZE 3
+930 LDIR 0
+940 LORG 8
+950 FOR I=Y1 TO Y2
+960 MOVE V1-X*.01,I
+970 LABEL USING "MZe" ; 10^I     ! Y軸目盛（対数）
+980 NEXT I
+990 PEN 1
+1000 LINETYPE 1
+1010 FOR I=1 TO N2
+1020 PLOT V1+(I*V3-V3),LGT(ABS(I1(I))) ! 測定値をプロット（X:Vgs, Y:log(Id)）
+1030 IF V1+(I*V3-V3)>V2 THEN 1050
+1040 NEXT I
+1050 PENUP
+1060 COPY                         ! グラフ出力
+1070 DISP "PRESS 'CONT'"         ! 続行待ち
+1080 PAUSE
+1090 RETURN
+1100 ! *** Gm=calculate ***        ! Gm（dId/dVgs）の計算
+1110 FOR I=1 TO N2-1
+1120 G1(I)=ABS((I1(I+1)-I1(I))/V3) ! 差分から近似微分を計算
+1130 NEXT I
+1140 G2=0
+1150 FOR I=1 TO N2-1
+1160 G2=MAX(G2,G1(I))             ! Gmの最大値を求める（Y軸スケーリング用）
+1170 NEXT I
+1180 G3=10^(INT(LGT(G2))-(FP(LGT(G2))#0 AND LGT(G2)>=0)) ! スケール用の単位（例: 1e-6, 1e-3など）
+1190 RETURN
+1200 ! *** Graphic-output ***      ! Gm-Vgsのグラフ描画
+1210 GCLEAR
+1220 GRAPH
+1230 Y=G3*(1+INT(G2/G3))          ! Y軸の上限を少し余裕を持たせて設定
+1240 Y1=0
+1250 SCALE V1,V2,0,G3*(1+INT(G2/G3))
+1260 AXES 1,G3, INT(V1),0
+1270 ! *** Gm unit x plot ***
+1280 CSIZE 3
+1290 LDIR 0
+1300 LORG 6
+1310 FOR I=INT(V1) TO INT(V2)
+1320 MOVE I,-G2*.01
+1330 FXD 0
+1340 LABEL I
+1350 NEXT I
+1360 ! *** Gm unit y Plot ***
+1370 CSIZE 3
+1380 LDIR 0
+1390 LORG 8
+1400 FOR I=0 TO INT(G2/G3)+(FP(LGT(G2))#0)
+1410 MOVE INT(V1)-(INT(V2)-INT(V1))*.01,I*G3
+1420 FXD 0
+1430 LABEL I
+1440 NEXT I
+1450 ! *** Gm PLOT ***
+1460 MOVE V1+X*.55,Y1+Y*1.15
+1470 LORG 5
+1480 LABEL "Gm-Vgs Characteristics"
+1490 MOVE V1+X*.25,Y1+Y*1.07
+1500 FXD 2
+1510 LABEL "DUT=";S$
+1520 MOVE V1+X,Y1+Y*1.05
+1530 IMAGE "Gm-(S) *", MZe
+1540 LABEL USING 690 ; V0
+1550 MOVE V1-X*.15,Y1+Y*.55
+1560 LDIR 90
+1570 LABEL USING 1530 ; G3        ! Y軸単位表示
+1580 LDIR 0
+1590 MOVE V1+X*.31,Y1-Y*.2
+1600 LABEL "HP 4140B"
+1610 MOVE V1+X*.99,Y1-Y*.2
+1620 LABEL "Vgs (V)"
+1630 MOVE V1+X*.99,Y1-Y*.3
+1640 LABEL D$
+1650 PEN 1
+1660 LINETYPE 1
+1670 FOR I=1 TO N2-1
+1680 PLOT V1+(I-1)*V3,G1(I)       ! Gmプロット（X:Vgs, Y:Gm）
+1690 IF V1+(I-1)*V3>V2 THEN 150
+1700 NEXT I
+1710 COPY                         ! 出力
+1720 RETURN

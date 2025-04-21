@@ -1,0 +1,63 @@
+10   ! Threshold Voltage Measurement (VthA/N) Aug.09,1980
+20   ! HP4140B+9835A used for 4140B A/M
+30   PRINT PAGE
+40   PRINT "THRESHOLD VOLTAGE MEASUREMENT"
+50   Flag=0
+60   Inst=717
+70   INPUT "4140B ADDRESS CODE ? (717)", Inst
+80 Meas: CALL Meas_para_entry(Flag,Sample$,Channel$,Vd,Ith,Vth_upper,Vth_lower)
+90    CALL Vth_measurement(Flag,Inst,Channel$,Vd,Ith,Vth_upper,Vth_lower,Vth)
+100   BEEP
+110   PRINT USING "18A,A,M3D.2D,K";Sample$,",",Vth,"V"
+120   Flag=1
+130 GOTO Meas
+140 END
+150 !
+160 SUB Vth_measurement(Flag,Inst,Channel$,Vd,Ith,Vth_upper, Vth_lower,Vth)
+170   DISP "THRESHOLD VOLTAGE MEASUREMENT"
+180 Image: IMAGE 2A,M3D2.2D,","
+190   Vth=0
+200   C=(UPC$(Channel$)="P")
+210   IF C=0 THEN 250
+220   Stop=PROUND(MIN(Vth_lower, Vth_upper), -2)
+230   Start=PROUND(MAX(Vth_lower, Vth_upper), -2)
+240   GOTO 270
+250   Start=PROUND(MIN(Vth_lower, Vth_upper), -2)
+260   Stop=PROUND(MAX(Vth_lower, Vth_upper), -2)
+270   Step=ABS(PROUND(Start - Stop, -2))
+280   IF Flag=1 THEN 330
+290   OUTPUT Inst, "F2RA1I1"
+300   OUTPUT Inst, "COA3B1L3M3S0J1H09"
+310   OUTPUT Inst USING Image,"PB",Vd
+320   OUTPUT Inst USING Image,"PS",Start,"PT",Stop,"PE",Step,"PH",0,"PD",.01
+330   OUTPUT Inst, "W2"
+340   IF C=1 THEN 380
+350   J=1
+360 Step: Step=MAX(PROUND(Step*.5,-2),.01)
+370 Set: OUTPUT Inst USING Image;"PE",Step
+380    IF (I>Ith) AND (C=0) OR (I<Ith) AND (C=1) THEN GOSUB Down
+390    IF (I<Ith) AND (C=0) OR (I>Ith) AND (C=1) THEN GOSUB Up
+400    ENTER Inst,1,V
+410    T=ABS(I)
+420    IF ABS(I)=Ith THEN Meas_end
+430    IF SGN(I-Ith)*SGN(J-Ith)=1 THEN GOTO 450
+440    IF (ABS(I-Ith) = MIN(ABS(I-Ith), ABS(J-Ith))) AND (Step=.01) THEN Meas_end
+450    J=I
+460    IF Step = .01 THEN GOTO Set
+470  GOTO Step
+480 Down: OUTPUT Inst;"W5"
+490  RETURN
+500 Up: OUTPUT Inst;"W6"
+510  RETURN
+520 Meas_end: Vth=V
+530    OUTPUT Inst USING "K"; "W7"
+540  SUBEXIT
+550  SUB Meas_para_entry(Flag,Sample$,Channel$,Vd,Ith,Vth_upper,Vth_lower)
+550   EDIT "CONNECT/CHANGE DUT and EDIT SAMPLE NUMBER? (max 18 chara)",Sample$
+560   INPUT "Channel? (P or N)",Channel$
+570   INPUT "Vd (V)?",Vd
+580   INPUT "Ith (uA)?",Ith
+590   Ith=Ith/1E6
+600   INPUT "Vth upper limit (V)?",Vth_upper
+610   INPUT "Vth lower limit (V)?",Vth_lower
+620  SUBEND
